@@ -23,3 +23,14 @@
   flex-direction: column;
   width: 100%;
 }
+
+/* Section scroll margin so headings are never obscured by floating navbar */
+#hero,
+#about,
+#schedule,
+#events,
+#contact,
+section[id],
+footer[id] {
+  scroll-margin-top: calc(var(--header-height, 4.5rem) + 24px);
+}
