@@ -12,21 +12,60 @@ import celestius2xPng from '../../assets/celestius-transparent@2x.png';
 
 /**
  * CelestiusSplash screen:
- * Displays centered PresentedBrandTag and Celestius logo on black background
- * with dot grid and radial yellow tint.
- * Fast & punchy timing:
- * - Fade in (200ms, scale 0.96 -> 1.0)
- * - Hold (650ms)
- * - Fade out into site (200ms)
- * Total duration: 1050ms (~1.05s)
+ * Renders ONLY:
+ * 1. The PRESENTED BY brand tag (slanted cream parallelogram with dark pixel text, yellow checkers & brackets)
+ * 2. The Celestius logo image
+ * 3. Visually hidden aria-live announcement
+ *
+ * Sequence:
+ * - Fade in (300ms, scale 0.96 -> 1.0)
+ * - Hold (1000ms)
+ * - Fade out into site (300ms)
+ * Total duration: 1600ms (1.6s)
  */
 export default function CelestiusSplash({ onComplete }) {
   const [animState, setAnimState] = useState('entering');
+  const splashRef = useRef(null);
   const onCompleteRef = useRef(onComplete);
 
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
+
+  // Dev-only assertion: Assert Splash DOM contains only BrandTag, logo, and sr-only
+  useEffect(() => {
+    if (import.meta.env.DEV && splashRef.current) {
+      const walker = document.createTreeWalker(
+        splashRef.current,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode: (node) => {
+            const parent = node.parentElement;
+            if (!parent) return NodeFilter.FILTER_REJECT;
+            if (parent.closest('.sr-only') || parent.classList.contains('sr-only')) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            if (parent.closest('svg') || parent.tagName.toLowerCase() === 'text') {
+              return NodeFilter.FILTER_REJECT;
+            }
+            const text = node.textContent?.trim();
+            return text ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+          },
+        }
+      );
+
+      const strayTexts = [];
+      while (walker.nextNode()) {
+        strayTexts.push(walker.currentNode.textContent?.trim());
+      }
+
+      if (strayTexts.length > 0) {
+        console.error('[Splash Assertion Failed] Stray visible text nodes found in splash DOM:', strayTexts);
+      } else {
+        console.info('[Splash Assertion Passed] Splash DOM contains ONLY brand tag, logo, and aria-live.');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     logTimelineEvent('splash start');
@@ -36,9 +75,9 @@ export default function CelestiusSplash({ onComplete }) {
     document.body.style.overflow = 'hidden';
 
     const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const fadeInDuration = isReduced ? 120 : SPLASH_TIMINGS.FADE_IN;
+    const fadeInDuration = isReduced ? 150 : SPLASH_TIMINGS.FADE_IN;
     const holdDuration = isReduced ? SPLASH_TIMINGS.REDUCED_HOLD : SPLASH_TIMINGS.HOLD;
-    const fadeOutDuration = isReduced ? 150 : SPLASH_TIMINGS.FADE_OUT;
+    const fadeOutDuration = isReduced ? 200 : SPLASH_TIMINGS.FADE_OUT;
 
     // Start entering -> holding on next animation frame
     const startTimer = setTimeout(() => {
@@ -74,6 +113,7 @@ export default function CelestiusSplash({ onComplete }) {
 
   return (
     <div
+      ref={splashRef}
       className={`${styles.splashOverlay} ${animState === 'exiting' ? styles.overlayExiting : ''}`}
       role="dialog"
       aria-modal="true"
@@ -83,14 +123,14 @@ export default function CelestiusSplash({ onComplete }) {
       <div className={styles.dotGrid} aria-hidden="true" />
       <div className={styles.radialTint} aria-hidden="true" />
 
-      {/* Screen Reader Announcement */}
+      {/* Visually hidden screen reader announcement */}
       <div className="sr-only" role="status" aria-live="polite">
         Presented by Celestius
       </div>
 
       {/* Centered Presentation Box */}
       <div className={`${styles.content} ${stateClass}`}>
-        {/* Pixel styled brand tag replaces plain white text */}
+        {/* Pixel-styled brand tag (cream parallelogram with yellow checkers & brackets) */}
         <PresentedBrandTag className={styles.brandTag} />
 
         <div className={styles.logoWrapper}>
