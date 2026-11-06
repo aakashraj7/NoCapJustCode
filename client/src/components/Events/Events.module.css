@@ -2,14 +2,18 @@
 /* Professional Dark Theme Event Cards & Detail Panel */
 
 .eventsSection {
+  --events-gap: 32px;
   position: relative;
   overflow: hidden;
-  padding-block: 4.5rem;
+  padding-top: 80px;
+  padding-bottom: 48px !important;
 }
 
-@media (max-width: 767px) {
+@media (min-width: 1024px) {
   .eventsSection {
-    padding-block: 80px;
+    --events-gap: 28px;
+    padding-top: 4.5rem;
+    padding-bottom: 72px !important;
   }
 }
 
@@ -26,14 +30,14 @@
 .cardsGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: var(--events-gap);
   align-items: stretch;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .cardsGrid {
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: var(--events-gap);
     align-items: stretch;
   }
 }

@@ -45,6 +45,36 @@ export default function Quote() {
 
     observer.observe(el);
 
+    // Dev-only check: measure card to statue distance
+    if (import.meta.env.DEV) {
+      const measureCardToStatue = () => {
+        const cards = document.querySelectorAll('.eventCard, [class*="eventCard"]');
+        const lastCard = cards[cards.length - 1];
+        const statue = el.querySelector(`.${styles.statueImage}`);
+        if (lastCard && statue) {
+          const cardRect = lastCard.getBoundingClientRect();
+          const statueRect = statue.getBoundingClientRect();
+          // Known crop offset: 8px on 901px canvas (0.89%)
+          const firstNonBlackRow = statueRect.top + statueRect.height * (8 / 901);
+          const dist = Math.round(firstNonBlackRow - cardRect.bottom);
+          const w = window.innerWidth;
+          const target = w >= 1024 ? 88 : 56;
+          console.info(
+            `[QuoteDistanceCheck] Width ${w}px: measured distance = ${dist}px (target: ${target}px, diff: ${dist - target}px)`
+          );
+        }
+      };
+      window.__measureCardToStatue = measureCardToStatue;
+      const distTimer = setTimeout(measureCardToStatue, 800);
+      window.addEventListener('resize', measureCardToStatue);
+      return () => {
+        clearTimeout(fallbackTimer);
+        clearTimeout(distTimer);
+        window.removeEventListener('resize', measureCardToStatue);
+        observer.disconnect();
+      };
+    }
+
     return () => {
       clearTimeout(fallbackTimer);
       observer.disconnect();
@@ -68,7 +98,7 @@ export default function Quote() {
               srcSet={`${thinker450Webp} 450w, ${thinkerWebp} 900w`}
               sizes="(min-width: 1024px) 450px, (min-width: 768px) 320px, 62vw"
               width={900}
-              height={1461}
+              height={1420}
               alt="Orange line drawing of The Thinker statue, seated with his chin on his hand"
               className={styles.statueImage}
               decoding="async"
