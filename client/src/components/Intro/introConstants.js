@@ -27,10 +27,10 @@ export const TIMINGS = {
 };
 
 export const SPLASH_TIMINGS = {
-  FADE_IN: 300,
-  HOLD: 1000,
-  FADE_OUT: 300,
-  REDUCED_HOLD: 1000,
+  FADE_IN: 200,
+  HOLD: 650,
+  FADE_OUT: 200,
+  REDUCED_HOLD: 600,
 };
 
 // Exact sampled colors from client/src/assets/logo.png

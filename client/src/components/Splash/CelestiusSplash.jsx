@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './CelestiusSplash.module.css';
 import { SPLASH_TIMINGS } from '../Intro/introConstants.js';
 import { logTimelineEvent } from '../../utils/timelineLogger.js';
+import PresentedBrandTag from './PresentedBrandTag.jsx';
 
 import celestiusWebp from '../../assets/celestius-transparent.webp';
 import celestius2xWebp from '../../assets/celestius-transparent@2x.webp';
@@ -11,13 +12,13 @@ import celestius2xPng from '../../assets/celestius-transparent@2x.png';
 
 /**
  * CelestiusSplash screen:
- * Displays centered "presented by" caption and Celestius logo on black background
+ * Displays centered PresentedBrandTag and Celestius logo on black background
  * with dot grid and radial yellow tint.
- * Sequence:
- * - Fade in (300ms, scale 0.94 -> 1.0)
- * - Hold (1000ms)
- * - Fade out into site (300ms)
- * Total duration: 1600ms (1.6s)
+ * Fast & punchy timing:
+ * - Fade in (200ms, scale 0.96 -> 1.0)
+ * - Hold (650ms)
+ * - Fade out into site (200ms)
+ * Total duration: 1050ms (~1.05s)
  */
 export default function CelestiusSplash({ onComplete }) {
   const [animState, setAnimState] = useState('entering');
@@ -35,9 +36,9 @@ export default function CelestiusSplash({ onComplete }) {
     document.body.style.overflow = 'hidden';
 
     const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const fadeInDuration = isReduced ? 150 : SPLASH_TIMINGS.FADE_IN;
+    const fadeInDuration = isReduced ? 120 : SPLASH_TIMINGS.FADE_IN;
     const holdDuration = isReduced ? SPLASH_TIMINGS.REDUCED_HOLD : SPLASH_TIMINGS.HOLD;
-    const fadeOutDuration = isReduced ? 200 : SPLASH_TIMINGS.FADE_OUT;
+    const fadeOutDuration = isReduced ? 150 : SPLASH_TIMINGS.FADE_OUT;
 
     // Start entering -> holding on next animation frame
     const startTimer = setTimeout(() => {
@@ -89,9 +90,8 @@ export default function CelestiusSplash({ onComplete }) {
 
       {/* Centered Presentation Box */}
       <div className={`${styles.content} ${stateClass}`}>
-        <div className={styles.caption} aria-hidden="true">
-          presented by
-        </div>
+        {/* Pixel styled brand tag replaces plain white text */}
+        <PresentedBrandTag className={styles.brandTag} />
 
         <div className={styles.logoWrapper}>
           <picture>
