@@ -2,6 +2,16 @@
 // Single source of truth for the LARPER OR CODER event at CodeVerse 2026.
 // Any information not confirmed by organizers is explicitly tagged with PLACEHOLDER comments.
 
+export const PAIR_SIZE = 2;
+
+export const PRICING = {
+  perHead: 149,
+  pair: 149 * 2, // compute the pair total, never hard-code it twice
+};
+
+// PLACEHOLDER: confirm with organizers
+export const PAYMENT_NOTE = "PLACEHOLDER: payment instructions will be shared by the organizers";
+
 export const eventData = {
   name: "LARPER OR CODER",
   edition: "CodeVerse 2026",
@@ -22,10 +32,11 @@ export const eventData = {
     discord: "https://discord.gg/celestials", // PLACEHOLDER: confirm with organizers
   },
 
-  // PLACEHOLDER: confirm with organizers (payment is out of scope for now)
+  // PLACEHOLDER: confirm with organizers
   fees: {
-    trainingArc: "Free", // PLACEHOLDER: confirm with organizers
-    tle: "Free", // PLACEHOLDER: confirm with organizers
+    perHead: `₹${PRICING.perHead}`,
+    pair: `₹${PRICING.pair}`,
+    note: "Includes The Training Arc and TLE", // PLACEHOLDER: confirm with organizers
   },
 
   // Neutral stat tiles requested
@@ -94,7 +105,7 @@ export const eventData = {
       title: "The Training Arc",
       badge: "Workshop",
       time: "10:15 AM - 11:15 AM",
-      registrationType: "individual", // Workshop registration is individual
+      registrationType: "pair", // Single pair registration covers both tracks
       blurb:
         "Competitive Coding & Problem-Solving Workshop conducted by Navadeep Anna and his friend.",
       speakers: [
@@ -128,9 +139,8 @@ export const eventData = {
       title: "TLE: Think, Lock In, Execute",
       badge: "DEADLOCK Competition",
       time: "12:00 PM - 2:30 PM",
-      registrationType: "team",
-      teamSizeMin: 2,
-      teamSizeMax: 4,
+      registrationType: "pair",
+      teamSize: PAIR_SIZE,
       blurb:
         "DEADLOCK Coding Competition featuring Tug of Aura and Who's the GOAT? Crack the Code.",
       rounds: [
@@ -139,7 +149,7 @@ export const eventData = {
           name: "Tug of Aura",
           tag: "Digital Tug-of-War",
           description:
-            "Teams Alpha and Omega compete live. Every coding challenge solved pulls the rope toward their side, so speed, accuracy and teamwork control the system's Kinetic Force.",
+            "Teams Alpha and Omega (assigned by organizers from registered pairs) compete live. Every coding challenge solved pulls the rope toward their side, so speed, accuracy and teamwork control the system's Kinetic Force.",
         },
         {
           number: 2,

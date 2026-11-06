@@ -65,7 +65,7 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
               {event.title}
             </h2>
             <span className={styles.timeChip}>
-              {event.time} // {isTrainingArc ? 'Individual Participation' : 'Team of 2 to 4'}
+              {event.time} // Pair Participation (2 coders)
             </span>
           </div>
 
@@ -187,17 +187,17 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
         {/* Panel Footer with Register CTA */}
         <div className={styles.panelFooter}>
           <div className={styles.footerNote}>
-            {isTrainingArc ? 'Individual Entry // Limited Seats' : 'Teams of 2 to 4 // Live Leaderboard'}
+            One registration covers both tracks // ₹149 per person (₹298 per pair)
           </div>
           <Button
             size="md"
             variant="primary"
             onClick={() => {
               onClose();
-              onRegister(event.id);
+              onRegister();
             }}
           >
-            Register for {event.title}
+            Register as a pair
           </Button>
         </div>
       </div>

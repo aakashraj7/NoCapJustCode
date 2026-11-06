@@ -63,8 +63,16 @@ export default function Hero({ onOpenRegister }) {
               {eventData.description}
             </p>
 
-            {/* Date & Venue Chips */}
+            {/* Date, Venue & Pricing Chips */}
             <div className={styles.chipsRow}>
+              <Chip
+                icon={
+                  <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>₹</span>
+                }
+              >
+                ₹149 per person // ₹298 per pair
+              </Chip>
+
               <Chip
                 icon={
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -93,7 +101,7 @@ export default function Hero({ onOpenRegister }) {
             {/* Action Buttons */}
             <div className={styles.ctaGroup}>
               <Button size="lg" variant="primary" onClick={() => onOpenRegister()}>
-                Register Now
+                Register as a pair
               </Button>
               <Button size="lg" variant="secondary" href="#events" onClick={scrollToEvents}>
                 See Events

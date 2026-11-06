@@ -2,7 +2,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: rgba(0, 0, 0, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 3000;
@@ -25,7 +25,7 @@
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-xl);
   width: 100%;
-  max-width: 740px;
+  max-width: 860px;
   max-height: 90vh;
   max-height: 90dvh;
   display: flex;
@@ -48,7 +48,7 @@
 
 /* Modal Header */
 .modalHeader {
-  padding: 1.5rem 1.75rem;
+  padding: 1.25rem 1.75rem;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -99,20 +99,71 @@
 
 /* Scroll Content */
 .formBody {
-  padding: 1.75rem;
+  padding: 1.5rem 1.75rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.5rem;
 }
 
-/* Event Selector Radio Tabs */
-.eventSelector {
+/* Pricing Summary Card */
+.pricingSummaryCard {
+  background: rgba(242, 107, 58, 0.08);
+  border: 1px solid rgba(242, 107, 58, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pricingLeft {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
+.pricingFormula {
+  font-family: var(--font-mono);
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.pricingTotal {
+  color: var(--accent-orange);
+}
+
+.pricingCoverage {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.pricingPill {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  background: rgba(242, 107, 58, 0.15);
+  border: 1px solid rgba(242, 107, 58, 0.3);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Optional Label Badge */
+.optionalBadge {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: none;
+}
+
+/* Fields & Labels */
 .fieldLabel {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
@@ -122,94 +173,13 @@
   text-transform: uppercase;
 }
 
-.radioCardsGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-}
-
-@media (min-width: 600px) {
-  .radioCardsGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.radioCard {
-  border: 1px solid var(--border-subtle);
-  background-color: var(--surface-2);
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
-}
-
-.radioCard:hover {
-  border-color: var(--border-medium);
-}
-
-.radioCard.selected {
-  border-color: var(--accent-orange);
-  background-color: rgba(242, 107, 58, 0.08);
-}
-
-.radioIndicator {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid var(--border-medium);
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.radioCard.selected .radioIndicator {
-  border-color: var(--accent-orange);
-}
-
-.radioIndicatorDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--accent-orange);
-}
-
-.radioContent {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.radioName {
-  font-size: 0.95rem;
+.fieldLabelSmall {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
-}
-
-.radioDesc {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-/* Fields Grid */
-.fieldsGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
-}
-
-@media (min-width: 600px) {
-  .fieldsGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.fullCol {
-  grid-column: 1 / -1;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .formGroup {
@@ -220,13 +190,13 @@
 
 .inputField, .selectField {
   width: 100%;
-  min-height: 46px;
+  min-height: 44px;
   background-color: var(--surface-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 0 1rem;
+  padding: 0 0.85rem;
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: border-color var(--transition-fast), background-color var(--transition-fast);
 }
 
@@ -246,53 +216,45 @@
   color: var(--accent-error);
 }
 
-/* Team Section Box */
-.teamSection {
-  background-color: rgba(20, 20, 22, 0.6);
+/* Two-Column Member Layout on Laptop / Stacked on Mobile */
+.membersColumnsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 820px) {
+  .membersColumnsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.memberCard {
+  background-color: rgba(20, 20, 22, 0.75);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
-.teamHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.teamHeading {
+.memberCardHeader {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--accent-yellow);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.65rem;
 }
 
-.membersList {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.memberCard {
-  background-color: var(--surface-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
+.memberFieldsGrid {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-}
-
-.memberTitle {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-secondary);
 }
 
 /* Truthful Error Banner */
@@ -327,7 +289,7 @@
 
 /* Success View */
 .successBody {
-  padding: 3rem 2rem;
+  padding: 2.5rem 1.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -336,8 +298,8 @@
 }
 
 .successIconWrapper {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background-color: var(--accent-green-subtle);
   border: 2px solid var(--accent-green);
@@ -345,19 +307,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
+  font-size: 1.6rem;
 }
 
 .successTitle {
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .successTagline {
   font-family: var(--font-mono);
-  font-size: 0.95rem;
-  color: var(--accent-green);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 .registrationCard {
@@ -369,8 +331,8 @@
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
-  max-width: 440px;
-  margin: 0.5rem 0;
+  max-width: 500px;
+  text-align: left;
 }
 
 .regIdLabel {
@@ -389,8 +351,43 @@
 }
 
 .regSubtext {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
+}
+
+.regFeeSubtext {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-yellow);
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+/* Payment Note Block */
+.paymentNoteBlock {
+  background: rgba(245, 168, 28, 0.08);
+  border: 1px solid rgba(245, 168, 28, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: left;
+}
+
+.paymentNoteIcon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.paymentNoteText {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  line-height: 1.5;
 }
 
 @keyframes fadeIn {

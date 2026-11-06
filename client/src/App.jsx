@@ -15,7 +15,6 @@ import Footer from './components/Footer/Footer.jsx';
 export default function App() {
   const [introFinished, setIntroFinished] = useState(false);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
-  const [defaultRegisterEvent, setDefaultRegisterEvent] = useState('training-arc');
 
   // Non-blocking background health check
   useEffect(() => {
@@ -28,8 +27,7 @@ export default function App() {
     });
   }, []);
 
-  const handleOpenRegister = (eventId = 'training-arc') => {
-    setDefaultRegisterEvent(eventId);
+  const handleOpenRegister = () => {
     setRegisterModalOpen(true);
   };
 
@@ -48,11 +46,11 @@ export default function App() {
       )}
 
       {/* Floating Pill Navbar */}
-      <Navbar onOpenRegister={() => handleOpenRegister('training-arc')} />
+      <Navbar onOpenRegister={handleOpenRegister} />
 
       {/* Main Sections */}
       <main className="mainContent">
-        <Hero onOpenRegister={() => handleOpenRegister('training-arc')} />
+        <Hero onOpenRegister={handleOpenRegister} />
         <About />
         <Schedule />
         <EventCards onOpenRegister={handleOpenRegister} />
@@ -65,7 +63,6 @@ export default function App() {
       <RegisterModal
         isOpen={registerModalOpen}
         onClose={handleCloseRegister}
-        defaultEventId={defaultRegisterEvent}
       />
     </div>
   );

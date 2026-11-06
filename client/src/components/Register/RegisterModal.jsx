@@ -6,9 +6,10 @@ import styles from './Register.module.css';
 import { registrationSchema } from './registrationSchema.js';
 import { registerParticipant } from '../../services/api.js';
 import { startPayment } from '../../services/payment.js';
+import { PRICING, PAYMENT_NOTE } from '../../data/event.js';
 import Button from '../ui/Button.jsx';
 
-export default function RegisterModal({ isOpen, onClose, defaultEventId = 'training-arc' }) {
+export default function RegisterModal({ isOpen, onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState(null);
   const [registrationResult, setRegistrationResult] = useState(null);
@@ -16,68 +17,29 @@ export default function RegisterModal({ isOpen, onClose, defaultEventId = 'train
   const modalRef = useRef(null);
   const closeBtnRef = useRef(null);
 
-  const initialEvent = defaultEventId === 'tle' ? 'tle' : 'training-arc';
-
   const {
     register,
     control,
     handleSubmit,
-    watch,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
-      event: initialEvent,
-      fullName: '',
-      email: '',
-      phone: '',
-      college: '',
-      department: '',
-      year: '1',
-      teamName: '',
-      teamSize: 2,
-      members: [{ fullName: '', email: '', phone: '' }],
+      pairName: '',
+      members: [
+        { fullName: '', email: '', phone: '', college: '', department: '', year: '1' },
+        { fullName: '', email: '', phone: '', college: '', department: '', year: '1' },
+      ],
     },
     mode: 'onBlur',
   });
 
-  const selectedEvent = watch('event');
-  const selectedTeamSize = watch('teamSize') || 2;
-
-  const { fields, append, remove } = useFieldArray({
+  // Exactly 2 members (fixed, non-removable)
+  const { fields } = useFieldArray({
     control,
     name: 'members',
   });
-
-  // Keep dynamic team members array aligned with teamSize (teamSize - 1 additional members)
-  useEffect(() => {
-    if (selectedEvent === 'tle') {
-      const requiredCount = Math.max(1, Number(selectedTeamSize) - 1);
-      const currentCount = fields.length;
-
-      if (currentCount < requiredCount) {
-        for (let i = currentCount; i < requiredCount; i++) {
-          append({ fullName: '', email: '', phone: '' });
-        }
-      } else if (currentCount > requiredCount) {
-        for (let i = currentCount - 1; i >= requiredCount; i--) {
-          remove(i);
-        }
-      }
-    }
-  }, [selectedEvent, selectedTeamSize, fields.length, append, remove]);
-
-  // Sync defaultEventId when opening
-  useEffect(() => {
-    if (isOpen) {
-      const target = defaultEventId === 'tle' ? 'tle' : 'training-arc';
-      setValue('event', target);
-      setServerError(null);
-      setRegistrationResult(null);
-    }
-  }, [isOpen, defaultEventId, setValue]);
 
   // Lock body scroll and focus close button on open
   useEffect(() => {
@@ -112,35 +74,28 @@ export default function RegisterModal({ isOpen, onClose, defaultEventId = 'train
     setServerError(null);
 
     try {
-      // Build normalized payload for API/Contract
       const payload = {
-        event: formData.event,
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        college: formData.college,
-        department: formData.department,
-        year: formData.year,
+        pairName: formData.pairName ? formData.pairName.trim() : null,
+        members: formData.members.map((m) => ({
+          fullName: m.fullName.trim(),
+          email: m.email.trim(),
+          phone: m.phone.trim(),
+          college: m.college.trim(),
+          department: m.department.trim(),
+          year: m.year,
+        })),
       };
 
-      if (formData.event === 'tle') {
-        payload.teamDetails = {
-          teamName: formData.teamName,
-          teamSize: Number(formData.teamSize),
-          members: formData.members,
-        };
-      }
-
-      // Step 1: Submit registration to API
+      // Step 1: Submit pair registration to API (or mock adapter)
       const result = await registerParticipant(payload);
 
       // Step 2: Payment seam stub (Razorpay integration point for teammate)
       await startPayment(result.registration);
 
-      // Step 3: Success state
+      // Step 3: Registration received success state
       setRegistrationResult(result.registration);
     } catch (err) {
-      // Truthful error message: tell user data is still in memory
+      // Truthful error message: preserve inputs on error
       setServerError(
         `Server flinched: ${err.message || 'Network error'}. Don't worry, your details are still here, try again.`
       );
@@ -150,6 +105,7 @@ export default function RegisterModal({ isOpen, onClose, defaultEventId = 'train
   };
 
   const handleModalClose = () => {
+    setServerError(null);
     if (registrationResult) {
       reset();
       setRegistrationResult(null);
@@ -171,9 +127,9 @@ export default function RegisterModal({ isOpen, onClose, defaultEventId = 'train
         {/* Header */}
         <div className={styles.modalHeader}>
           <div className={styles.modalTitleGroup}>
-            <span className={styles.modalTag}>// EVENT REGISTRATION</span>
+            <span className={styles.modalTag}>// PAIR REGISTRATION</span>
             <h2 id="modal-title" className={styles.modalTitle}>
-              {registrationResult ? 'Registration Confirmed' : 'Lock In Your Spot'}
+              {registrationResult ? 'Registration Received' : 'Register as a Pair'}
             </h2>
           </div>
 
@@ -196,18 +152,27 @@ export default function RegisterModal({ isOpen, onClose, defaultEventId = 'train
         {registrationResult ? (
           <div className={styles.successBody}>
             <div className={styles.successIconWrapper}>✓</div>
-            <h3 className={styles.successTitle}>You&apos;re locked in.</h3>
-            <div className={styles.successTagline}>no larping now. see you on the battlefield.</div>
+            <h3 className={styles.successTitle}>Registration Received</h3>
+            <div className={styles.successTagline}>Your spot has been queued for LARPER OR CODER.</div>
 
             <div className={styles.registrationCard}>
               <span className={styles.regIdLabel}>REGISTRATION ID</span>
               <span className={styles.regIdValue}>{registrationResult.id}</span>
-              <span className={styles.regSubtext}>
-                Track: {registrationResult.event === 'tle' ? 'TLE: Think, Lock In, Execute' : 'The Training Arc'}
-              </span>
-              {registrationResult.teamName && (
-                <span className={styles.regSubtext}>Team: {registrationResult.teamName}</span>
+              {registrationResult.pairName && (
+                <span className={styles.regSubtext}>Pair: {registrationResult.pairName}</span>
               )}
+              <span className={styles.regSubtext}>
+                Format: Pair (2 coders) // Both tracks included (The Training Arc & TLE)
+              </span>
+              <span className={styles.regFeeSubtext}>
+                Total Registration Fee: ₹{PRICING.pair} (₹{PRICING.perHead} × 2)
+              </span>
+            </div>
+
+            {/* PAYMENT NOTE Line */}
+            <div className={styles.paymentNoteBlock}>
+              <span className={styles.paymentNoteIcon}>ℹ️</span>
+              <span className={styles.paymentNoteText}>{PAYMENT_NOTE}</span>
             </div>
 
             <Button size="md" variant="primary" onClick={handleModalClose}>
@@ -225,246 +190,172 @@ export default function RegisterModal({ isOpen, onClose, defaultEventId = 'train
                 </div>
               )}
 
-              {/* Event Track Radio Selector */}
-              <div className={styles.eventSelector}>
-                <span className={styles.fieldLabel}>Select Track</span>
-                <div className={styles.radioCardsGrid}>
-                  <div
-                    className={`${styles.radioCard} ${selectedEvent === 'training-arc' ? styles.selected : ''}`}
-                    onClick={() => setValue('event', 'training-arc')}
-                  >
-                    <div className={styles.radioIndicator}>
-                      {selectedEvent === 'training-arc' && <div className={styles.radioIndicatorDot} />}
-                    </div>
-                    <div className={styles.radioContent}>
-                      <span className={styles.radioName}>The Training Arc</span>
-                      <span className={styles.radioDesc}>Workshop // Individual entry</span>
-                    </div>
+              {/* Pricing & Coverage Summary Banner */}
+              <div className={styles.pricingSummaryCard}>
+                <div className={styles.pricingLeft}>
+                  <div className={styles.pricingFormula}>
+                    2 people × ₹{PRICING.perHead} = <span className={styles.pricingTotal}>₹{PRICING.pair}</span>
                   </div>
-
-                  <div
-                    className={`${styles.radioCard} ${selectedEvent === 'tle' ? styles.selected : ''}`}
-                    onClick={() => setValue('event', 'tle')}
-                  >
-                    <div className={styles.radioIndicator}>
-                      {selectedEvent === 'tle' && <div className={styles.radioIndicatorDot} />}
-                    </div>
-                    <div className={styles.radioContent}>
-                      <span className={styles.radioName}>TLE (DEADLOCK)</span>
-                      <span className={styles.radioDesc}>Competition // Team of 2 to 4</span>
-                    </div>
+                  <div className={styles.pricingCoverage}>
+                    Includes The Training Arc and TLE
                   </div>
+                </div>
+                <div className={styles.pricingPill}>
+                  ONE PASS COVERS ALL
                 </div>
               </div>
 
-              {/* Primary Applicant Fields */}
-              <div className={styles.fieldsGrid}>
-                {/* Full Name */}
-                <div className={styles.formGroup}>
-                  <label htmlFor="reg-fullname" className={styles.fieldLabel}>
-                    Full Name {selectedEvent === 'tle' && '(Team Lead)'}
-                  </label>
-                  <input
-                    id="reg-fullname"
-                    type="text"
-                    placeholder="e.g. Jane Doe"
-                    className={`${styles.inputField} ${errors.fullName ? styles.hasError : ''}`}
-                    {...register('fullName')}
-                  />
-                  {errors.fullName && (
-                    <span className={styles.errorMessage}>{errors.fullName.message}</span>
-                  )}
-                </div>
-
-                {/* Email */}
-                <div className={styles.formGroup}>
-                  <label htmlFor="reg-email" className={styles.fieldLabel}>
-                    Email Address
-                  </label>
-                  <input
-                    id="reg-email"
-                    type="email"
-                    placeholder="e.g. jane@example.com"
-                    className={`${styles.inputField} ${errors.email ? styles.hasError : ''}`}
-                    {...register('email')}
-                  />
-                  {errors.email && (
-                    <span className={styles.errorMessage}>{errors.email.message}</span>
-                  )}
-                </div>
-
-                {/* Phone */}
-                <div className={styles.formGroup}>
-                  <label htmlFor="reg-phone" className={styles.fieldLabel}>
-                    Phone Number (10 Digits)
-                  </label>
-                  <input
-                    id="reg-phone"
-                    type="tel"
-                    placeholder="e.g. 9876543210"
-                    className={`${styles.inputField} ${errors.phone ? styles.hasError : ''}`}
-                    {...register('phone')}
-                  />
-                  {errors.phone && (
-                    <span className={styles.errorMessage}>{errors.phone.message}</span>
-                  )}
-                </div>
-
-                {/* Year */}
-                <div className={styles.formGroup}>
-                  <label htmlFor="reg-year" className={styles.fieldLabel}>
-                    Year of Study
-                  </label>
-                  <select
-                    id="reg-year"
-                    className={`${styles.selectField} ${errors.year ? styles.hasError : ''}`}
-                    {...register('year')}
-                  >
-                    <option value="1">1st Year</option>
-                    <option value="2">2nd Year</option>
-                    <option value="3">3rd Year</option>
-                    <option value="4">4th Year</option>
-                  </select>
-                  {errors.year && (
-                    <span className={styles.errorMessage}>{errors.year.message}</span>
-                  )}
-                </div>
-
-                {/* College */}
-                <div className={styles.formGroup}>
-                  <label htmlFor="reg-college" className={styles.fieldLabel}>
-                    College Name
-                  </label>
-                  <input
-                    id="reg-college"
-                    type="text"
-                    placeholder="e.g. SJIT"
-                    className={`${styles.inputField} ${errors.college ? styles.hasError : ''}`}
-                    {...register('college')}
-                  />
-                  {errors.college && (
-                    <span className={styles.errorMessage}>{errors.college.message}</span>
-                  )}
-                </div>
-
-                {/* Department */}
-                <div className={styles.formGroup}>
-                  <label htmlFor="reg-department" className={styles.fieldLabel}>
-                    Department
-                  </label>
-                  <input
-                    id="reg-department"
-                    type="text"
-                    placeholder="e.g. CSE / IT"
-                    className={`${styles.inputField} ${errors.department ? styles.hasError : ''}`}
-                    {...register('department')}
-                  />
-                  {errors.department && (
-                    <span className={styles.errorMessage}>{errors.department.message}</span>
-                  )}
-                </div>
+              {/* Optional Pair Name */}
+              <div className={styles.formGroup}>
+                <label htmlFor="reg-pairname" className={styles.fieldLabel}>
+                  Pair Name <span className={styles.optionalBadge}>(Optional)</span>
+                </label>
+                <input
+                  id="reg-pairname"
+                  type="text"
+                  placeholder="e.g. ByteForce"
+                  className={`${styles.inputField} ${errors.pairName ? styles.hasError : ''}`}
+                  {...register('pairName')}
+                />
+                {errors.pairName && (
+                  <span className={styles.errorMessage}>{errors.pairName.message}</span>
+                )}
               </div>
 
-              {/* TLE Team Details Section */}
-              {selectedEvent === 'tle' && (
-                <div className={styles.teamSection}>
-                  <div className={styles.teamHeader}>
-                    <span className={styles.teamHeading}>// TEAM SPECIFICATIONS</span>
-                  </div>
+              {/* Two-Column Member Layout on Laptop / Stacked on Mobile */}
+              <div className={styles.membersColumnsGrid}>
+                {fields.map((field, index) => {
+                  const memberNum = index + 1;
+                  const memberErrors = errors.members?.[index];
 
-                  <div className={styles.fieldsGrid}>
-                    {/* Team Name */}
-                    <div className={styles.formGroup}>
-                      <label htmlFor="reg-teamname" className={styles.fieldLabel}>
-                        Team Name
-                      </label>
-                      <input
-                        id="reg-teamname"
-                        type="text"
-                        placeholder="e.g. ByteForce"
-                        className={`${styles.inputField} ${errors.teamName ? styles.hasError : ''}`}
-                        {...register('teamName')}
-                      />
-                      {errors.teamName && (
-                        <span className={styles.errorMessage}>{errors.teamName.message}</span>
-                      )}
-                    </div>
+                  return (
+                    <div key={field.id} className={styles.memberCard}>
+                      <div className={styles.memberCardHeader}>
+                        <span>MEMBER #{memberNum} {memberNum === 1 ? '(PRIMARY CONTACT)' : ''}</span>
+                      </div>
 
-                    {/* Team Size */}
-                    <div className={styles.formGroup}>
-                      <label htmlFor="reg-teamsize" className={styles.fieldLabel}>
-                        Total Team Size (2 to 4)
-                      </label>
-                      <select
-                        id="reg-teamsize"
-                        className={styles.selectField}
-                        {...register('teamSize')}
-                      >
-                        <option value="2">2 Members (Lead + 1)</option>
-                        <option value="3">3 Members (Lead + 2)</option>
-                        <option value="4">4 Members (Lead + 3)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Dynamic Additional Team Members */}
-                  <div className={styles.membersList}>
-                    {fields.map((field, index) => {
-                      const memberNum = index + 2;
-                      const memberErrors = errors.members?.[index];
-
-                      return (
-                        <div key={field.id} className={styles.memberCard}>
-                          <span className={styles.memberTitle}>Member #{memberNum} Details</span>
-                          <div className={styles.fieldsGrid}>
-                            <div className={styles.formGroup}>
-                              <input
-                                type="text"
-                                placeholder={`Member #${memberNum} Full Name`}
-                                className={`${styles.inputField} ${memberErrors?.fullName ? styles.hasError : ''}`}
-                                {...register(`members.${index}.fullName`)}
-                              />
-                              {memberErrors?.fullName && (
-                                <span className={styles.errorMessage}>
-                                  {memberErrors.fullName.message}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className={styles.formGroup}>
-                              <input
-                                type="email"
-                                placeholder={`Member #${memberNum} Email`}
-                                className={`${styles.inputField} ${memberErrors?.email ? styles.hasError : ''}`}
-                                {...register(`members.${index}.email`)}
-                              />
-                              {memberErrors?.email && (
-                                <span className={styles.errorMessage}>
-                                  {memberErrors.email.message}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className={`${styles.formGroup} ${styles.fullCol}`}>
-                              <input
-                                type="tel"
-                                placeholder={`Member #${memberNum} Phone (10 Digits)`}
-                                className={`${styles.inputField} ${memberErrors?.phone ? styles.hasError : ''}`}
-                                {...register(`members.${index}.phone`)}
-                              />
-                              {memberErrors?.phone && (
-                                <span className={styles.errorMessage}>
-                                  {memberErrors.phone.message}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                      <div className={styles.memberFieldsGrid}>
+                        {/* Full Name */}
+                        <div className={styles.formGroup}>
+                          <label htmlFor={`member-${index}-name`} className={styles.fieldLabelSmall}>
+                            Full Name
+                          </label>
+                          <input
+                            id={`member-${index}-name`}
+                            type="text"
+                            placeholder="e.g. Jane Doe"
+                            className={`${styles.inputField} ${memberErrors?.fullName ? styles.hasError : ''}`}
+                            {...register(`members.${index}.fullName`)}
+                          />
+                          {memberErrors?.fullName && (
+                            <span className={styles.errorMessage}>
+                              {memberErrors.fullName.message}
+                            </span>
+                          )}
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+
+                        {/* Email */}
+                        <div className={styles.formGroup}>
+                          <label htmlFor={`member-${index}-email`} className={styles.fieldLabelSmall}>
+                            Email Address
+                          </label>
+                          <input
+                            id={`member-${index}-email`}
+                            type="email"
+                            placeholder="e.g. jane@example.com"
+                            className={`${styles.inputField} ${memberErrors?.email ? styles.hasError : ''}`}
+                            {...register(`members.${index}.email`)}
+                          />
+                          {memberErrors?.email && (
+                            <span className={styles.errorMessage}>
+                              {memberErrors.email.message}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Phone */}
+                        <div className={styles.formGroup}>
+                          <label htmlFor={`member-${index}-phone`} className={styles.fieldLabelSmall}>
+                            Phone (10 Digits)
+                          </label>
+                          <input
+                            id={`member-${index}-phone`}
+                            type="tel"
+                            placeholder="e.g. 9876543210"
+                            className={`${styles.inputField} ${memberErrors?.phone ? styles.hasError : ''}`}
+                            {...register(`members.${index}.phone`)}
+                          />
+                          {memberErrors?.phone && (
+                            <span className={styles.errorMessage}>
+                              {memberErrors.phone.message}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Year */}
+                        <div className={styles.formGroup}>
+                          <label htmlFor={`member-${index}-year`} className={styles.fieldLabelSmall}>
+                            Year of Study
+                          </label>
+                          <select
+                            id={`member-${index}-year`}
+                            className={`${styles.selectField} ${memberErrors?.year ? styles.hasError : ''}`}
+                            {...register(`members.${index}.year`)}
+                          >
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                          </select>
+                          {memberErrors?.year && (
+                            <span className={styles.errorMessage}>
+                              {memberErrors.year.message}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* College */}
+                        <div className={styles.formGroup}>
+                          <label htmlFor={`member-${index}-college`} className={styles.fieldLabelSmall}>
+                            College Name
+                          </label>
+                          <input
+                            id={`member-${index}-college`}
+                            type="text"
+                            placeholder="e.g. SJIT"
+                            className={`${styles.inputField} ${memberErrors?.college ? styles.hasError : ''}`}
+                            {...register(`members.${index}.college`)}
+                          />
+                          {memberErrors?.college && (
+                            <span className={styles.errorMessage}>
+                              {memberErrors.college.message}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Department */}
+                        <div className={styles.formGroup}>
+                          <label htmlFor={`member-${index}-dept`} className={styles.fieldLabelSmall}>
+                            Department
+                          </label>
+                          <input
+                            id={`member-${index}-dept`}
+                            type="text"
+                            placeholder="e.g. CSE / IT"
+                            className={`${styles.inputField} ${memberErrors?.department ? styles.hasError : ''}`}
+                            {...register(`members.${index}.department`)}
+                          />
+                          {memberErrors?.department && (
+                            <span className={styles.errorMessage}>
+                              {memberErrors.department.message}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Modal Actions */}
@@ -484,7 +375,7 @@ export default function RegisterModal({ isOpen, onClose, defaultEventId = 'train
                 size="md"
                 disabled={submitting}
               >
-                {submitting ? 'locking you in...' : 'Complete Registration'}
+                {submitting ? 'Registering pair...' : `Register as a pair - ₹${PRICING.pair}`}
               </Button>
             </div>
           </form>

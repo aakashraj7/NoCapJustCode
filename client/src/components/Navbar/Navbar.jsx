@@ -58,7 +58,7 @@ export default function Navbar({ onOpenRegister }) {
         <div className={styles.actions}>
           <div className={styles.registerBtnDesktop}>
             <Button size="sm" variant="primary" onClick={() => onOpenRegister()}>
-              Register
+              Register as a pair
             </Button>
           </div>
 
@@ -101,7 +101,7 @@ export default function Navbar({ onOpenRegister }) {
             setMobileMenuOpen(false);
             onOpenRegister();
           }}>
-            Register Now
+            Register as a pair
           </Button>
         </div>
       )}

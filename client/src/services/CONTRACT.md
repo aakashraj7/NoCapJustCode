@@ -1,6 +1,6 @@
 # Backend Registration API Contract
 
-> Event: **LARPER OR CODER** (part of CodeVerse 2026, presented by Celestials)  
+> Event: **LARPER OR CODER**  
 > This contract defines the endpoints, request/response structures, and validation rules expected by the frontend.
 
 ---
@@ -20,58 +20,40 @@ Verifies backend server status.
 
 ---
 
-## 2. Participant Registration
+## 2. Pair Registration
 
 ### `POST /api/register`
-Registers an individual for **The Training Arc** (Workshop) or a team for **TLE: Think, Lock In, Execute** (DEADLOCK Competition).
+Registers a pair for **LARPER OR CODER** (one registration covers both **The Training Arc** and **TLE**).
 
 - **Headers**:
   ```http
   Content-Type: application/json
   ```
 
-### Request Payload Shapes
+### Request Payload Shape
+A single registration covers both tracks for exactly 2 coders. No event selector field. Amount is never accepted from the client; it is computed server-side only.
 
-#### A. The Training Arc (Individual Registration)
 ```json
 {
-  "event": "training-arc",
-  "fullName": "Jane Doe",
-  "email": "jane@example.com",
-  "phone": "9876543210",
-  "college": "St. Joseph's Institute of Technology",
-  "department": "Computer Science & Engineering",
-  "year": "3"
-}
-```
-
-#### B. TLE: Think, Lock In, Execute (Team of 2 to 4)
-Main applicant is Member 1 (Team Lead). `teamDetails.members` contains the remaining members (`teamSize - 1`).
-```json
-{
-  "event": "tle",
-  "fullName": "Alex Smith",
-  "email": "alex@example.com",
-  "phone": "9876543210",
-  "college": "St. Joseph's Institute of Technology",
-  "department": "Information Technology",
-  "year": "3",
-  "teamDetails": {
-    "teamName": "ByteForce",
-    "teamSize": 3,
-    "members": [
-      {
-        "fullName": "Rohan Kumar",
-        "email": "rohan@example.com",
-        "phone": "9123456780"
-      },
-      {
-        "fullName": "Priya Nair",
-        "email": "priya@example.com",
-        "phone": "9812345678"
-      }
-    ]
-  }
+  "pairName": "ByteForce",
+  "members": [
+    {
+      "fullName": "Jane Doe",
+      "email": "jane@example.com",
+      "phone": "9876543210",
+      "college": "St. Joseph's Institute of Technology",
+      "department": "Computer Science & Engineering",
+      "year": "3"
+    },
+    {
+      "fullName": "John Smith",
+      "email": "john@example.com",
+      "phone": "9123456780",
+      "college": "St. Joseph's Institute of Technology",
+      "department": "Information Technology",
+      "year": "3"
+    }
+  ]
 }
 ```
 
@@ -81,56 +63,66 @@ Main applicant is Member 1 (Team Lead). `teamDetails.members` contains the remai
 
 | Field | Type | Rules |
 |---|---|---|
-| `event` | String enum | Must be `"training-arc"` or `"tle"` |
-| `fullName` | String | Trimmed, min 2 characters, max 100 characters |
-| `email` | String | Valid email address format |
-| `phone` | String | Valid 10-digit Indian phone number (`/^[6-9]\d{9}$/`) |
-| `college` | String | Trimmed, min 2 characters |
-| `department` | String | Trimmed, min 2 characters |
-| `year` | String enum | Must be `"1"`, `"2"`, `"3"`, or `"4"` |
-| `teamDetails` | Object | Required if `event === "tle"`, disallowed if `event === "training-arc"` |
-| `teamDetails.teamName` | String | Min 2 characters, max 60 characters |
-| `teamDetails.teamSize` | Number | Integer between `2` and `4` inclusive |
-| `teamDetails.members` | Array | Must contain exactly `teamSize - 1` objects with `fullName`, `email`, and `phone` |
+| `pairName` | String (optional) | Max 60 characters |
+| `members` | Array | Must contain **exactly 2** member objects |
+| `members[i].fullName` | String | Trimmed, min 2 characters, max 100 characters |
+| `members[i].email` | String | Valid email address format |
+| `members[i].phone` | String | Valid 10-digit Indian phone number (`/^[6-9]\d{9}$/`) |
+| `members[i].college` | String | Trimmed, min 2 characters |
+| `members[i].department` | String | Trimmed, min 2 characters |
+| `members[i].year` | String enum | Must be `"1"`, `"2"`, `"3"`, or `"4"` |
+
+### Cross-Member Uniqueness Constraints
+- `members[0].email.toLowerCase() !== members[1].email.toLowerCase()`
+- `members[0].phone !== members[1].phone`
 
 ---
 
 ## Expected Response Shapes
 
 ### Success (`201 Created` or `200 OK`)
+Amount is computed server-side (₹149 × 2 = ₹298).
 ```json
 {
   "success": true,
-  "message": "Successfully locked in for LARPER OR CODER",
+  "message": "Registration received successfully",
   "registration": {
-    "id": "REG-2026-LOC-84920",
-    "event": "tle",
-    "fullName": "Alex Smith",
-    "email": "alex@example.com",
-    "teamName": "ByteForce",
-    "timestamp": "2026-11-06T08:30:00.000Z"
+    "id": "LOC-PAIR-84920",
+    "pairName": "ByteForce",
+    "amount": 298,
+    "members": [
+      {
+        "fullName": "Jane Doe",
+        "email": "jane@example.com",
+        "phone": "9876543210",
+        "college": "St. Joseph's Institute of Technology",
+        "department": "Computer Science & Engineering",
+        "year": "3"
+      },
+      {
+        "fullName": "John Smith",
+        "email": "john@example.com",
+        "phone": "9123456780",
+        "college": "St. Joseph's Institute of Technology",
+        "department": "Information Technology",
+        "year": "3"
+      }
+    ],
+    "createdAt": "2026-11-06T10:15:00.000Z"
   }
 }
 ```
 
-### Validation Error (`400 Bad Request`)
+### Error (`400 Bad Request` / `422 Unprocessable Entity`)
 ```json
 {
   "success": false,
   "message": "Validation failed",
   "errors": [
     {
-      "field": "phone",
-      "message": "Enter a valid 10-digit phone number"
+      "field": "members.1.email",
+      "message": "Member 1 and Member 2 must have different email addresses"
     }
   ]
-}
-```
-
-### Server Error (`500 Internal Server Error`)
-```json
-{
-  "success": false,
-  "message": "Internal server error. Please try again later."
 }
 ```

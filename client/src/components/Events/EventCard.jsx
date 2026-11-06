@@ -18,7 +18,7 @@ export default function EventCard({ event, onOpenDetails, onRegister }) {
         <p className={styles.cardBlurb}>{event.blurb}</p>
 
         <div className={styles.cardMeta}>
-          <span>Format: {event.registrationType === 'team' ? 'Teams of 2 to 4' : 'Individual'}</span>
+          <span>Format: Pairs (2 coders) // Both tracks included</span>
         </div>
       </div>
 
@@ -35,9 +35,9 @@ export default function EventCard({ event, onOpenDetails, onRegister }) {
         <Button
           size="md"
           variant="primary"
-          onClick={() => onRegister(event.id)}
+          onClick={() => onRegister()}
         >
-          Register
+          Register as a pair
         </Button>
       </div>
     </div>
