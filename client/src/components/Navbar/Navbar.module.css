@@ -37,11 +37,15 @@
   color: var(--text-primary);
 }
 
+.brandLogoWrapper {
+  display: flex;
+  align-items: center;
+}
+
 .brandLogo {
   height: 32px;
   width: auto;
   object-fit: contain;
-  border-radius: 4px;
 }
 
 .brandTitle {

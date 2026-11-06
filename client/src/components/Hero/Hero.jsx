@@ -1,7 +1,8 @@
 // client/src/components/Hero/Hero.jsx
 import React from 'react';
 import styles from './Hero.module.css';
-import logoImg from '../../assets/logo.png';
+import logoImg from '../../assets/logo-transparent.webp';
+import logoPngFallback from '../../assets/logo-transparent.png';
 import { eventData } from '../../data/event.js';
 import Button from '../ui/Button.jsx';
 import Chip from '../ui/Chip.jsx';
@@ -76,17 +77,23 @@ export default function Hero({ onOpenRegister }) {
             </div>
           </div>
 
-          {/* Right Column Brand Showcase Card */}
+          {/* Right Column Brand Display */}
           <div className={styles.rightCol}>
-            <div className={styles.showcaseCard}>
-              <img
-                src={logoImg}
-                alt="LARPER OR CODER Logo"
-                className={styles.heroLogoImg}
-                loading="eager"
-              />
+            <div className={styles.heroLogoWrapper}>
+              <div className={styles.heroLogoGlow} aria-hidden="true" />
+              <picture>
+                <source srcSet={logoImg} type="image/webp" />
+                <img
+                  src={logoPngFallback}
+                  alt="LARPER OR CODER Logo"
+                  className={styles.heroLogoImg}
+                  loading="eager"
+                  width={617}
+                  height={314}
+                />
+              </picture>
               <div className={styles.showcaseFootnote}>
-                &gt; locked in. no cap. code only.
+                &gt; locked in. code only.
               </div>
             </div>
           </div>

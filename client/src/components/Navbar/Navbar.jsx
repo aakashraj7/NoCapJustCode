@@ -1,7 +1,8 @@
 // client/src/components/Navbar/Navbar.jsx
 import React, { useState } from 'react';
 import styles from './Navbar.module.css';
-import logoImg from '../../assets/logo.png';
+import navbarLogoWebp from '../../assets/logo-navbar.webp';
+import navbarLogoPng from '../../assets/logo-navbar.png';
 import Button from '../ui/Button.jsx';
 import { useScrollSpy } from '../../hooks/useScrollSpy.js';
 
@@ -30,7 +31,10 @@ export default function Navbar({ onOpenRegister }) {
       <nav className={styles.navbar} aria-label="Main Navigation">
         {/* Brand */}
         <a href="#hero" className={styles.brand} onClick={(e) => handleNavClick(e, '#hero')}>
-          <img src={logoImg} alt="LARPER OR CODER Logo" className={styles.brandLogo} />
+          <picture className={styles.brandLogoWrapper}>
+            <source srcSet={navbarLogoWebp} type="image/webp" />
+            <img src={navbarLogoPng} alt="LARPER OR CODER Logo" className={styles.brandLogo} width={160} height={80} />
+          </picture>
           <span className={styles.brandTitle}>LARPER OR CODER</span>
           <span className={styles.brandBadge}>2026</span>
         </a>
