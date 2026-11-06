@@ -6,12 +6,12 @@
 
 /* DevCards in Margins */
 .aboutGitGraph {
-  top: 22%;
-  right: 2%;
+  top: 15%;
+  right: 1.5%;
 }
 
 .aboutTestCase {
-  bottom: 18%;
+  top: 2.8rem;
   left: 2%;
 }
 

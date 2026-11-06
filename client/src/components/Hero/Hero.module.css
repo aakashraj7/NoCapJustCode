@@ -25,19 +25,19 @@
 }
 
 .heroLaptop {
-  top: 24%;
-  right: 2%;
+  top: 63%;
+  right: 1.5%;
   width: 200px;
 }
 
 .heroTerminal {
-  bottom: 6.5rem;
-  right: 3%;
+  bottom: 4.5rem;
+  right: 2.5%;
   width: 220px;
 }
 
 .heroKeyCaps {
-  bottom: 6.5rem;
+  bottom: 5.5rem;
   left: 3%;
 }
 
@@ -57,14 +57,27 @@
   .heroKeyCaps {
     display: none;
   }
+  .heroStatusPill {
+    top: auto;
+    bottom: 5.2rem;
+    right: 1.25rem;
+    max-width: 130px;
+  }
 }
 
 @media (max-width: 767px) {
   .heroStatusPill {
     top: auto;
     bottom: 5.2rem;
-    right: 1.25rem;
+    right: 1rem;
     max-width: 130px;
+  }
+}
+
+/* Hide on low-height landscape phone to prevent button collision */
+@media (max-height: 480px) and (orientation: landscape) {
+  .heroStatusPill {
+    display: none;
   }
 }
 
