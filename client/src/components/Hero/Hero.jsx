@@ -31,6 +31,7 @@ export default function Hero({ onOpenRegister }) {
             </div>
 
             <h1 className={styles.heroTitleH1}>
+              <span className="sr-only">LARPER OR CODER - Coding Event by Celestius</span>
               <picture className={styles.heroLogoPicture}>
                 <source srcSet={logoImg} type="image/webp" />
                 <img

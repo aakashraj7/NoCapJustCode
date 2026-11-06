@@ -1,0 +1,5 @@
+# robots.txt for LARPER OR CODER
+User-agent: *
+Allow: /
+
+Sitemap: https://YOUR-DOMAIN.com/sitemap.xml
