@@ -25,6 +25,13 @@ export const TIMINGS = {
   REDUCED_MOTION_HOLD: 1500,
 };
 
+export const SPLASH_TIMINGS = {
+  FADE_IN: 400,
+  HOLD: 1400,
+  FADE_OUT: 450,
+  REDUCED_HOLD: 1200,
+};
+
 // Exact sampled colors from client/src/assets/logo.png
 export const COLORS = {
   bgBase: '#050507',

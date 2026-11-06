@@ -1,0 +1,104 @@
+/* client/src/components/Splash/CelestiusSplash.module.css */
+
+.splashOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Dot grid matching Scene */
+.dotGrid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(247, 237, 216, 0.045) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Subtle radial yellow tint (0.08 opacity) */
+.radialTint {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(250, 160, 18, 0.08) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+/* Centered content box */
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  will-change: transform, opacity;
+  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.caption {
+  font-family: var(--font-mono, 'JetBrains Mono', 'Fira Code', monospace);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-cream, #f7edd8);
+  opacity: 0.6;
+}
+
+.logoWrapper {
+  width: clamp(220px, 56vw, 520px);
+  display: flex;
+  justify-content: center;
+}
+
+.logoImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Sequence animation states */
+.stateEntering {
+  opacity: 0;
+  transform: scale(0.94);
+}
+
+.stateHolding {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.stateExiting {
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 450ms cubic-bezier(0.7, 0, 0.84, 0), transform 450ms cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    transition: opacity 250ms ease !important;
+    transform: none !important;
+  }
+  .stateEntering {
+    opacity: 0 !important;
+    transform: none !important;
+  }
+  .stateHolding {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stateExiting {
+    opacity: 0 !important;
+    transform: none !important;
+  }
+}
