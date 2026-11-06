@@ -1,5 +1,5 @@
 // client/src/App.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import { checkHealth } from './services/api.js';
 import Scene from './components/Scene/Scene.jsx';
@@ -7,6 +7,7 @@ import { HardwareBand, WideMarginsHardware } from './components/Scene/index.js';
 import Intro from './components/Intro/Intro.jsx';
 import CelestiusSplash from './components/Splash/CelestiusSplash.jsx';
 import { SESSION_KEYS } from './components/Intro/introConstants.js';
+import { logTimelineEvent } from './utils/timelineLogger.js';
 import Navbar from './components/Navbar/Navbar.jsx';
 import Hero from './components/Hero/Hero.jsx';
 import About from './components/About/About.jsx';
@@ -55,18 +56,23 @@ export default function App() {
     setRegisterModalOpen(false);
   };
 
-  const handleIntroComplete = () => {
+  const handleIntroComplete = useCallback(() => {
     setAppFlow('SPLASH');
-  };
+  }, []);
 
-  const handleSplashComplete = () => {
+  const handleSplashComplete = useCallback(() => {
     setAppFlow('SITE');
-    sessionStorage.setItem('INTRO_SEEN', 'true');
-    sessionStorage.setItem(
-      SESSION_KEYS?.INTRO_SEEN || 'larper_or_coder_intro_seen',
-      'true'
-    );
-  };
+    logTimelineEvent('site visible');
+    try {
+      sessionStorage.setItem('INTRO_SEEN', 'true');
+      sessionStorage.setItem(
+        SESSION_KEYS?.INTRO_SEEN || 'larper_or_coder_intro_seen',
+        'true'
+      );
+    } catch {
+      // Storage safety
+    }
+  }, []);
 
   return (
     <div className="appWrapper">

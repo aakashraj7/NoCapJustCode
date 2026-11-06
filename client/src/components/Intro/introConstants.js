@@ -1,35 +1,36 @@
 // client/src/components/Intro/introConstants.js
 
 export const INTRO_STATES = {
-  LOADING: 'LOADING',             // 0 -> 2.4s: counter to 99%, segmented bar, single status line
-  ALERT: 'ALERT',                 // 2.4s -> 4.4s: "LARPER DETECTED" banner above loader, 3x orange screen wash (peak 0.25)
-  TURN_GREEN: 'TURN_GREEN',       // 4.4s -> 5.9s: cut to green, 3x green wash (peak 0.28), counter 99% -> 100% over 1.5s
-  COMPLETE: 'COMPLETE',           // 5.9s -> 6.3s: 100% flash & 0.4s hold, clears loader & banner
-  TYPE_LOGO: 'TYPE_LOGO',         // 6.3s -> 8.7s: LARPER OR CODER image typing, hold 1s
-  SWAP: 'SWAP',                   // 8.7s -> 11.0s: backspace, then PRESENTED BY CELESTIUS in same style, hold 1s
-  AUTO_ENTER: 'AUTO_ENTER',       // ~11.0s: smooth fade-out (600ms) into the site
+  LOADING: 'LOADING',             // 0 -> 1.5s: counter to 99%, segmented bar, single status line
+  ALERT: 'ALERT',                 // 1.5s -> 2.7s: "LARPER DETECTED" banner above loader, 3x orange screen wash (peak 0.25)
+  TURN_GREEN: 'TURN_GREEN',       // 2.7s -> 4.1s: cut to green, 3x green wash (peak 0.28), counter 99% -> 100% over 1.4s
+  COMPLETE: 'COMPLETE',           // 4.1s -> 4.3s: 100% flash & 0.2s hold, clears loader & banner
+  TYPE_LOGO: 'TYPE_LOGO',         // 4.3s -> 6.3s: LARPER OR CODER image typing (1.4s), hold 0.6s
+  SWAP: 'SWAP',                   // 6.3s -> 8.5s: backspace (0.4s), then PRESENTED BY CELESTIUS (1.3s), hold 0.5s
+  AUTO_ENTER: 'AUTO_ENTER',       // Immediate handover to Splash
 };
 
 export const PRESENTER_NAME = 'CELESTIUS';
 
 export const TIMINGS = {
-  LOADING_DURATION: 2400,
-  ALERT_DURATION: 2000,
-  TURN_GREEN_DURATION: 1500,     // Counter animates 99% -> 100% over 1.5s
-  COMPLETE_HOLD: 400,            // 0.4s hold at 100%
-  HOLD_LOGO: 1000,
-  TYPE_STEP_SPEED: 90,           // Letters appear one by one (~90ms each)
-  BACKSPACE_STEP_SPEED: 40,      // Backspace reverse removal (~40ms each)
-  HOLD_SWAP: 1000,
-  FADE_OUT_DURATION: 600,
-  REDUCED_MOTION_HOLD: 1500,
+  LOADING_DURATION: 1500,        // 0 to 99% in 1.5s
+  ALERT_DURATION: 1200,          // orange alert blink 1.2s
+  TURN_GREEN_DURATION: 1400,     // Counter animates 99% -> 100% over 1.4s
+  COMPLETE_HOLD: 200,            // 0.2s hold at 100%
+  HOLD_LOGO: 600,                // hold logo 0.6s
+  TYPE_STEP_SPEED: 108,          // logo typing 1.4s (13 boxes * 108ms = 1404ms)
+  BACKSPACE_STEP_SPEED: 30,      // backspace 0.4s (13 boxes * 30ms = 390ms)
+  TYPE_PRES_STEP_SPEED: 65,      // presented typing 1.3s (20 boxes * 65ms = 1300ms)
+  HOLD_SWAP: 500,                // hold presented 0.5s
+  FADE_OUT_DURATION: 0,          // Cut straight to splash with no extra delay
+  REDUCED_MOTION_HOLD: 1000,
 };
 
 export const SPLASH_TIMINGS = {
-  FADE_IN: 400,
-  HOLD: 1400,
-  FADE_OUT: 450,
-  REDUCED_HOLD: 1200,
+  FADE_IN: 300,
+  HOLD: 1000,
+  FADE_OUT: 300,
+  REDUCED_HOLD: 1000,
 };
 
 // Exact sampled colors from client/src/assets/logo.png

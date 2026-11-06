@@ -1,7 +1,8 @@
 // client/src/components/Splash/CelestiusSplash.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './CelestiusSplash.module.css';
 import { SPLASH_TIMINGS } from '../Intro/introConstants.js';
+import { logTimelineEvent } from '../../utils/timelineLogger.js';
 
 import celestiusWebp from '../../assets/celestius-transparent.webp';
 import celestius2xWebp from '../../assets/celestius-transparent@2x.webp';
@@ -13,15 +14,22 @@ import celestius2xPng from '../../assets/celestius-transparent@2x.png';
  * Displays centered "presented by" caption and Celestius logo on black background
  * with dot grid and radial yellow tint.
  * Sequence:
- * - Fade in (400ms, scale 0.94 -> 1.0)
- * - Hold (1400ms)
- * - Fade out into site (450ms)
- * Total duration: 2250ms (< 2.3s)
+ * - Fade in (300ms, scale 0.94 -> 1.0)
+ * - Hold (1000ms)
+ * - Fade out into site (300ms)
+ * Total duration: 1600ms (1.6s)
  */
 export default function CelestiusSplash({ onComplete }) {
   const [animState, setAnimState] = useState('entering');
+  const onCompleteRef = useRef(onComplete);
 
   useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    logTimelineEvent('splash start');
+
     // Body scroll lock
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -44,7 +52,8 @@ export default function CelestiusSplash({ onComplete }) {
     // Complete splash
     const completeTimer = setTimeout(() => {
       document.body.style.overflow = prevOverflow;
-      onComplete();
+      logTimelineEvent('splash end');
+      onCompleteRef.current?.();
     }, fadeInDuration + holdDuration + fadeOutDuration);
 
     return () => {
@@ -53,7 +62,7 @@ export default function CelestiusSplash({ onComplete }) {
       clearTimeout(completeTimer);
       document.body.style.overflow = prevOverflow;
     };
-  }, [onComplete]);
+  }, []);
 
   const stateClass =
     animState === 'holding'
@@ -64,7 +73,7 @@ export default function CelestiusSplash({ onComplete }) {
 
   return (
     <div
-      className={styles.splashOverlay}
+      className={`${styles.splashOverlay} ${animState === 'exiting' ? styles.overlayExiting : ''}`}
       role="dialog"
       aria-modal="true"
       aria-label="Celestius Splash"

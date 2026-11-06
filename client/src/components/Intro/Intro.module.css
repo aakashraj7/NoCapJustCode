@@ -60,7 +60,7 @@
   opacity: 0;
   pointer-events: none;
   z-index: 5;
-  animation: orangeFlashWash 1000ms ease-in-out 1;
+  animation: orangeFlashWash 1200ms ease-in-out 1;
 }
 
 @keyframes orangeFlashWash {
@@ -73,7 +73,7 @@
   100% { opacity: 0; }
 }
 
-/* Screen wash for GREEN phase (3 soft green blinks over 1s, peak opacity 0.28) */
+/* Screen wash for GREEN phase (3 soft green blinks over 1.4s, peak opacity 0.28) */
 .greenWash {
   position: absolute;
   inset: 0;
@@ -81,7 +81,7 @@
   opacity: 0;
   pointer-events: none;
   z-index: 5;
-  animation: greenFlashWash 1000ms ease-in-out 1;
+  animation: greenFlashWash 1400ms ease-in-out 1;
 }
 
 @keyframes greenFlashWash {
@@ -94,7 +94,7 @@
   100% { opacity: 0; }
 }
 
-/* 100% Snap Clean Flash */
+/* 100% Snap Clean Flash (200ms) */
 .completeFlash {
   position: absolute;
   inset: 0;
@@ -102,7 +102,7 @@
   opacity: 0;
   pointer-events: none;
   z-index: 6;
-  animation: flashWhite 350ms ease-out 1;
+  animation: flashWhite 200ms ease-out 1;
 }
 
 @keyframes flashWhite {

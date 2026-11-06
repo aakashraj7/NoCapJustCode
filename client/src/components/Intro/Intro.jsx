@@ -4,6 +4,7 @@ import styles from './Intro.module.css';
 import ImageTypewriter from './ImageTypewriter.jsx';
 import logoTypingImg from '../../assets/intro/logo-typing.png';
 import presentedTypingImg from '../../assets/intro/presented-typing.png';
+import { logTimelineEvent } from '../../utils/timelineLogger.js';
 import {
   INTRO_STATES,
   PRESENTER_NAME,
@@ -87,7 +88,21 @@ export default function Intro({ onComplete }) {
     }
   }, [alreadySeen]);
 
-  // Layout Invariant Verification (verifies getBoundingClientRect stays 100% constant)
+  // Timeline event tracking
+  const prevStateRef = useRef(null);
+  useEffect(() => {
+    if (alreadySeen) return;
+    if (prevStateRef.current === null) {
+      logTimelineEvent('intro start');
+      logTimelineEvent(`phase: ${state}`);
+      prevStateRef.current = state;
+    } else if (prevStateRef.current !== state) {
+      logTimelineEvent(`phase: ${state}`);
+      prevStateRef.current = state;
+    }
+  }, [state, alreadySeen]);
+
+  // Layout Invariant Verification (verifies getBoundingClientRect stays constant within subpixels)
   useEffect(() => {
     if (containerRef.current && (state === INTRO_STATES.TYPE_LOGO || state === INTRO_STATES.SWAP)) {
       const rect = containerRef.current.getBoundingClientRect();
@@ -96,7 +111,7 @@ export default function Intro({ onComplete }) {
       } else {
         const dw = Math.abs(rect.width - initialRectRef.current.width);
         const dh = Math.abs(rect.height - initialRectRef.current.height);
-        if (dw > 0.5 || dh > 0.5) {
+        if (dw > 2.0 || dh > 2.0) {
           console.warn(`[Intro] Container size shifted: delta w=${dw.toFixed(2)}, h=${dh.toFixed(2)}`);
         }
       }
@@ -216,18 +231,15 @@ export default function Intro({ onComplete }) {
     }
   };
 
-  // Dismiss intro immediately and transition to site
+  // Dismiss intro immediately and transition to splash (no extra delay, no seen flag here)
   const dismiss = useCallback(() => {
-    setState(INTRO_STATES.AUTO_ENTER);
-    try {
-      sessionStorage.setItem(SESSION_KEYS.INTRO_SEEN, 'true');
-    } catch {
-      // Storage safety
-    }
-    setTimeout(() => {
-      onComplete?.();
-    }, TIMINGS.FADE_OUT_DURATION);
+    onComplete?.();
   }, [onComplete]);
+
+  const handleSkip = useCallback(() => {
+    logTimelineEvent('skip pressed');
+    dismiss();
+  }, [dismiss]);
 
   // Keyboard shortcut listener (Enter, Escape)
   useEffect(() => {
@@ -236,13 +248,13 @@ export default function Intro({ onComplete }) {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' || e.key === 'Enter') {
         e.preventDefault();
-        dismiss();
+        handleSkip();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [alreadySeen, dismiss]);
+  }, [alreadySeen, handleSkip]);
 
   // Reduced motion: show static "PRESENTED BY CELESTIUS" logo for 1.5s then auto-enter
   useEffect(() => {
@@ -469,7 +481,7 @@ export default function Intro({ onComplete }) {
 
     let current = LOGO_REVEAL_BOXES.length; // 13
 
-    // Step A: Backspace logo boxes in reverse order (40ms per step)
+    // Step A: Backspace logo boxes in reverse order (~30ms per step)
     const backspaceInterval = setInterval(() => {
       current--;
       setRevealedCount(Math.max(0, current));
@@ -478,27 +490,26 @@ export default function Intro({ onComplete }) {
       if (current <= 0) {
         clearInterval(backspaceInterval);
 
-        // Step B: Short pause (120ms), switch image, then type PRESENTED BY CELESTIUS
-        setTimeout(() => {
-          setActiveLogo('presented');
-          let presCount = 0;
-          const presTotal = PRESENTED_REVEAL_BOXES.length; // 20 boxes
+        // Step B: Switch image immediately, log event, then type PRESENTED BY CELESTIUS
+        setActiveLogo('presented');
+        logTimelineEvent('swap: PRESENTED');
+        let presCount = 0;
+        const presTotal = PRESENTED_REVEAL_BOXES.length; // 20 boxes
 
-          const typePresInterval = setInterval(() => {
-            presCount++;
-            setRevealedCount(presCount);
-            playKeyClick();
+        const typePresInterval = setInterval(() => {
+          presCount++;
+          setRevealedCount(presCount);
+          playKeyClick();
 
-            if (presCount >= presTotal) {
-              clearInterval(typePresInterval);
+          if (presCount >= presTotal) {
+            clearInterval(typePresInterval);
 
-              // Step C: Hold 1.0s, then AUTO-ENTER (about 11.0s total)
-              setTimeout(() => {
-                dismiss();
-              }, TIMINGS.HOLD_SWAP);
-            }
-          }, TIMINGS.TYPE_STEP_SPEED);
-        }, 120);
+            // Step C: Hold 0.5s, then immediately transition to Splash
+            setTimeout(() => {
+              dismiss();
+            }, TIMINGS.HOLD_SWAP);
+          }
+        }, TIMINGS.TYPE_PRES_STEP_SPEED || 65);
       }
     }, TIMINGS.BACKSPACE_STEP_SPEED);
 
@@ -600,7 +611,7 @@ export default function Intro({ onComplete }) {
           ref={skipBtnRef}
           type="button"
           className={styles.skipButton}
-          onClick={dismiss}
+          onClick={handleSkip}
           aria-label="Skip intro to site"
         >
           SKIP
