@@ -1,0 +1,52 @@
+/* client/src/styles/variables.css */
+:root {
+  /* Colors */
+  --bg-base: #000000;
+  --surface-1: #0B0B0D;
+  --surface-2: #141416;
+  --surface-3: #1C1C20;
+  --surface-glass: rgba(11, 11, 13, 0.82);
+
+  --border-subtle: rgba(247, 237, 216, 0.08);
+  --border-medium: rgba(247, 237, 216, 0.16);
+  --border-active: rgba(242, 107, 58, 0.4);
+
+  --text-primary: #F7EDD8;
+  --text-secondary: rgba(247, 237, 216, 0.68);
+  --text-muted: rgba(247, 237, 216, 0.42);
+
+  --accent-orange: #F26B3A;
+  --accent-orange-hover: #fa7b4c;
+  --accent-orange-subtle: rgba(242, 107, 58, 0.12);
+  --accent-yellow: #F5A81C;
+  --accent-green: #3DDC84;
+  --accent-green-subtle: rgba(61, 220, 132, 0.12);
+  --accent-error: #FF5A5A;
+  --accent-error-subtle: rgba(255, 90, 90, 0.12);
+
+  /* Subtle Hero Radial Glow Only */
+  --hero-glow: radial-gradient(ellipse 60% 40% at 50% 12%, rgba(242, 107, 58, 0.10), transparent 70%);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-intro-pixel: 'Press Start 2P', monospace; /* Used strictly in Intro */
+
+  /* Radii */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --radius-pill: 9999px;
+
+  /* Layout */
+  --max-content-width: 1280px;
+  --header-height: 72px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
