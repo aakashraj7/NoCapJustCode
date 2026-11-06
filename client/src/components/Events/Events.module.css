@@ -1099,15 +1099,24 @@
   color: var(--text-primary);
 }
 
-/* 14px-tall rounded bar with center tick */
+/* Container inset by half thumb width (14px) so 28px thumb never overflows */
+.ropeTrackContainer {
+  position: relative;
+  width: 100%;
+  padding: 0 14px;
+  box-sizing: border-box;
+  touch-action: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 14px-tall rounded bar */
 .ropeTrack {
   position: relative;
   width: 100%;
   height: 14px;
   background-color: rgba(247, 237, 216, 0.08);
   border-radius: var(--radius-pill);
-  display: flex;
-  align-items: center;
 }
 
 /* Center Tick: 2px wide, cream 0.35, taller than bar */
@@ -1122,42 +1131,47 @@
   z-index: 2;
 }
 
-/* Orange fill from center using transform scaleX */
+/* Orange fill: starts at 50% and grows left or right to thumb */
 .ropeFill {
   position: absolute;
   top: 0;
   bottom: 0;
   background-color: var(--accent-orange);
-  transition: transform 220ms ease-out;
+  transition: left 180ms cubic-bezier(0.2, 1, 0.3, 1), width 180ms cubic-bezier(0.2, 1, 0.3, 1);
+  will-change: left, width;
 }
 
-.fillOriginLeft {
-  right: 50%;
-  width: 50%;
-  transform-origin: right center;
-  border-radius: 9999px 0 0 9999px;
-}
-
-.fillOriginRight {
-  left: 50%;
-  width: 50%;
-  transform-origin: left center;
-  border-radius: 0 9999px 9999px 0;
-}
-
-/* Marker: 28px circle (orange fill, 3px #0B0B0D ring, 1px orange outer ring) */
+/* Thumb Marker: 28px circle centered at pct */
 .ropeMarker28 {
   position: absolute;
-  left: 50%;
   top: 50%;
   width: 28px;
   height: 28px;
-  margin-top: -14px;
   border-radius: 50%;
   background-color: var(--accent-orange);
   box-shadow: 0 0 0 3px #0B0B0D, 0 0 0 4px var(--accent-orange);
   z-index: 4;
-  transition: transform 220ms ease-out;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  outline: none;
+  transition: left 180ms cubic-bezier(0.2, 1, 0.3, 1);
+  will-change: left;
+}
+
+.ropeMarker28:focus-visible {
+  box-shadow: 0 0 0 3px #0B0B0D, 0 0 0 5px #F26B3A, 0 0 14px rgba(242, 107, 58, 0.7);
+}
+
+.trackDragging .ropeFill,
+.trackDragging .ropeMarker28 {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ropeFill,
+  .ropeMarker28 {
+    transition: none !important;
+  }
 }
 
 /* Outcome text under rope */

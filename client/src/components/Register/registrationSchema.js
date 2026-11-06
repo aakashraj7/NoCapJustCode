@@ -1,8 +1,6 @@
 // client/src/components/Register/registrationSchema.js
 import { z } from 'zod';
 
-const phoneRegex = /^[6-9]\d{9}$/;
-
 export const memberSchema = z.object({
   fullName: z
     .string({ error: 'Full name is required' })
@@ -16,11 +14,10 @@ export const memberSchema = z.object({
   phone: z
     .string({ error: 'Phone number is required' })
     .trim()
-    .regex(phoneRegex, 'Enter a valid 10-digit Indian phone number'),
-  college: z
-    .string({ error: 'College is required' })
-    .trim()
-    .min(2, 'College name is required'),
+    .transform((val) => val.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, ''))
+    .refine((val) => /^[6-9]\d{9}$/.test(val), {
+      message: 'Enter a valid 10-digit phone number',
+    }),
   department: z
     .string({ error: 'Department is required' })
     .trim()
@@ -43,10 +40,12 @@ export const registrationSchema = z
   .superRefine((data, ctx) => {
     if (data.members && data.members.length === 2) {
       const [m1, m2] = data.members;
+
+      // Unique emails check
       if (
         m1.email &&
         m2.email &&
-        m1.email.toLowerCase() === m2.email.toLowerCase()
+        m1.email.toLowerCase().trim() === m2.email.toLowerCase().trim()
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -54,7 +53,11 @@ export const registrationSchema = z
           path: ['members', 1, 'email'],
         });
       }
-      if (m1.phone && m2.phone && m1.phone === m2.phone) {
+
+      // Unique phones check (normalized)
+      const p1 = (m1.phone || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
+      const p2 = (m2.phone || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
+      if (p1 && p2 && p1 === p2) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Member 1 and Member 2 must have different phone numbers',

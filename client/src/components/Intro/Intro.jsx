@@ -29,10 +29,17 @@ export default function Intro({ onComplete }) {
     }
   });
 
-  // Sound enabled state (persisted in sessionStorage, OFF by default)
+  // Sound enabled state: default ON on desktop, OFF on mobile/tablet unless user has a stored preference
   const [soundEnabled, setSoundEnabled] = useState(() => {
     try {
-      return sessionStorage.getItem(SESSION_KEYS.SOUND_ENABLED) === 'true';
+      const stored = sessionStorage.getItem(SESSION_KEYS.SOUND_ENABLED);
+      if (stored !== null) {
+        return stored === 'true';
+      }
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        return window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1024px)').matches;
+      }
+      return false;
     } catch {
       return false;
     }
@@ -218,11 +225,63 @@ export default function Intro({ onComplete }) {
     }
   }, [soundEnabled, getAudioCtx]);
 
+  // Autoplay handler: on desktop, try immediate resume; if browser suspends, unlock on first user gesture
+  useEffect(() => {
+    if (!soundEnabled) return;
+
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+
+      const unlockAudio = () => {
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+      };
+
+      const events = ['click', 'keydown', 'pointerdown', 'touchstart'];
+      events.forEach((evt) => window.addEventListener(evt, unlockAudio, { once: true, passive: true }));
+
+      return () => {
+        events.forEach((evt) => window.removeEventListener(evt, unlockAudio));
+      };
+    }
+  }, [soundEnabled, getAudioCtx]);
+
+  const cleanupAudio = useCallback(() => {
+    if (audioCtxRef.current) {
+      try {
+        if (audioCtxRef.current.state !== 'closed') {
+          audioCtxRef.current.close().catch(() => {});
+        }
+      } catch {
+        // Audio safety
+      }
+      audioCtxRef.current = null;
+    }
+  }, []);
+
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      cleanupAudio();
+    };
+  }, [cleanupAudio]);
+
   const toggleSound = () => {
     const nextState = !soundEnabled;
     setSoundEnabled(nextState);
     if (nextState) {
-      getAudioCtx();
+      const ctx = getAudioCtx();
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+    } else {
+      if (audioCtxRef.current && audioCtxRef.current.state === 'running') {
+        audioCtxRef.current.suspend().catch(() => {});
+      }
     }
     try {
       sessionStorage.setItem(SESSION_KEYS.SOUND_ENABLED, String(nextState));
@@ -233,13 +292,15 @@ export default function Intro({ onComplete }) {
 
   // Dismiss intro immediately and transition to splash (no extra delay, no seen flag here)
   const dismiss = useCallback(() => {
+    cleanupAudio();
     onComplete?.();
-  }, [onComplete]);
+  }, [onComplete, cleanupAudio]);
 
   const handleSkip = useCallback(() => {
+    cleanupAudio();
     logTimelineEvent('skip pressed');
     dismiss();
-  }, [dismiss]);
+  }, [dismiss, cleanupAudio]);
 
   // Keyboard shortcut listener (Enter, Escape)
   useEffect(() => {

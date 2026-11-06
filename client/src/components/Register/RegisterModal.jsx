@@ -16,6 +16,7 @@ export default function RegisterModal({ isOpen, onClose }) {
 
   const modalRef = useRef(null);
   const closeBtnRef = useRef(null);
+  const triggerRef = useRef(null);
 
   const {
     register,
@@ -28,8 +29,8 @@ export default function RegisterModal({ isOpen, onClose }) {
     defaultValues: {
       pairName: '',
       members: [
-        { fullName: '', email: '', phone: '', college: '', department: '', year: '1' },
-        { fullName: '', email: '', phone: '', college: '', department: '', year: '1' },
+        { fullName: '', email: '', phone: '', department: '', year: '1' },
+        { fullName: '', email: '', phone: '', department: '', year: '1' },
       ],
     },
     mode: 'onBlur',
@@ -41,35 +42,68 @@ export default function RegisterModal({ isOpen, onClose }) {
     name: 'members',
   });
 
-  // Lock body scroll and focus close button on open
+  // Lock body scroll and handle focus trap / restore trigger on open/close
   useEffect(() => {
     if (!isOpen) return;
-    document.body.classList.add('scroll-locked');
-    closeBtnRef.current?.focus();
+
+    triggerRef.current = document.activeElement;
+
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    // Focus close button initially
+    const timer = setTimeout(() => {
+      closeBtnRef.current?.focus();
+    }, 60);
 
     return () => {
-      document.body.classList.remove('scroll-locked');
+      clearTimeout(timer);
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+
+      if (triggerRef.current && typeof triggerRef.current.focus === 'function') {
+        triggerRef.current.focus();
+      }
     };
   }, [isOpen]);
 
-  // Escape key closes modal
-  useEffect(() => {
-    if (!isOpen) return;
+  // Trap focus and handle Escape
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape' && !submitting) {
+      e.preventDefault();
+      handleModalClose();
+      return;
+    }
 
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && !submitting) {
-        e.preventDefault();
-        onClose();
+    if (e.key === 'Tab' && modalRef.current) {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements.length === 0) return;
+
+      const firstEl = focusableElements[0];
+      const lastEl = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
       }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, submitting, onClose]);
+    }
+  };
 
   if (!isOpen) return null;
 
   const onSubmit = async (formData) => {
+    if (submitting) return;
     setSubmitting(true);
     setServerError(null);
 
@@ -79,8 +113,7 @@ export default function RegisterModal({ isOpen, onClose }) {
         members: formData.members.map((m) => ({
           fullName: m.fullName.trim(),
           email: m.email.trim(),
-          phone: m.phone.trim(),
-          college: m.college.trim(),
+          phone: m.phone.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '').trim(),
           department: m.department.trim(),
           year: m.year,
         })),
@@ -89,7 +122,7 @@ export default function RegisterModal({ isOpen, onClose }) {
       // Step 1: Submit pair registration to API (or mock adapter)
       const result = await registerParticipant(payload);
 
-      // Step 2: Payment seam stub (Razorpay integration point for teammate)
+      // Step 2: Payment seam stub
       await startPayment(result.registration);
 
       // Step 3: Registration received success state
@@ -110,7 +143,17 @@ export default function RegisterModal({ isOpen, onClose }) {
       reset();
       setRegistrationResult(null);
     }
+    // Note: If closed without success, form data is NOT wiped by accident
     onClose();
+  };
+
+  // Scroll active input into view on mobile keyboard display
+  const handleInputFocus = (e) => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 767) {
+      setTimeout(() => {
+        e.target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
   };
 
   return (
@@ -122,9 +165,10 @@ export default function RegisterModal({ isOpen, onClose }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
+      onKeyDown={handleKeyDown}
     >
       <div className={styles.modal} ref={modalRef}>
-        {/* Header */}
+        {/* Sticky Header */}
         <div className={styles.modalHeader}>
           <div className={styles.modalTitleGroup}>
             <span className={styles.modalTag}>// PAIR REGISTRATION</span>
@@ -141,7 +185,7 @@ export default function RegisterModal({ isOpen, onClose }) {
             aria-label="Close registration modal"
             disabled={submitting}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -171,7 +215,7 @@ export default function RegisterModal({ isOpen, onClose }) {
 
             {/* PAYMENT NOTE Line */}
             <div className={styles.paymentNoteBlock}>
-              <span className={styles.paymentNoteIcon}>ℹ️</span>
+              <span className={styles.paymentNoteIcon} aria-hidden="true">ℹ️</span>
               <span className={styles.paymentNoteText}>{PAYMENT_NOTE}</span>
             </div>
 
@@ -180,12 +224,12 @@ export default function RegisterModal({ isOpen, onClose }) {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <form className={styles.formContainer} onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className={styles.formBody}>
               {/* Error banner if submission failed */}
               {serverError && (
                 <div className={styles.errorBanner} role="alert">
-                  <span className={styles.errorIcon}>⚠️</span>
+                  <span className={styles.errorIcon} aria-hidden="true">⚠️</span>
                   <span>{serverError}</span>
                 </div>
               )}
@@ -213,12 +257,18 @@ export default function RegisterModal({ isOpen, onClose }) {
                 <input
                   id="reg-pairname"
                   type="text"
+                  autoComplete="off"
                   placeholder="e.g. ByteForce"
                   className={`${styles.inputField} ${errors.pairName ? styles.hasError : ''}`}
+                  aria-invalid={!!errors.pairName}
+                  aria-describedby={errors.pairName ? 'reg-pairname-error' : undefined}
+                  onFocus={handleInputFocus}
                   {...register('pairName')}
                 />
                 {errors.pairName && (
-                  <span className={styles.errorMessage}>{errors.pairName.message}</span>
+                  <span id="reg-pairname-error" className={styles.errorMessage} role="alert">
+                    {errors.pairName.message}
+                  </span>
                 )}
               </div>
 
@@ -243,12 +293,16 @@ export default function RegisterModal({ isOpen, onClose }) {
                           <input
                             id={`member-${index}-name`}
                             type="text"
+                            autoComplete={index === 0 ? 'name' : 'off'}
                             placeholder="e.g. Jane Doe"
                             className={`${styles.inputField} ${memberErrors?.fullName ? styles.hasError : ''}`}
+                            aria-invalid={!!memberErrors?.fullName}
+                            aria-describedby={memberErrors?.fullName ? `member-${index}-name-error` : undefined}
+                            onFocus={handleInputFocus}
                             {...register(`members.${index}.fullName`)}
                           />
                           {memberErrors?.fullName && (
-                            <span className={styles.errorMessage}>
+                            <span id={`member-${index}-name-error`} className={styles.errorMessage} role="alert">
                               {memberErrors.fullName.message}
                             </span>
                           )}
@@ -262,12 +316,16 @@ export default function RegisterModal({ isOpen, onClose }) {
                           <input
                             id={`member-${index}-email`}
                             type="email"
+                            autoComplete={index === 0 ? 'email' : 'off'}
                             placeholder="e.g. jane@example.com"
                             className={`${styles.inputField} ${memberErrors?.email ? styles.hasError : ''}`}
+                            aria-invalid={!!memberErrors?.email}
+                            aria-describedby={memberErrors?.email ? `member-${index}-email-error` : undefined}
+                            onFocus={handleInputFocus}
                             {...register(`members.${index}.email`)}
                           />
                           {memberErrors?.email && (
-                            <span className={styles.errorMessage}>
+                            <span id={`member-${index}-email-error`} className={styles.errorMessage} role="alert">
                               {memberErrors.email.message}
                             </span>
                           )}
@@ -281,18 +339,30 @@ export default function RegisterModal({ isOpen, onClose }) {
                           <input
                             id={`member-${index}-phone`}
                             type="tel"
+                            inputMode="numeric"
+                            maxLength={10}
+                            autoComplete={index === 0 ? 'tel' : 'off'}
                             placeholder="e.g. 9876543210"
                             className={`${styles.inputField} ${memberErrors?.phone ? styles.hasError : ''}`}
-                            {...register(`members.${index}.phone`)}
+                            aria-invalid={!!memberErrors?.phone}
+                            aria-describedby={memberErrors?.phone ? `member-${index}-phone-error` : undefined}
+                            onFocus={handleInputFocus}
+                            {...register(`members.${index}.phone`, {
+                              onChange: (e) => {
+                                // Strip non-numeric characters and limit to 10
+                                const raw = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                e.target.value = raw;
+                              },
+                            })}
                           />
                           {memberErrors?.phone && (
-                            <span className={styles.errorMessage}>
+                            <span id={`member-${index}-phone-error`} className={styles.errorMessage} role="alert">
                               {memberErrors.phone.message}
                             </span>
                           )}
                         </div>
 
-                        {/* Year */}
+                        {/* Year of Study */}
                         <div className={styles.formGroup}>
                           <label htmlFor={`member-${index}-year`} className={styles.fieldLabelSmall}>
                             Year of Study
@@ -300,6 +370,9 @@ export default function RegisterModal({ isOpen, onClose }) {
                           <select
                             id={`member-${index}-year`}
                             className={`${styles.selectField} ${memberErrors?.year ? styles.hasError : ''}`}
+                            aria-invalid={!!memberErrors?.year}
+                            aria-describedby={memberErrors?.year ? `member-${index}-year-error` : undefined}
+                            onFocus={handleInputFocus}
                             {...register(`members.${index}.year`)}
                           >
                             <option value="1">1st Year</option>
@@ -308,27 +381,8 @@ export default function RegisterModal({ isOpen, onClose }) {
                             <option value="4">4th Year</option>
                           </select>
                           {memberErrors?.year && (
-                            <span className={styles.errorMessage}>
+                            <span id={`member-${index}-year-error`} className={styles.errorMessage} role="alert">
                               {memberErrors.year.message}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* College */}
-                        <div className={styles.formGroup}>
-                          <label htmlFor={`member-${index}-college`} className={styles.fieldLabelSmall}>
-                            College Name
-                          </label>
-                          <input
-                            id={`member-${index}-college`}
-                            type="text"
-                            placeholder="e.g. SJIT"
-                            className={`${styles.inputField} ${memberErrors?.college ? styles.hasError : ''}`}
-                            {...register(`members.${index}.college`)}
-                          />
-                          {memberErrors?.college && (
-                            <span className={styles.errorMessage}>
-                              {memberErrors.college.message}
                             </span>
                           )}
                         </div>
@@ -341,12 +395,16 @@ export default function RegisterModal({ isOpen, onClose }) {
                           <input
                             id={`member-${index}-dept`}
                             type="text"
+                            autoComplete="off"
                             placeholder="e.g. CSE / IT"
                             className={`${styles.inputField} ${memberErrors?.department ? styles.hasError : ''}`}
+                            aria-invalid={!!memberErrors?.department}
+                            aria-describedby={memberErrors?.department ? `member-${index}-dept-error` : undefined}
+                            onFocus={handleInputFocus}
                             {...register(`members.${index}.department`)}
                           />
                           {memberErrors?.department && (
-                            <span className={styles.errorMessage}>
+                            <span id={`member-${index}-dept-error`} className={styles.errorMessage} role="alert">
                               {memberErrors.department.message}
                             </span>
                           )}
@@ -358,25 +416,34 @@ export default function RegisterModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            {/* Modal Actions */}
+            {/* Sticky / Fixed Footer Actions */}
             <div className={styles.modalFooter}>
-              <Button
-                type="button"
-                variant="ghost"
-                size="md"
-                onClick={handleModalClose}
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                size="md"
-                disabled={submitting}
-              >
-                {submitting ? 'Registering pair...' : `Register as a pair - ₹${PRICING.pair}`}
-              </Button>
+              <div className={styles.footerPriceSummaryMobile}>
+                <span className={styles.footerFormula}>2 people × ₹{PRICING.perHead}</span>
+                <span className={styles.footerTotal}>Total ₹{PRICING.pair}</span>
+              </div>
+
+              <div className={styles.footerActions}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="md"
+                  onClick={handleModalClose}
+                  disabled={submitting}
+                  className={styles.cancelBtnDesktop}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  disabled={submitting}
+                  className={styles.submitBtn}
+                >
+                  {submitting ? 'Registering pair...' : `Register as a pair - ₹${PRICING.pair}`}
+                </Button>
+              </div>
             </div>
           </form>
         )}

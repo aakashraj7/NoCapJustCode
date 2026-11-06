@@ -1,74 +1,147 @@
 // client/src/components/Events/TugOfAuraVisual.jsx
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, useRef, memo } from 'react';
 import styles from './Events.module.css';
 
 function TugOfAuraVisual() {
-  // Offset in percent: -50 (full Omega) to +50 (full Alpha), default 0 (centered)
-  const [offset, setOffset] = useState(0);
+  // Single source of truth: -100 (full Omega) to +100 (full Alpha), 0 at center
+  const [value, setValue] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const trackRef = useRef(null);
+
+  // Convert value (-100 to +100) to percentage (0 to 100)
+  const pct = (value + 100) / 2; // e.g. -100 -> 0%, 0 -> 50%, 100 -> 100%
 
   const pullOmega = useCallback(() => {
-    setOffset((prev) => Math.max(prev - 12, -50));
+    setValue((prev) => Math.max(-100, prev - 10));
   }, []);
 
   const pullAlpha = useCallback(() => {
-    setOffset((prev) => Math.min(prev + 12, 50));
+    setValue((prev) => Math.min(100, prev + 10));
   }, []);
 
   const reset = useCallback(() => {
-    setOffset(0);
+    setValue(0);
   }, []);
 
-  const omegaWon = offset <= -50;
-  const alphaWon = offset >= 50;
+  const omegaWon = value <= -100;
+  const alphaWon = value >= 100;
 
-  // Scale of orange fill from center: 0 to 1
-  const fillScale = Math.abs(offset) / 50;
-  const isLeft = offset < 0;
+  // Pointer drag and track click handling
+  const handlePointerDown = (e) => {
+    const track = trackRef.current;
+    if (!track) return;
+    setIsDragging(true);
+
+    const updateFromClientX = (clientX) => {
+      const rect = track.getBoundingClientRect();
+      const ratio = (clientX - rect.left) / rect.width;
+      const clampedRatio = Math.max(0, Math.min(1, ratio));
+      const newVal = Math.round(clampedRatio * 200 - 100);
+      setValue(newVal);
+    };
+
+    updateFromClientX(e.clientX);
+
+    const onPointerMove = (moveEvt) => {
+      updateFromClientX(moveEvt.clientX);
+    };
+
+    const onPointerUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+    };
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  };
+
+  // Keyboard navigation for accessibility
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setValue((prev) => Math.max(-100, prev - 10));
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setValue((prev) => Math.min(100, prev + 10));
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setValue(-100);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setValue(100);
+    }
+  };
 
   return (
     <div className={styles.tugCard}>
-      {/* Header: "INTERACTIVE DEMO" (mono 11.5px, orange), nothing on the right */}
+      {/* Header: "INTERACTIVE DEMO" */}
       <div className={styles.tugHeader}>
         <span className={styles.tugTitle}>INTERACTIVE DEMO</span>
       </div>
 
-      {/* Labels row: "OMEGA" left and "ALPHA" right (mono 13px cream, no brackets), 14px above rope */}
+      {/* Labels row: "OMEGA" left and "ALPHA" right */}
       <div className={styles.tugLabelsRow}>
         <span className={styles.teamLabelOmega}>OMEGA</span>
         <span className={styles.teamLabelAlpha}>ALPHA</span>
       </div>
 
-      {/* Rope: 14px-tall rounded bar with center tick */}
-      <div className={styles.ropeTrack} aria-label="Digital Tug of War Track">
-        {/* Center tick: 2px, cream 0.35, taller than the bar */}
-        <div className={styles.centerTick} aria-hidden="true" />
-
-        {/* Orange fill growing from center toward winner using transform: scaleX */}
+      {/* Track Container: Inset by half thumb width (14px) so 28px thumb never overflows track ends */}
+      <div
+        className={styles.ropeTrackContainer}
+        onPointerDown={handlePointerDown}
+      >
         <div
-          className={`${styles.ropeFill} ${isLeft ? styles.fillOriginLeft : styles.fillOriginRight}`}
-          style={{
-            transform: `scaleX(${fillScale})`,
-          }}
-          aria-hidden="true"
-        />
+          ref={trackRef}
+          className={`${styles.ropeTrack} ${isDragging ? styles.trackDragging : ''}`}
+          style={{ '--pct': pct }}
+        >
+          {/* Center tick at 50% */}
+          <div className={styles.centerTick} aria-hidden="true" />
 
-        {/* Marker: 28px circle moving by transform: translateX */}
-        <div
-          className={styles.ropeMarker28}
-          style={{
-            transform: `translateX(calc(-50% + ${offset * 2.8}px))`,
-          }}
-          aria-label={`Rope position: ${offset}%`}
-        />
+          {/* Orange fill: starts at center (50%) and grows left or right exactly to the thumb center */}
+          <div
+            className={styles.ropeFill}
+            style={
+              value >= 0
+                ? {
+                    left: '50%',
+                    width: `${pct - 50}%`,
+                    borderRadius: '0 7px 7px 0',
+                  }
+                : {
+                    left: `${pct}%`,
+                    width: `${50 - pct}%`,
+                    borderRadius: '7px 0 0 7px',
+                  }
+            }
+            aria-hidden="true"
+          />
+
+          {/* Thumb marker: 28px circle centered at pct% */}
+          <div
+            className={styles.ropeMarker28}
+            role="slider"
+            tabIndex={0}
+            aria-valuemin={-100}
+            aria-valuemax={100}
+            aria-valuenow={value}
+            aria-label="Tug of Aura rope balance"
+            onKeyDown={handleKeyDown}
+            style={{
+              left: `${pct}%`,
+            }}
+          />
+        </div>
       </div>
 
-      {/* Outcome text under the rope when an end is reached */}
+      {/* Outcome text under the rope */}
       <div className={styles.ropeOutcomeRow} aria-live="polite">
         {omegaWon && <span className={styles.outcomeText}>Omega pulled it</span>}
         {alphaWon && <span className={styles.outcomeText}>Alpha pulled it</span>}
       </div>
 
-      {/* Controls: 2-column grid, 12px gap, both buttons equal width, 52px tall, radius 14px */}
+      {/* Controls: Omega pulls & Alpha pulls */}
       <div className={styles.tugControlsGrid}>
         <button
           type="button"
@@ -99,7 +172,7 @@ function TugOfAuraVisual() {
         </button>
       </div>
 
-      {/* Below: Centered Reset text button (44px tap area, muted cream, underlined, rotate icon) */}
+      {/* Centered Reset Button */}
       <div className={styles.resetRow}>
         <button
           type="button"
