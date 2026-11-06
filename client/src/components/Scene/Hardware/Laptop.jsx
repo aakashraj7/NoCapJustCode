@@ -1,7 +1,7 @@
 // client/src/components/Scene/Hardware/Laptop.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Hardware.module.css';
-import { THEME, hexToRgba } from '../hardwareConfig.js';
+import { THEME, hexToRgba, LAPTOP_HALO } from '../hardwareConfig.js';
 import ScreenCode from './ScreenCode.jsx';
 
 export default function Laptop({
@@ -46,7 +46,7 @@ export default function Laptop({
       style={{ width, height, ...style }}
       aria-hidden="true"
     >
-      {hasHalo && (
+      {hasHalo && LAPTOP_HALO && (
         <div className={`${styles.halo} ${haloStrong ? styles.haloStrong : ''}`} />
       )}
       <svg

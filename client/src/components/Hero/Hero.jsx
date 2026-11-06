@@ -99,10 +99,10 @@ export default function Hero({ onOpenRegister }) {
             </div>
           </div>
 
-          {/* Right Column Brand Display - Shows only complete hardware laptop */}
+          {/* Right Column: Complete Hardware Laptop with subtle orange glow */}
           <div className={styles.rightCol}>
             <div className={styles.heroLaptopWrapper}>
-              <Laptop width={380} height={238} floatVariant="A" hasHalo={true} isHero={true} />
+              <Laptop width={420} height={263} floatVariant="A" hasHalo={true} isHero={true} />
             </div>
           </div>
         </div>

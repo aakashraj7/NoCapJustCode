@@ -6,8 +6,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-top: calc(var(--header-height) + 2.5rem);
-  padding-bottom: 2rem;
+  padding-top: calc(var(--header-height) + 1.25rem);
+  padding-bottom: 0;
   background-image: var(--hero-glow);
   background-repeat: no-repeat;
   overflow: hidden;
@@ -15,8 +15,8 @@
 
 @media (max-width: 767px) {
   .heroSection {
-    padding-top: 140px;
-    padding-bottom: 140px;
+    padding-top: calc(var(--header-height) + 1rem);
+    padding-bottom: 1.5rem;
   }
 }
 
@@ -24,15 +24,19 @@
   flex: 1;
   display: flex;
   align-items: center;
-  margin-bottom: 3rem;
+  justify-content: center;
   position: relative;
   z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
 }
 
 .heroGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 3rem;
+  gap: 2rem;
   align-items: center;
   width: 100%;
 }
@@ -40,7 +44,8 @@
 @media (min-width: 1024px) {
   .heroGrid {
     grid-template-columns: 1.15fr 0.85fr;
-    gap: 4rem;
+    gap: 3.5rem;
+    align-items: center;
   }
 }
 
@@ -54,58 +59,71 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
+  padding: 0.3rem 0.8rem;
   background-color: var(--surface-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-secondary);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
-}
-
-.presenterAccent {
-  color: var(--accent-orange);
-  font-weight: 600;
+  margin-bottom: 0.85rem;
 }
 
 .heroTitleH1 {
-  margin: 0 0 1.25rem 0;
+  margin: 0 0 0.85rem 0;
   padding: 0;
   line-height: 1;
   display: block;
   width: 100%;
 }
 
+.heroLogoImg {
+  position: relative;
+  z-index: 1;
+  width: clamp(260px, 80vw, 420px);
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45));
+}
+
+@media (min-width: 1024px) {
+  .heroLogoImg {
+    width: clamp(280px, 26vw, 420px);
+    margin: 0;
+  }
+}
+
 .tagline {
   font-family: var(--font-mono);
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
   color: var(--accent-orange);
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.75rem;
   letter-spacing: 0.02em;
 }
 
 .leadText {
-  font-size: clamp(1rem, 1.3vw, 1.125rem);
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
   color: var(--text-secondary);
-  line-height: 1.6;
-  max-width: 540px;
-  margin-bottom: 1.75rem;
+  line-height: 1.55;
+  max-width: 480px;
+  margin-bottom: 1.25rem;
 }
 
 .chipsRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  gap: 0.6rem;
+  margin-bottom: 1.35rem;
 }
 
 .ctaGroup {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 @media (max-width: 480px) {
@@ -126,6 +144,8 @@
 @media (min-width: 1024px) {
   .rightCol {
     display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -134,34 +154,25 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  animation: heroLaptopFloat 6s ease-in-out infinite alternate;
 }
 
-.heroLogoImg {
-  position: relative;
-  z-index: 1;
-  width: clamp(260px, 82vw, 480px);
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
-}
-
-@media (min-width: 1024px) {
-  .heroLogoImg {
-    width: clamp(360px, 40vw, 720px);
-    margin: 0;
+@keyframes heroLaptopFloat {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0.6deg);
+  }
+  100% {
+    transform: translateY(5px) rotate(-0.4deg);
   }
 }
 
-.showcaseFootnote {
-  position: relative;
-  z-index: 1;
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
-  margin-top: 1.25rem;
+@media (prefers-reduced-motion: reduce) {
+  .heroLaptopWrapper {
+    animation: none !important;
+  }
 }
 
 /* Marquee Ticker */
