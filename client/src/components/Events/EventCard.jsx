@@ -28,14 +28,12 @@ export default function EventCard({ event, index, onOpenDetails }) {
       {/* 3px top accent line inside rounded clip */}
       <span className={styles.accentLine} aria-hidden="true" />
 
-      {/* Ghost numeral behind text */}
-      <span className={styles.ghostNumeral} aria-hidden="true">
-        {numeral}
-      </span>
-
-      {/* 1. Top row: tag chip (left), time (right) */}
+      {/* 1. Top row: mono index + tag chip (left), time (right) */}
       <div className={styles.cardTopRow}>
-        <span className={styles.tagChip}>{tagLabel}</span>
+        <div className={styles.tagGroup}>
+          <span className={styles.cardIndexMono}>{numeral}</span>
+          <span className={styles.tagChip}>{tagLabel}</span>
+        </div>
         <span className={styles.timeText}>{event.time}</span>
       </div>
 
