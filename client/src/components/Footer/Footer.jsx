@@ -1,9 +1,9 @@
 // client/src/components/Footer/Footer.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './Footer.module.css';
 import navbarLogoWebp from '../../assets/logo-navbar.webp';
 import navbarLogoPng from '../../assets/logo-navbar.png';
-import { eventData } from '../../data/event.js';
+import { eventData, LINK_TARGET } from '../../data/event.js';
 import { SectionScene } from '../Scene/index.js';
 
 export default function Footer() {
@@ -11,8 +11,52 @@ export default function Footer() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const auditConnectCards = () => {
+        const cards = document.querySelectorAll(`.${styles.connectCard}`);
+        cards.forEach((card, index) => {
+          const rect = card.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          if (cx >= 0 && cx <= window.innerWidth && cy >= 0 && cy <= window.innerHeight) {
+            const hit = document.elementFromPoint(cx, cy);
+            if (!hit || (hit !== card && !card.contains(hit))) {
+              console.warn(
+                `[ConnectCardAudit] Card ${index} (${card.getAttribute('href')}) is blocked by:`,
+                hit
+              );
+            }
+          }
+        });
+
+        // Check footer divider gap
+        const lastCard = cards[cards.length - 1];
+        const bottomBar = document.querySelector(`.${styles.bottomBar}`);
+        if (lastCard && bottomBar) {
+          const cardBottom = lastCard.getBoundingClientRect().bottom;
+          const dividerTop = bottomBar.getBoundingClientRect().top;
+          const gap = Math.round(dividerTop - cardBottom);
+          const w = window.innerWidth;
+          console.info(`[FooterGapCheck] Width ${w}px: gap = ${gap}px (target: 32px)`);
+          if (gap > 48) {
+            console.error(`[FooterGapCheck] FAILURE: gap is ${gap}px (exceeds 48px max threshold!)`);
+          }
+        }
+      };
+
+      window.__auditConnectCards = auditConnectCards;
+      const timer = setTimeout(auditConnectCards, 800);
+      window.addEventListener('resize', auditConnectCards);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', auditConnectCards);
+      };
+    }
+  }, []);
+
   return (
-    <footer id="connect" className={styles.footer}>
+    <footer className={styles.footer}>
       <SectionScene section="footer" />
       <div className={`container ${styles.footerContainer}`}>
         <div className={styles.footerGrid}>
@@ -57,31 +101,114 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Connect Details */}
-          <div className={styles.footerCol}>
+          {/* Connect Column */}
+          <div id="connect" className={styles.connectCol}>
             <span className={styles.colTitle}>Connect</span>
-            <ul className={styles.colList}>
-              <li>
-                <a
-                  href={eventData.connect.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.colLink}
-                >
-                  Website &rarr;
-                </a>
-              </li>
-              <li>
-                <a
-                  href={eventData.connect.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.colLink}
-                >
-                  Instagram ({eventData.connect.instagramLabel}) &rarr;
-                </a>
-              </li>
-            </ul>
+            <div className={styles.cardsList}>
+              {/* Website Card */}
+              <a
+                href={eventData.connect.website}
+                target={LINK_TARGET}
+                rel="noopener noreferrer"
+                className={styles.connectCard}
+                aria-label="Visit the Celestius website (opens in a new tab)"
+              >
+                <div className={styles.iconTile} aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={styles.iconSvg}
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </svg>
+                </div>
+                <div className={styles.cardInfo}>
+                  <span className={styles.cardLabel}>Website</span>
+                  <span className={styles.cardDetail}>
+                    {eventData.connect.websiteLabel || 'celestius.in'}
+                  </span>
+                </div>
+                <div className={styles.actionPill} aria-hidden="true">
+                  <span className={styles.pillTextTouch}>TAP TO OPEN</span>
+                  <span className={styles.pillTextMouse}>CLICK TO OPEN</span>
+                  <span className={styles.pillTextNarrow}>OPEN</span>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={styles.pillArrow}
+                  >
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                  </svg>
+                </div>
+              </a>
+
+              {/* Instagram Card */}
+              <a
+                href={eventData.connect.instagram}
+                target={LINK_TARGET}
+                rel="noopener noreferrer"
+                className={styles.connectCard}
+                aria-label="Open Celestius on Instagram (opens in a new tab)"
+              >
+                <div className={styles.iconTile} aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={styles.iconSvg}
+                  >
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                </div>
+                <div className={styles.cardInfo}>
+                  <span className={styles.cardLabel}>Instagram</span>
+                  <span className={styles.cardDetail}>
+                    {eventData.connect.instagramLabel || '@celestius_cit'}
+                  </span>
+                </div>
+                <div className={styles.actionPill} aria-hidden="true">
+                  <span className={styles.pillTextTouch}>TAP TO OPEN</span>
+                  <span className={styles.pillTextMouse}>CLICK TO OPEN</span>
+                  <span className={styles.pillTextNarrow}>OPEN</span>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={styles.pillArrow}
+                  >
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                  </svg>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
 
