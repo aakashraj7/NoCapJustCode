@@ -338,7 +338,7 @@
   }
 }
 
-/* (a) HEADER (64px laptop, 56px phone, border-bottom) */
+/* Header */
 .sheetHeader {
   background-color: #0B0B0D;
   border-bottom: 1px solid rgba(247, 237, 216, 0.10);
@@ -441,7 +441,7 @@
   color: var(--accent-orange);
 }
 
-/* (b) BODY: Inner Scroll Container with Dark Thin Scrollbar */
+/* Inner Scroll Container with Dark Thin Scrollbar */
 .sheetBody {
   flex: 1;
   overflow-y: auto;
@@ -480,6 +480,42 @@
 @media (min-width: 768px) {
   .sheetBody {
     padding: 32px;
+  }
+}
+
+/* Training Arc Container */
+.trainingArcContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .trainingArcContainer {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+}
+
+/* On mobile, framed gallery shows first inside the 20px padding */
+@media (max-width: 767px) {
+  .gallerySlot {
+    order: -1;
+    margin-bottom: 8px;
+  }
+}
+
+/* TLE Container */
+.tleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@media (min-width: 768px) {
+  .tleContainer {
     display: grid;
     grid-template-columns: 1.25fr 1fr;
     gap: 40px;
@@ -547,7 +583,6 @@
   gap: 10px;
 }
 
-/* Section labels are small orange mono caps without the "//" prefix */
 .sectionMonoLabel {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -656,68 +691,547 @@
 }
 
 /* ---------------------------------------------------- */
-/* TLE SEGMENTED CONTROL & TAB PANELS                   */
+/* SECTION 1: FRAMED PHOTO GALLERY                      */
 /* ---------------------------------------------------- */
-.segmentedControl {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--surface-2);
-  border: 1px solid rgba(247, 237, 216, 0.12);
-  border-radius: var(--radius-pill);
-  padding: 4px;
-  width: fit-content;
+.galleryWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-@media (max-width: 767px) {
+/* Framed Card: 2px solid #F26B3A, radius 24px, padding 6px, bg #0B0B0D, aspect 4/3 */
+.framedPhotoCard {
+  width: 100%;
+  border: 2px solid #F26B3A;
+  border-radius: 24px;
+  padding: 6px;
+  background-color: #0B0B0D;
+  position: relative;
+  overflow: hidden;
+}
+
+.innerImageBtn {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: #070709;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: block;
+  outline: none;
+}
+
+.innerImageBtn picture,
+.innerFramedImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Dark "1/4" counter pill in top-right corner */
+.counterPill {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background-color: rgba(11, 11, 13, 0.88);
+  border: 1px solid rgba(247, 237, 216, 0.16);
+  border-radius: 8px;
+  padding: 3px 9px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  z-index: 5;
+  user-select: none;
+}
+
+/* Dots Row BELOW the frame, centered: 8px dots, active 22px orange pill, inactive cream 0.3, 12px under frame */
+.dotsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.galleryDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(247, 237, 216, 0.30);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.galleryDotActive {
+  width: 22px;
+  border-radius: var(--radius-pill);
+  background-color: var(--accent-orange);
+}
+
+/* Caption under the dots: muted cream, 13px */
+.galleryCaptionText {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(247, 237, 216, 0.50);
+  text-align: center;
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+/* Laptop gallery controls: 44px arrow buttons & 4 thumbnail strip (64px, radius 12px) */
+.laptopGalleryControls {
+  display: none;
+  margin-top: 16px;
+}
+
+@media (min-width: 768px) {
+  .laptopGalleryControls {
+    display: block;
+  }
+}
+
+.laptopArrowRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.laptopArrowBtn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  background-color: var(--surface-2);
+  border: 1.5px solid var(--accent-orange);
+  color: var(--accent-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.laptopArrowBtn:hover {
+  background-color: var(--accent-orange);
+  color: #0B0B0D;
+}
+
+.thumbStrip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.thumbBtn {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #070709;
+  border: 1px solid rgba(247, 237, 216, 0.15);
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color var(--transition-fast);
+}
+
+.thumbBtnActive {
+  border: 2px solid var(--accent-orange);
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Lightbox */
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background-color: rgba(0, 0, 0, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: modalFadeIn 180ms ease-out forwards;
+}
+
+.lightboxCloseBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(247, 237, 216, 0.1);
+  border: 1px solid rgba(247, 237, 216, 0.2);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-fast);
+}
+
+.lightboxCloseBtn:hover {
+  background: var(--accent-orange);
+  color: #0B0B0D;
+}
+
+.lightboxNavBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(247, 237, 216, 0.1);
+  border: 1px solid rgba(247, 237, 216, 0.2);
+  color: var(--text-primary);
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-fast);
+}
+
+.lightboxNavBtn:hover {
+  background: var(--accent-orange);
+  color: #0B0B0D;
+}
+
+.lightboxPrev {
+  left: 20px;
+}
+
+.lightboxNext {
+  right: 20px;
+}
+
+.lightboxContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  max-height: 85vh;
+}
+
+.lightboxFramedBox {
+  border: 2px solid #F26B3A;
+  border-radius: 20px;
+  padding: 6px;
+  background-color: #0B0B0D;
+  overflow: hidden;
+}
+
+.lightboxImg {
+  max-width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 14px;
+  display: block;
+}
+
+.lightboxCaption {
+  margin-top: 14px;
+  color: rgba(247, 237, 216, 0.7);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ---------------------------------------------------- */
+/* SECTION 2: TUG OF AURA DEMO                          */
+/* ---------------------------------------------------- */
+.tugCard {
+  background-color: #0B0B0D;
+  border: 1px solid rgba(247, 237, 216, 0.10);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tugHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tugTitle {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--accent-orange);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tugLabelsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.teamLabelOmega {
+  color: var(--text-primary);
+}
+
+.teamLabelAlpha {
+  color: var(--text-primary);
+}
+
+/* 14px-tall rounded bar with center tick */
+.ropeTrack {
+  position: relative;
+  width: 100%;
+  height: 14px;
+  background-color: rgba(247, 237, 216, 0.08);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+}
+
+/* Center Tick: 2px wide, cream 0.35, taller than bar */
+.centerTick {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background-color: rgba(247, 237, 216, 0.35);
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* Orange fill from center using transform scaleX */
+.ropeFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: var(--accent-orange);
+  transition: transform 220ms ease-out;
+}
+
+.fillOriginLeft {
+  right: 50%;
+  width: 50%;
+  transform-origin: right center;
+  border-radius: 9999px 0 0 9999px;
+}
+
+.fillOriginRight {
+  left: 50%;
+  width: 50%;
+  transform-origin: left center;
+  border-radius: 0 9999px 9999px 0;
+}
+
+/* Marker: 28px circle (orange fill, 3px #0B0B0D ring, 1px orange outer ring) */
+.ropeMarker28 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
+  border-radius: 50%;
+  background-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px #0B0B0D, 0 0 0 4px var(--accent-orange);
+  z-index: 4;
+  transition: transform 220ms ease-out;
+}
+
+/* Outcome text under rope */
+.ropeOutcomeRow {
+  min-height: 24px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.outcomeText {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-orange);
+}
+
+/* Controls: 2-column grid, 12px gap, equal width, 52px tall, radius 14px */
+.tugControlsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pullBtn {
+  height: 52px;
+  border-radius: 14px;
+  background-color: #141416;
+  border: 1px solid rgba(247, 237, 216, 0.18);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+@media (hover: hover) {
+  .pullBtn:hover:not(:disabled) {
+    border-color: rgba(242, 107, 58, 0.50);
+    color: var(--accent-orange);
+  }
+}
+
+.pullBtn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.pullBtn:focus-visible {
+  outline: 2px solid var(--accent-orange);
+  outline-offset: 2px;
+}
+
+.pullBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Reset button below: 44px tap area, centered, muted cream, underlined */
+.resetRow {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.resetTextBtn {
+  height: 44px;
+  padding: 0 16px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: rgba(247, 237, 216, 0.60);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  outline: none;
+}
+
+.resetTextBtn span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.resetTextBtn:hover {
+  color: var(--accent-orange);
+}
+
+/* ---------------------------------------------------- */
+/* SECTION 3: STICKY TAB BAR (TLE)                      */
+/* ---------------------------------------------------- */
+.stickyTabBarWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background-color: #0B0B0D;
+  width: 100%;
+  border-bottom: 1px solid rgba(247, 237, 216, 0.08);
+  padding: 8px 20px;
+  margin: -20px -20px 20px -20px;
+}
+
+@media (min-width: 768px) {
+  .stickyTabBarWrapper {
+    position: static;
+    background: transparent;
+    border-bottom: none;
+    padding: 0;
+    margin: 0;
+    width: fit-content;
+  }
+}
+
+.segmentedControl {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
   .segmentedControl {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    width: 100%;
-    height: 44px;
-    border-radius: var(--radius-pill);
-    background: #0B0B0D;
-    border: 1px solid rgba(247, 237, 216, 0.12);
+    width: fit-content;
+    display: inline-flex;
+    gap: 8px;
   }
 }
 
 .tabBtn {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
   font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: var(--radius-pill);
+  font-weight: 500;
   background: transparent;
-  border: none;
-  color: rgba(247, 237, 216, 0.65);
+  color: rgba(247, 237, 216, 0.70);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 150ms ease;
   white-space: nowrap;
 }
 
-@media (max-width: 767px) {
+@media (min-width: 768px) {
   .tabBtn {
-    flex: 1;
-    text-align: center;
-    padding: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: initial;
+    padding: 0 20px;
   }
 }
 
 .tabBtnActive {
-  background: var(--accent-orange);
-  color: #0B0B0D;
-  font-weight: 700;
+  background: var(--accent-orange) !important;
+  color: #0B0B0D !important;
+  font-weight: 700 !important;
 }
 
 .tabPanelFade {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  scroll-margin-top: 64px;
   animation: panelFade 150ms ease-out forwards;
 }
 
@@ -727,12 +1241,6 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tabPanelFade {
-    animation: none !important;
   }
 }
 
@@ -753,7 +1261,7 @@
 }
 
 /* ---------------------------------------------------- */
-/* RIGHT COLUMN (Laptop >= 768px)                      */
+/* RIGHT COLUMN & STEPPER (Laptop >= 768px)            */
 /* ---------------------------------------------------- */
 .rightCol {
   display: none;
@@ -768,79 +1276,12 @@
   }
 }
 
-/* Training Arc Gallery (Laptop) */
-.desktopGalleryArea {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.mainImageFrame {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: #070709;
-  border: 1px solid rgba(247, 237, 216, 0.12);
-  padding: 0;
-  cursor: pointer;
-  display: block;
-}
-
-.mainImageFrame picture,
-.mainPhotoImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.thumbStrip {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.thumbBtn {
-  width: 64px;
-  height: 64px;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: #070709;
-  border: 2px solid transparent;
-  padding: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: border-color var(--transition-fast);
-}
-
-.thumbBtnActive {
-  border-color: var(--accent-orange);
-}
-
-.thumbImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.galleryCaption {
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: rgba(247, 237, 216, 0.45);
-  font-style: italic;
-  margin: 0;
-}
-
-/* TLE Stepper & Facts Area (Laptop) */
 .desktopTleFactsArea {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-/* Vertical Stepper: Dots joined by a continuous line */
 .stepperCard {
   background-color: var(--surface-2);
   border: 1px solid rgba(247, 237, 216, 0.10);
@@ -932,7 +1373,6 @@
   font-size: 11px;
 }
 
-/* Note Card below stepper */
 .noteCard {
   margin-top: 12px;
   background: rgba(242, 107, 58, 0.08);
@@ -949,102 +1389,7 @@
 }
 
 /* ---------------------------------------------------- */
-/* PHONE CAROUSEL (Full-Bleed, Edge-to-Edge)            */
-/* ---------------------------------------------------- */
-.phoneCarouselArea {
-  display: block;
-  position: relative;
-  margin: -20px -20px 0 -20px;
-}
-
-@media (min-width: 768px) {
-  .phoneCarouselArea {
-    display: none;
-  }
-}
-
-.phoneCarouselTrack {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  background-color: #070709;
-}
-
-.phoneCarouselTrack::-webkit-scrollbar {
-  display: none;
-}
-
-.phoneCarouselSlide {
-  flex: 0 0 100%;
-  aspect-ratio: 4 / 3;
-  scroll-snap-align: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.phoneCarouselImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.phoneCarouselCounter {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(11, 11, 13, 0.75);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(247, 237, 216, 0.15);
-  border-radius: var(--radius-pill);
-  padding: 3px 10px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.phoneCarouselDots {
-  position: absolute;
-  bottom: 34px;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.phoneDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(247, 237, 216, 0.35);
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.phoneDotActive {
-  background: var(--accent-orange);
-  width: 20px;
-  border-radius: 4px;
-}
-
-.galleryCaptionPhone {
-  font-family: var(--font-body);
-  font-size: 12px;
-  color: rgba(247, 237, 216, 0.45);
-  font-style: italic;
-  text-align: center;
-  margin-top: 8px;
-  padding: 0 20px;
-}
-
-/* ---------------------------------------------------- */
-/* (c) STICKY FOOTER BAR                                */
+/* STICKY FOOTER BAR                                    */
 /* ---------------------------------------------------- */
 .stickyFooterBar {
   position: sticky;
@@ -1150,126 +1495,6 @@
 }
 
 /* ---------------------------------------------------- */
-/* TUG OF AURA DEMO CARD                                */
-/* ---------------------------------------------------- */
-.demoCard {
-  background-color: var(--surface-2);
-  border: 1px solid rgba(247, 237, 216, 0.10);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.demoHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.demoLabel {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--accent-orange);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.teamsRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.teamOmega {
-  color: #FAA012;
-}
-
-.teamAlpha {
-  color: var(--accent-orange);
-}
-
-.ropeTrack {
-  position: relative;
-  width: 100%;
-  height: 22px;
-  background-color: #000000;
-  border: 1px solid rgba(247, 237, 216, 0.12);
-  border-radius: var(--radius-pill);
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.ropeCenterMark {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background-color: rgba(247, 237, 216, 0.25);
-}
-
-.ropeMarker {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  width: 26px;
-  transform: translateX(-50%);
-  background-color: var(--accent-orange);
-  border-radius: var(--radius-pill);
-  box-shadow: 0 0 10px rgba(242, 107, 58, 0.6);
-  transition: left 240ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Controls Grid: 3 equal buttons on laptop, 2 on row 1 + Reset below on phone */
-.demoControlsGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-@media (min-width: 768px) {
-  .demoControlsGrid {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-.demoBtn {
-  height: 48px;
-  min-height: 48px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  background: var(--surface-3);
-  border: 1px solid rgba(247, 237, 216, 0.12);
-  color: var(--text-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-}
-
-.demoBtn:hover {
-  background: rgba(242, 107, 58, 0.15);
-  border-color: var(--accent-orange);
-  color: var(--accent-orange);
-}
-
-@media (max-width: 767px) {
-  .btnReset {
-    grid-column: 1 / -1;
-  }
-}
-
-/* ---------------------------------------------------- */
 /* TERMINAL EXAMPLE WINDOW                              */
 /* ---------------------------------------------------- */
 .terminalCard {
@@ -1355,105 +1580,13 @@
   color: rgba(247, 237, 216, 0.55);
 }
 
-/* ---------------------------------------------------- */
-/* LIGHTBOX                                             */
-/* ---------------------------------------------------- */
-.lightboxOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1200;
-  background-color: rgba(0, 0, 0, 0.92);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  animation: modalFadeIn 180ms ease-out forwards;
-}
-
-.lightboxCloseBtn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(247, 237, 216, 0.1);
-  border: 1px solid rgba(247, 237, 216, 0.2);
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all var(--transition-fast);
-}
-
-.lightboxCloseBtn:hover {
-  background: var(--accent-orange);
-  color: #0B0B0D;
-}
-
-.lightboxNavBtn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(247, 237, 216, 0.1);
-  border: 1px solid rgba(247, 237, 216, 0.2);
-  color: var(--text-primary);
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all var(--transition-fast);
-}
-
-.lightboxNavBtn:hover {
-  background: var(--accent-orange);
-  color: #0B0B0D;
-}
-
-.lightboxPrev {
-  left: 20px;
-}
-
-.lightboxNext {
-  right: 20px;
-}
-
-.lightboxContent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 90vw;
-  max-height: 85vh;
-}
-
-.lightboxImg {
-  max-width: 100%;
-  max-height: 75vh;
-  object-fit: contain;
-  border-radius: 12px;
-  border: 1px solid rgba(247, 237, 216, 0.15);
-}
-
-.lightboxCaption {
-  margin-top: 12px;
-  color: rgba(247, 237, 216, 0.7);
-  font-size: 14px;
-  text-align: center;
-}
-
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .eventCard,
   .detailSheet,
   .circularArrowBadge,
-  .ropeMarker,
+  .ropeMarker28,
+  .ropeFill,
   .tabBtn,
   .panelBackdrop,
   .lightboxOverlay {

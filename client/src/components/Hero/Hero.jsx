@@ -111,6 +111,11 @@ export default function Hero({ onOpenRegister }) {
                 See Events
               </Button>
             </div>
+
+            {/* Centered Laptop in page flow on phone (< 768px) */}
+            <div className={styles.phoneLaptopBlock}>
+              <Laptop width="100%" height="auto" floatVariant="A" hasHalo={false} opacity={0.55} isHero={true} />
+            </div>
           </div>
 
           {/* Right Column: Complete Hardware Laptop without halo */}

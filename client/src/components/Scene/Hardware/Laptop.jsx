@@ -34,10 +34,10 @@ export default function Laptop({
 
   const primary = hexToRgba(color, opacity);
   const primaryFaint = hexToRgba(color, opacity * 0.75);
-  const cream = hexToRgba(THEME.cream, THEME.creamDetailOpacity);
-  const creamFaint = hexToRgba(THEME.cream, THEME.creamDetailOpacity * 0.7);
-  const creamDim = hexToRgba(THEME.cream, THEME.creamDetailOpacity * 0.5);
-  const accent = hexToRgba(color, Math.min(opacity + 0.08, 0.24));
+  const cream = hexToRgba(THEME.cream, opacity > 0.3 ? 0.45 : THEME.creamDetailOpacity);
+  const creamFaint = hexToRgba(THEME.cream, opacity > 0.3 ? 0.35 : THEME.creamDetailOpacity * 0.7);
+  const creamDim = hexToRgba(THEME.cream, opacity > 0.3 ? 0.25 : THEME.creamDetailOpacity * 0.5);
+  const accent = hexToRgba(color, opacity > 0.3 ? 0.55 : Math.min(opacity + 0.08, 0.24));
 
   return (
     <div

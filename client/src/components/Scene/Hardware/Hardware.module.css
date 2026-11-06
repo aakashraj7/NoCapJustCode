@@ -221,57 +221,57 @@
 /* -------------------------------------------------------------------------- */
 @keyframes codeTypeLine1 {
   0%, 4% { width: 0; }
-  20%, 90% { width: 95px; }
-  94%, 100% { width: 0; }
+  20%, 81% { width: 95px; }
+  83%, 100% { width: 0; }
 }
 
 @keyframes codeTypeLine2 {
-  0%, 30% { width: 0; }
-  46%, 90% { width: 105px; }
-  94%, 100% { width: 0; }
+  0%, 25% { width: 0; }
+  41%, 81% { width: 105px; }
+  83%, 100% { width: 0; }
 }
 
 @keyframes codeTypeLine3 {
-  0%, 52% { width: 0; }
-  68%, 90% { width: 100px; }
-  94%, 100% { width: 0; }
+  0%, 47% { width: 0; }
+  63%, 81% { width: 100px; }
+  83%, 100% { width: 0; }
 }
 
-@keyframes strikeDraw1 {
-  0%, 20% { stroke-dashoffset: 95; opacity: 0; }
-  21% { opacity: 1; }
-  28%, 90% { stroke-dashoffset: 0; opacity: 1; }
-  94%, 100% { stroke-dashoffset: 95; opacity: 0; }
+@keyframes strikeScale1 {
+  0%, 20% { transform: scaleX(0); opacity: 0; }
+  20.1% { opacity: 1; transform: scaleX(0); }
+  23%, 81% { transform: scaleX(1); opacity: 1; }
+  83%, 100% { transform: scaleX(0); opacity: 0; }
 }
 
-@keyframes strikeDraw3 {
-  0%, 70% { stroke-dashoffset: 95; opacity: 0; }
-  71% { opacity: 1; }
-  78%, 90% { stroke-dashoffset: 0; opacity: 1; }
-  94%, 100% { stroke-dashoffset: 95; opacity: 0; }
+@keyframes strikeScale3 {
+  0%, 63% { transform: scaleX(0); opacity: 0; }
+  63.1% { opacity: 1; transform: scaleX(0); }
+  66%, 81% { transform: scaleX(1); opacity: 1; }
+  83%, 100% { transform: scaleX(0); opacity: 0; }
 }
 
-@keyframes screenFade {
-  0%, 90% { opacity: 1; }
-  94%, 98% { opacity: 0; }
+@keyframes screenFadeOut {
+  0%, 81% { opacity: 1; }
+  83%, 98% { opacity: 0; }
   100% { opacity: 1; }
 }
 
-@keyframes cursorMove {
+@keyframes cursorSequence {
   0%, 4% { transform: translate(0, 0); opacity: 1; }
-  20% { transform: translate(80px, 0); opacity: 1; }
-  28% { transform: translate(80px, 0); opacity: 0.6; }
-  32% { transform: translate(6px, 14px); opacity: 1; }
-  46% { transform: translate(92px, 14px); opacity: 1; }
-  52% { transform: translate(92px, 14px); opacity: 0.6; }
-  54% { transform: translate(6px, 28px); opacity: 1; }
-  68% { transform: translate(86px, 28px); opacity: 1; }
-  90% { transform: translate(86px, 28px); opacity: 1; }
-  94%, 100% { transform: translate(0, 0); opacity: 0; }
+  20% { transform: translate(82px, 0); opacity: 1; }
+  23% { transform: translate(82px, 0); opacity: 0.6; }
+  25% { transform: translate(6px, 14px); opacity: 1; }
+  41% { transform: translate(98px, 14px); opacity: 1; }
+  46% { transform: translate(98px, 14px); opacity: 0.6; }
+  47% { transform: translate(6px, 28px); opacity: 1; }
+  63% { transform: translate(92px, 28px); opacity: 1; }
+  81% { transform: translate(92px, 28px); opacity: 1; }
+  83%, 100% { transform: translate(0, 0); opacity: 0; }
 }
 
 .screenCodeGroup {
-  animation: screenFade 10s ease-in-out infinite;
+  animation: screenFadeOut 10s ease-in-out infinite;
 }
 
 .typeLine1 {
@@ -279,27 +279,23 @@
 }
 
 .typeLine2 {
-  animation: codeTypeLine2 10s steps(15) infinite;
+  animation: codeTypeLine2 10s steps(13) infinite;
 }
 
 .typeLine3 {
-  animation: codeTypeLine3 10s steps(14) infinite;
+  animation: codeTypeLine3 10s steps(13) infinite;
 }
 
 .strike1 {
-  stroke-dasharray: 95;
-  stroke-dashoffset: 95;
-  animation: strikeDraw1 10s ease-out infinite;
+  animation: strikeScale1 10s ease-out infinite;
 }
 
 .strike3 {
-  stroke-dasharray: 95;
-  stroke-dashoffset: 95;
-  animation: strikeDraw3 10s ease-out infinite;
+  animation: strikeScale3 10s ease-out infinite;
 }
 
 .codeCursor {
-  animation: cursorMove 10s ease-in-out infinite, hwBlink 0.8s step-start infinite;
+  animation: cursorSequence 10s ease-in-out infinite, hwBlink 0.8s step-start infinite;
 }
 
 /* Off-screen pause via IntersectionObserver or tab-hidden */
@@ -337,7 +333,10 @@
   }
   .strike1,
   .strike3 {
-    stroke-dashoffset: 0 !important;
+    transform: scaleX(1) !important;
     opacity: 1 !important;
+  }
+  .codeCursor {
+    display: none !important;
   }
 }

@@ -73,31 +73,31 @@ export const SECTION_SCENES = {
   hero: {
     desktop: {
       big: [
-        { type: 'Cpu', size: 100, pos: { top: '24px', left: '24px' }, rotate: 0, float: 'C', color: THEME.orange },
-        { type: 'Gpu', size: 210, pos: { bottom: '72px', right: '36px' }, rotate: 0, float: 'B', color: THEME.yellow },
+        { type: 'Cpu', size: 90, pos: { top: '32px', left: '28px' }, rotate: 0, float: 'C', color: THEME.orange },
+        { type: 'Gpu', size: 190, pos: { top: '160px', right: '32px' }, rotate: 0, float: 'B', color: THEME.yellow },
       ],
       small: [
-        { type: 'Screw', size: 36, pos: { top: '32px', right: '48px' }, rotate: 0, spin: 85, color: THEME.orange },
-        { type: 'HexBolt', size: 38, pos: { bottom: '72px', left: '48px' }, rotate: 0, spin: 105, color: THEME.yellow },
-        { type: 'TinyChip', size: 36, pos: { top: '48%', left: '20px' }, rotate: 0, color: THEME.orange },
+        { type: 'Screw', size: 32, pos: { top: '32px', right: '48px' }, rotate: 0, spin: 85, color: THEME.orange },
+        { type: 'HexBolt', size: 34, pos: { top: '160px', left: '32px' }, rotate: 0, spin: 105, color: THEME.yellow },
+        { type: 'TinyChip', size: 32, pos: { top: '280px', left: '24px' }, rotate: 0, color: THEME.orange },
       ],
     },
     tablet: {
       big: [
-        { type: 'Laptop', size: 190, pos: { bottom: '72px', right: '36px' }, rotate: 0, float: 'A', color: THEME.orange },
+        { type: 'Laptop', size: 170, pos: { top: '160px', right: '32px' }, rotate: 0, float: 'A', color: THEME.orange },
       ],
       small: [
-        { type: 'Screw', size: 36, pos: { top: '32px', left: '36px' }, rotate: 0, spin: 85, color: THEME.orange },
-        { type: 'HexBolt', size: 38, pos: { top: '36px', right: '48px' }, rotate: 0, spin: 105, color: THEME.yellow },
-        { type: 'Standoff', size: 38, pos: { bottom: '72px', left: '48px' }, rotate: 0, color: THEME.yellow },
+        { type: 'Screw', size: 32, pos: { top: '32px', left: '32px' }, rotate: 0, spin: 85, color: THEME.orange },
+        { type: 'HexBolt', size: 34, pos: { top: '36px', right: '40px' }, rotate: 0, spin: 105, color: THEME.yellow },
+        { type: 'Standoff', size: 34, pos: { top: '240px', left: '28px' }, rotate: 0, color: THEME.yellow },
       ],
     },
     phone: {
       big: [
-        { type: 'Cpu', size: 75, pos: { top: '18px', right: '20px' }, rotate: 0, float: 'A', color: THEME.orange },
+        { type: 'Cpu', size: 55, pos: { top: '24px', right: '16px' }, rotate: 0, float: 'A', color: THEME.orange },
       ],
       small: [
-        { type: 'Screw', size: 30, pos: { top: '22px', left: '20px' }, rotate: 0, spin: 80, color: THEME.orange },
+        { type: 'Screw', size: 28, pos: { top: '24px', left: '16px' }, rotate: 0, spin: 80, color: THEME.orange },
       ],
     },
   },
@@ -105,32 +105,32 @@ export const SECTION_SCENES = {
   about: {
     desktop: {
       big: [
-        { type: 'Cpu', size: 120, pos: { top: '24px', left: '36px' }, rotate: 0, float: 'B', color: THEME.orange },
-        { type: 'M2Ssd', size: 180, pos: { bottom: '24px', right: '36px' }, rotate: 0, float: 'C', color: THEME.yellow },
+        { type: 'Cpu', size: 95, pos: { top: '140px', left: '28px' }, rotate: 0, float: 'B', color: THEME.orange },
+        { type: 'M2Ssd', size: 160, pos: { bottom: '24px', right: '32px' }, rotate: 0, float: 'C', color: THEME.yellow },
       ],
       small: [
-        { type: 'SingleKeycap', size: 40, pos: { top: '28px', right: '48px' }, rotate: 0, color: THEME.yellow },
-        { type: 'Standoff', size: 40, pos: { bottom: '28px', left: '48px' }, rotate: 0, color: THEME.orange },
-        { type: 'Screw', size: 34, pos: { top: '50%', right: '20px' }, rotate: 0, spin: 75, color: THEME.yellow },
+        { type: 'SingleKeycap', size: 36, pos: { top: '28px', right: '40px' }, rotate: 0, color: THEME.yellow },
+        { type: 'Standoff', size: 36, pos: { bottom: '28px', left: '40px' }, rotate: 0, color: THEME.orange },
+        { type: 'Screw', size: 30, pos: { top: '50%', right: '20px' }, rotate: 0, spin: 75, color: THEME.yellow },
       ],
     },
     tablet: {
       big: [
-        { type: 'Cpu', size: 110, pos: { top: '24px', right: '36px' }, rotate: 0, float: 'B', color: THEME.orange },
+        { type: 'Cpu', size: 90, pos: { top: '140px', right: '28px' }, rotate: 0, float: 'B', color: THEME.orange },
       ],
       small: [
-        { type: 'SingleKeycap', size: 38, pos: { top: '24px', left: '36px' }, rotate: 0, color: THEME.yellow },
-        { type: 'Standoff', size: 38, pos: { bottom: '24px', left: '36px' }, rotate: 0, color: THEME.orange },
-        { type: 'Screw', size: 32, pos: { bottom: '24px', right: '36px' }, rotate: 0, spin: 90, color: THEME.yellow },
+        { type: 'SingleKeycap', size: 34, pos: { top: '24px', left: '32px' }, rotate: 0, color: THEME.yellow },
+        { type: 'Standoff', size: 34, pos: { bottom: '24px', left: '32px' }, rotate: 0, color: THEME.orange },
+        { type: 'Screw', size: 30, pos: { bottom: '24px', right: '32px' }, rotate: 0, spin: 90, color: THEME.yellow },
       ],
     },
     phone: {
       big: [
-        { type: 'Cpu', size: 75, pos: { top: '18px', right: '20px' }, rotate: 0, float: 'B', color: THEME.orange },
+        { type: 'Cpu', size: 65, pos: { top: '18px', right: '18px' }, rotate: 0, float: 'B', color: THEME.orange },
       ],
       small: [
-        { type: 'SingleKeycap', size: 32, pos: { top: '22px', left: '20px' }, rotate: 0, color: THEME.yellow },
-        { type: 'Screw', size: 30, pos: { bottom: '22px', left: '20px' }, rotate: 0, spin: 85, color: THEME.orange },
+        { type: 'SingleKeycap', size: 30, pos: { top: '22px', left: '18px' }, rotate: 0, color: THEME.yellow },
+        { type: 'Screw', size: 28, pos: { bottom: '22px', left: '18px' }, rotate: 0, spin: 85, color: THEME.orange },
       ],
     },
   },
@@ -138,32 +138,32 @@ export const SECTION_SCENES = {
   schedule: {
     desktop: {
       big: [
-        { type: 'RamStick', size: 180, pos: { top: '24px', right: '36px' }, rotate: 0, float: 'C', color: THEME.orange },
-        { type: 'Keyboard', size: 210, pos: { bottom: '24px', left: '36px' }, rotate: 0, float: 'A', color: THEME.yellow },
+        { type: 'RamStick', size: 160, pos: { top: '24px', right: '32px' }, rotate: 0, float: 'C', color: THEME.orange },
+        { type: 'Keyboard', size: 180, pos: { bottom: '24px', left: '32px' }, rotate: 0, float: 'A', color: THEME.yellow },
       ],
       small: [
-        { type: 'HexBolt', size: 38, pos: { top: '28px', left: '48px' }, rotate: 0, spin: 95, color: THEME.yellow },
-        { type: 'JumperPin', size: 38, pos: { bottom: '28px', right: '48px' }, rotate: 0, color: THEME.orange },
-        { type: 'SdCard', size: 40, pos: { top: '50%', left: '20px' }, rotate: 0, color: THEME.yellow },
+        { type: 'HexBolt', size: 36, pos: { top: '28px', left: '40px' }, rotate: 0, spin: 95, color: THEME.yellow },
+        { type: 'JumperPin', size: 36, pos: { bottom: '28px', right: '40px' }, rotate: 0, color: THEME.orange },
+        { type: 'SdCard', size: 36, pos: { top: '50%', left: '20px' }, rotate: 0, color: THEME.yellow },
       ],
     },
     tablet: {
       big: [
-        { type: 'Keyboard', size: 190, pos: { bottom: '28px', right: '36px' }, rotate: 0, float: 'A', color: THEME.yellow },
+        { type: 'Keyboard', size: 160, pos: { top: '28px', right: '28px' }, rotate: 0, float: 'A', color: THEME.yellow },
       ],
       small: [
-        { type: 'HexBolt', size: 36, pos: { top: '24px', left: '36px' }, rotate: 0, spin: 95, color: THEME.yellow },
-        { type: 'JumperPin', size: 36, pos: { top: '24px', right: '40px' }, rotate: 0, color: THEME.orange },
-        { type: 'SdCard', size: 38, pos: { bottom: '28px', left: '36px' }, rotate: 0, color: THEME.yellow },
+        { type: 'HexBolt', size: 34, pos: { top: '24px', left: '32px' }, rotate: 0, spin: 95, color: THEME.yellow },
+        { type: 'JumperPin', size: 34, pos: { top: '24px', right: '36px' }, rotate: 0, color: THEME.orange },
+        { type: 'SdCard', size: 34, pos: { bottom: '24px', left: '32px' }, rotate: 0, color: THEME.yellow },
       ],
     },
     phone: {
       big: [
-        { type: 'RamStick', size: 120, pos: { top: '20px', right: '20px' }, rotate: 0, float: 'A', color: THEME.yellow },
+        { type: 'RamStick', size: 110, pos: { top: '20px', right: '18px' }, rotate: 0, float: 'A', color: THEME.yellow },
       ],
       small: [
-        { type: 'HexBolt', size: 32, pos: { top: '22px', left: '20px' }, rotate: 0, spin: 90, color: THEME.yellow },
-        { type: 'JumperPin', size: 32, pos: { bottom: '22px', right: '20px' }, rotate: 0, color: THEME.orange },
+        { type: 'HexBolt', size: 30, pos: { top: '22px', left: '18px' }, rotate: 0, spin: 90, color: THEME.yellow },
+        { type: 'JumperPin', size: 30, pos: { bottom: '22px', right: '18px' }, rotate: 0, color: THEME.orange },
       ],
     },
   },
@@ -171,32 +171,32 @@ export const SECTION_SCENES = {
   events: {
     desktop: {
       big: [
-        { type: 'Gpu', size: 190, pos: { top: '24px', left: '36px' }, rotate: 0, float: 'B', color: THEME.orange },
-        { type: 'Monitor', size: 170, pos: { bottom: '24px', right: '36px' }, rotate: 0, float: 'A', color: THEME.yellow },
+        { type: 'Gpu', size: 160, pos: { top: '140px', left: '28px' }, rotate: 0, float: 'B', color: THEME.orange },
+        { type: 'Monitor', size: 140, pos: { top: '140px', right: '28px' }, rotate: 0, float: 'A', color: THEME.yellow },
       ],
       small: [
-        { type: 'UsbDrive', size: 44, pos: { top: '28px', right: '48px' }, rotate: 0, color: THEME.orange },
-        { type: 'TinyChip', size: 36, pos: { bottom: '28px', left: '48px' }, rotate: 0, color: THEME.yellow },
-        { type: 'Screw', size: 34, pos: { top: '50%', right: '20px' }, rotate: 0, spin: 80, color: THEME.orange },
+        { type: 'UsbDrive', size: 38, pos: { top: '28px', right: '40px' }, rotate: 0, color: THEME.orange },
+        { type: 'TinyChip', size: 32, pos: { bottom: '28px', left: '40px' }, rotate: 0, color: THEME.yellow },
+        { type: 'Screw', size: 30, pos: { top: '50%', right: '18px' }, rotate: 0, spin: 80, color: THEME.orange },
       ],
     },
     tablet: {
       big: [
-        { type: 'Monitor', size: 150, pos: { bottom: '28px', left: '36px' }, rotate: 0, float: 'A', color: THEME.yellow },
+        { type: 'Monitor', size: 130, pos: { top: '140px', left: '28px' }, rotate: 0, float: 'A', color: THEME.yellow },
       ],
       small: [
-        { type: 'UsbDrive', size: 40, pos: { top: '28px', right: '40px' }, rotate: 0, color: THEME.orange },
-        { type: 'TinyChip', size: 36, pos: { top: '28px', left: '40px' }, rotate: 0, color: THEME.yellow },
-        { type: 'Screw', size: 32, pos: { bottom: '28px', right: '40px' }, rotate: 0, spin: 80, color: THEME.orange },
+        { type: 'UsbDrive', size: 36, pos: { top: '28px', right: '36px' }, rotate: 0, color: THEME.orange },
+        { type: 'TinyChip', size: 32, pos: { top: '28px', left: '36px' }, rotate: 0, color: THEME.yellow },
+        { type: 'Screw', size: 30, pos: { bottom: '28px', right: '36px' }, rotate: 0, spin: 80, color: THEME.orange },
       ],
     },
     phone: {
       big: [
-        { type: 'Monitor', size: 100, pos: { top: '18px', right: '20px' }, rotate: 0, float: 'A', color: THEME.yellow },
+        { type: 'Monitor', size: 90, pos: { top: '18px', right: '18px' }, rotate: 0, float: 'A', color: THEME.yellow },
       ],
       small: [
-        { type: 'UsbDrive', size: 34, pos: { top: '22px', left: '20px' }, rotate: 0, color: THEME.orange },
-        { type: 'Screw', size: 30, pos: { bottom: '22px', left: '20px' }, rotate: 0, spin: 85, color: THEME.yellow },
+        { type: 'UsbDrive', size: 30, pos: { top: '22px', left: '18px' }, rotate: 0, color: THEME.orange },
+        { type: 'Screw', size: 28, pos: { bottom: '22px', left: '18px' }, rotate: 0, spin: 85, color: THEME.yellow },
       ],
     },
   },
@@ -204,32 +204,32 @@ export const SECTION_SCENES = {
   footer: {
     desktop: {
       big: [
-        { type: 'CaseFan', size: 100, pos: { top: '24px', right: '48px' }, rotate: 0, float: 'C', color: THEME.orange },
-        { type: 'Laptop', size: 170, pos: { bottom: '24px', left: '48px' }, rotate: 0, float: 'A', color: THEME.yellow },
+        { type: 'CaseFan', size: 85, pos: { top: '16px', right: '36px' }, rotate: 0, float: 'C', color: THEME.orange },
+        { type: 'Laptop', size: 140, pos: { top: '16px', left: '36px' }, rotate: 0, float: 'A', color: THEME.yellow },
       ],
       small: [
-        { type: 'HexBolt', size: 38, pos: { top: '24px', left: '48px' }, rotate: 0, spin: 110, color: THEME.yellow },
-        { type: 'Standoff', size: 38, pos: { bottom: '24px', right: '48px' }, rotate: 0, color: THEME.orange },
-        { type: 'Screw', size: 34, pos: { top: '50%', right: '20px' }, rotate: 0, spin: 90, color: THEME.yellow },
+        { type: 'HexBolt', size: 34, pos: { bottom: '20px', left: '36px' }, rotate: 0, spin: 110, color: THEME.yellow },
+        { type: 'Standoff', size: 34, pos: { bottom: '20px', right: '220px' }, rotate: 0, color: THEME.orange },
+        { type: 'Screw', size: 30, pos: { top: '50%', right: '18px' }, rotate: 0, spin: 90, color: THEME.yellow },
       ],
     },
     tablet: {
       big: [
-        { type: 'CaseFan', size: 100, pos: { bottom: '28px', right: '36px' }, rotate: 0, float: 'C', color: THEME.orange },
+        { type: 'CaseFan', size: 80, pos: { top: '16px', right: '32px' }, rotate: 0, float: 'C', color: THEME.orange },
       ],
       small: [
-        { type: 'HexBolt', size: 36, pos: { top: '28px', left: '40px' }, rotate: 0, spin: 105, color: THEME.yellow },
-        { type: 'Standoff', size: 38, pos: { top: '28px', right: '48px' }, rotate: 0, color: THEME.orange },
-        { type: 'Screw', size: 34, pos: { bottom: '28px', left: '48px' }, rotate: 0, spin: 85, color: THEME.yellow },
+        { type: 'HexBolt', size: 32, pos: { top: '24px', left: '32px' }, rotate: 0, spin: 105, color: THEME.yellow },
+        { type: 'Standoff', size: 34, pos: { bottom: '20px', left: '32px' }, rotate: 0, color: THEME.orange },
+        { type: 'Screw', size: 30, pos: { bottom: '20px', right: '220px' }, rotate: 0, spin: 85, color: THEME.yellow },
       ],
     },
     phone: {
       big: [
-        { type: 'CaseFan', size: 75, pos: { top: '18px', right: '20px' }, rotate: 0, float: 'C', color: THEME.orange },
+        { type: 'CaseFan', size: 65, pos: { bottom: '16px', right: '18px' }, rotate: 0, float: 'C', color: THEME.orange },
       ],
       small: [
-        { type: 'HexBolt', size: 32, pos: { top: '22px', left: '20px' }, rotate: 0, spin: 95, color: THEME.yellow },
-        { type: 'Screw', size: 30, pos: { bottom: '22px', left: '20px' }, rotate: 0, spin: 80, color: THEME.orange },
+        { type: 'HexBolt', size: 28, pos: { top: '18px', left: '18px' }, rotate: 0, spin: 95, color: THEME.yellow },
+        { type: 'Screw', size: 26, pos: { bottom: '18px', left: '18px' }, rotate: 0, spin: 80, color: THEME.orange },
       ],
     },
   },
