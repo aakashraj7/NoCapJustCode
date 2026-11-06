@@ -4,6 +4,9 @@
 
 export const CLUB_NAME = "Celestius";
 
+// PLACEHOLDER: confirm with organizers
+export const EVENT_YEAR = null;
+
 export const PAIR_SIZE = 2;
 
 export const PRICING = {

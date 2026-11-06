@@ -5,6 +5,7 @@ import navbarLogoWebp from '../../assets/logo-navbar.webp';
 import navbarLogoPng from '../../assets/logo-navbar.png';
 import Button from '../ui/Button.jsx';
 import { useScrollSpy } from '../../hooks/useScrollSpy.js';
+import { EVENT_YEAR } from '../../data/event.js';
 
 export default function Navbar({ onOpenRegister }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,7 +37,7 @@ export default function Navbar({ onOpenRegister }) {
             <img src={navbarLogoPng} alt="LARPER OR CODER Logo" className={styles.brandLogo} width={160} height={80} />
           </picture>
           <span className={styles.brandTitle}>LARPER OR CODER</span>
-          <span className={styles.brandBadge}>2026</span>
+          {EVENT_YEAR && <span className={styles.brandBadge}>{EVENT_YEAR}</span>}
         </a>
 
         {/* Desktop Links */}
