@@ -1,11 +1,18 @@
 /* client/src/components/Intro/Intro.module.css */
+
 .overlay {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  background-color: #000000;
+  background-color: #050507;
+  /* Top radial orange tint + edge vignette + subtle dot texture */
+  background-image:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(242, 107, 58, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.88) 100%),
+    radial-gradient(rgba(247, 237, 216, 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px;
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -13,7 +20,8 @@
   justify-content: center;
   padding: 1.5rem;
   overflow: hidden;
-  transition: opacity 400ms ease-out, visibility 400ms ease-out;
+  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), visibility 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
 }
 
 .overlay.fadingOut {
@@ -21,13 +29,80 @@
   pointer-events: none;
 }
 
-/* Skip Button - Always top right, 44px tall */
-.skipButton {
+/* Background canvas for floating code glyphs */
+.particleCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Screen wash for green flash (peak opacity 0.28, 3 flashes in 1s) */
+.greenWash {
+  position: absolute;
+  inset: 0;
+  background-color: #3DDC84;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  animation: greenFlashWash 1000ms ease-in-out 1;
+}
+
+@keyframes greenFlashWash {
+  0% { opacity: 0; }
+  16% { opacity: 0.28; }
+  33% { opacity: 0; }
+  49% { opacity: 0.28; }
+  66% { opacity: 0; }
+  83% { opacity: 0.28; }
+  100% { opacity: 0; }
+}
+
+/* Top Controls */
+.topControls {
   position: absolute;
   top: 1.5rem;
+  left: 1.5rem;
   right: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.soundButton {
+  width: 44px;
   height: 44px;
-  min-width: 80px;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 20, 22, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.soundButton:hover {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+  background: var(--surface-2);
+}
+
+.soundButton.soundActive {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+.skipButton {
+  height: 44px;
+  min-width: 88px;
   padding: 0 1.25rem;
   display: inline-flex;
   align-items: center;
@@ -35,285 +110,407 @@
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-primary);
   background: rgba(20, 20, 22, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-pill);
   cursor: pointer;
-  z-index: 10000;
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .skipButton:hover {
   border-color: var(--accent-orange);
+  color: var(--accent-orange);
   background: var(--surface-2);
 }
 
+/* Main Stage Container */
 .stage {
+  position: relative;
+  z-index: 10;
   width: 100%;
-  max-width: 560px;
+  max-width: 760px;
+  min-height: 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 280px;
 }
 
-/* Loading section */
-.loadingBox {
+/* Loader Area (contains ALERT banner + Percentage + Segmented Bar + Status Lines) */
+.loaderArea {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1.5rem;
+  animation: fadeIn 240ms ease-out;
 }
 
-.loadingLabel {
-  font-family: var(--font-intro-pixel);
-  font-size: 0.85rem;
-  color: var(--text-primary);
-  letter-spacing: 0.05em;
+.loaderArea.clearing {
+  animation: fadeOutScale 400ms ease-in forwards;
 }
 
-.progressBarContainer {
-  width: 100%;
-  max-width: 380px;
-  height: 12px;
-  background-color: #141416;
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-  border: 1px solid var(--border-subtle);
-  position: relative;
-}
-
-.progressBarFill {
-  height: 100%;
-  background-color: var(--accent-orange);
-  transition: width 80ms linear, background-color 0s;
-}
-
-.progressBarFill.green {
-  background-color: var(--accent-green);
-}
-
-/* Larper Detected Popup Box */
-.popupWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1.5rem;
-  animation: popIn 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.popupWrapper.poppingOut {
-  animation: popOut 180ms ease-in forwards;
-}
-
-.popupBox {
-  position: relative;
+/* Large Alert Banner - Slides in ABOVE the loader */
+.alertBanner {
+  width: 90%;
+  max-width: 680px;
   background-color: #F7EDD8;
-  color: #000000;
-  padding: 0.85rem 1.75rem;
-  border-radius: 8px;
+  color: #F26B3A;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 0 3px rgba(242, 107, 58, 0.35);
+  animation: slideInFromTop 300ms cubic-bezier(0.16, 1, 0.3, 1), alertPulseOrange 1.2s ease-in-out infinite, alertShake 3s ease-in-out infinite;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
+}
+
+.alertBannerGreen {
+  background-color: #0c1f13;
+  color: #3DDC84;
+  border: 2px solid #3DDC84;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 0 3px rgba(61, 220, 132, 0.5);
+  animation: alertPulseGreen 1.2s ease-in-out infinite;
+}
+
+.hazardStripes {
+  height: 10px;
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #F26B3A,
+    #F26B3A 12px,
+    #F5A81C 12px,
+    #F5A81C 24px
+  );
+}
+
+.alertBannerGreen .hazardStripes {
+  background: repeating-linear-gradient(
+    45deg,
+    #3DDC84,
+    #3DDC84 12px,
+    #17753b 12px,
+    #17753b 24px
+  );
+}
+
+.alertContent {
+  padding: 1.15rem 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 3px rgba(242, 107, 58, 0.4);
-  animation: blinkOrange 1s ease-in-out infinite;
+  gap: 1rem;
 }
 
-.popupBox.greenCut {
-  box-shadow: 0 0 0 3px rgba(61, 220, 132, 0.7);
-  animation: none;
+.alertIcon {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  line-height: 1;
 }
 
-/* Orange/Green Side Handles */
-.sideHandleLeft,
-.sideHandleRight {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 8px;
-  height: 20px;
-  background-color: var(--accent-orange);
-  border-radius: 2px;
-}
-
-.sideHandleLeft {
-  left: -8px;
-}
-
-.sideHandleRight {
-  right: -8px;
-}
-
-.popupBox.greenCut .sideHandleLeft,
-.popupBox.greenCut .sideHandleRight {
-  background-color: var(--accent-green);
-}
-
-.popupText {
+.alertText {
   font-family: var(--font-intro-pixel);
-  font-size: 0.8rem;
+  font-size: clamp(1.15rem, 5vw, 2.4rem);
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  line-height: 1.15;
 }
 
-/* Logo Presentation */
-.logoScene {
+/* Very Large Percentage Counter */
+.counterRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.5rem, 13vw, 7.5rem);
+  line-height: 0.95;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.counterPercent {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  font-weight: 600;
+  color: var(--accent-orange);
+  margin-left: 0.35rem;
+}
+
+.counterRow.greenText .counterPercent {
+  color: #3DDC84;
+}
+
+/* Thick Segmented Bar made of small blocks */
+.segmentedBar {
+  width: 100%;
+  max-width: 520px;
+  height: 24px;
+  background-color: #0d0d11;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 3px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.segmentBlock {
+  flex: 1;
+  height: 100%;
+  background-color: #1a1a20;
+  border-radius: 2px;
+  transition: background-color 60ms linear, box-shadow 60ms linear;
+}
+
+.segmentBlock.filled {
+  background-color: var(--accent-orange);
+}
+
+.segmentBlock.tip {
+  background-color: #FFA575;
+  box-shadow: 0 0 10px rgba(255, 165, 117, 0.9);
+}
+
+.segmentedBar.greenMode .segmentBlock.filled {
+  background-color: #3DDC84;
+}
+
+.segmentedBar.greenMode .segmentBlock.tip {
+  background-color: #8CFFBD;
+  box-shadow: 0 0 10px rgba(140, 255, 189, 0.9);
+}
+
+/* Status Lines typing under the loader */
+.statusConsole {
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
   align-items: center;
-  gap: 0.75rem;
-  user-select: none;
+  min-height: 52px;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
 }
 
-.larperRow {
-  font-family: var(--font-intro-pixel);
-  font-size: clamp(1.75rem, 5vw, 3rem);
-  color: var(--accent-orange);
-  letter-spacing: 0.08em;
-  line-height: 1.1;
-  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
-}
-
-.orRow {
+.statusLine {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-intro-pixel);
-  font-size: 0.85rem;
-  color: var(--accent-yellow);
 }
 
-.orBracket {
-  letter-spacing: 0.1em;
+.statusPrompt {
+  color: var(--accent-orange);
 }
 
-.orBadge {
-  background: var(--accent-yellow);
-  color: #000000;
-  padding: 0.2rem 0.5rem;
-  border-radius: 3px;
-  transform: skewX(-12deg);
-  font-weight: 700;
-}
+/* ------------------------------------------------------------- */
+/* LOGO TYPING & SWAP SCENE (Recreated in Real Logo Style)       */
+/* ------------------------------------------------------------- */
 
-.coderRow {
-  font-family: var(--font-intro-pixel);
-  font-size: clamp(1.75rem, 5vw, 3rem);
-  color: var(--text-primary);
-  letter-spacing: 0.08em;
-  line-height: 1.1;
-  display: inline-flex;
-  align-items: baseline;
-}
-
-.cursor {
-  display: inline-block;
-  width: 0.6em;
-  height: 0.15em;
-  background-color: var(--accent-yellow);
-  margin-left: 0.1em;
-  animation: blinkCursor 800ms steps(1, start) infinite;
-}
-
-/* Presenter Scene */
-.presenterScene {
+.logoContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 100%;
+  animation: fadeIn 300ms ease-out;
 }
 
-.presenterLabel {
+/* Top row: LARPER / PRESENTED */
+.logoRowTop {
   font-family: var(--font-intro-pixel);
-  font-size: clamp(0.95rem, 2.5vw, 1.35rem);
-  color: var(--text-primary);
-  line-height: 1.6;
-  letter-spacing: 0.06em;
-}
-
-.presenterHighlight {
-  color: var(--accent-orange);
-  font-weight: 700;
-}
-
-/* Enter Button (pulsing) */
-.enterButton {
-  margin-top: 2rem;
-  height: 52px;
-  padding: 0 2.5rem;
-  border-radius: var(--radius-pill);
-  background-color: var(--accent-orange);
-  color: #000000;
-  font-family: var(--font-intro-pixel);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: clamp(1.2rem, 5.2vw, 2.85rem);
   letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  border: none;
-  animation: pulseButton 1.5s ease-in-out infinite;
-  transition: transform var(--transition-fast), background-color var(--transition-fast);
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
-.enterButton:hover {
-  background-color: var(--accent-orange-hover);
-  transform: scale(1.04);
+.logoRowTop.larperColor {
+  color: #F26B3A;
+  text-shadow: 3px 3px 0 #7A280D, 6px 6px 0 #000000;
+}
+
+.logoRowTop.presentedColor {
+  color: #F7EDD8;
+  text-shadow: 3px 3px 0 #3b3a36, 6px 6px 0 #000000;
+}
+
+/* Middle Row: Bracket Corners + Yellow Checkers + Dashed Lines + Slanted Tag */
+.logoRowMiddle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 0.5rem;
+}
+
+.bracketLeft,
+.bracketRight {
+  font-family: var(--font-intro-pixel);
+  font-size: clamp(0.65rem, 2vw, 0.85rem);
+  color: var(--accent-yellow);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.dashedLine {
+  flex: 1;
+  height: 2px;
+  border-top: 2px dashed var(--accent-yellow);
+}
+
+.checkerBox {
+  width: 12px;
+  height: 12px;
+  background-image:
+    linear-gradient(45deg, var(--accent-yellow) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--accent-yellow) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--accent-yellow) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--accent-yellow) 75%);
+  background-size: 6px 6px;
+  background-position: 0 0, 0 3px, 3px -3px, -3px 0;
+  background-color: #050507;
+  border: 1px solid var(--accent-yellow);
+}
+
+.slantedBadge {
+  background-color: #F7EDD8;
+  color: #050507;
+  padding: 0.25rem 0.85rem;
+  border-radius: 3px;
+  transform: skewX(-14deg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+.badgeText {
+  font-family: var(--font-intro-pixel);
+  font-size: clamp(0.75rem, 2.5vw, 1.1rem);
+  font-weight: 700;
+  transform: skewX(14deg);
+  letter-spacing: 0.05em;
+}
+
+/* Bottom Row: CODER / CELESTIUS + Underscore Cursor */
+.logoRowBottom {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  font-family: var(--font-intro-pixel);
+  font-size: clamp(1.2rem, 5.2vw, 2.85rem);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.logoRowBottom.coderColor {
+  color: #F7EDD8;
+  text-shadow: 3px 3px 0 #3b3a36, 6px 6px 0 #000000;
+}
+
+.logoRowBottom.celestiusColor {
+  color: #F26B3A;
+  text-shadow: 3px 3px 0 #7A280D, 6px 6px 0 #000000;
+}
+
+.cursorUnderscore {
+  display: inline-block;
+  width: 0.65em;
+  height: 0.18em;
+  background-color: var(--accent-yellow);
+  margin-left: 0.15em;
+  animation: blinkCursor 750ms steps(1, start) infinite;
+  box-shadow: 0 0 6px rgba(245, 168, 28, 0.6);
 }
 
 /* Keyframes */
-@keyframes popIn {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOutScale {
   from {
-    transform: scale(0.7);
-    opacity: 0;
+    opacity: 1;
+    transform: scale(1);
   }
   to {
-    transform: scale(1);
-    opacity: 1;
+    opacity: 0;
+    transform: scale(0.95);
   }
 }
 
-@keyframes popOut {
+@keyframes slideInFromTop {
   from {
-    transform: scale(1);
-    opacity: 1;
+    opacity: 0;
+    transform: translateY(-28px);
   }
   to {
-    transform: scale(0);
-    opacity: 0;
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes blinkOrange {
+@keyframes alertPulseOrange {
   0%, 100% {
-    box-shadow: 0 0 0 3px rgba(242, 107, 58, 0.2);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 0 3px rgba(242, 107, 58, 0.25);
   }
   50% {
-    box-shadow: 0 0 0 7px rgba(242, 107, 58, 0.7);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 0 8px rgba(242, 107, 58, 0.65);
   }
+}
+
+@keyframes alertPulseGreen {
+  0%, 100% {
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 0 3px rgba(61, 220, 132, 0.35);
+  }
+  50% {
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 0 8px rgba(61, 220, 132, 0.75);
+  }
+}
+
+@keyframes alertShake {
+  0%, 100% { transform: translate(0, 0); }
+  2% { transform: translate(-2px, 1px); }
+  4% { transform: translate(2px, -1px); }
+  6% { transform: translate(-1px, 2px); }
+  8% { transform: translate(1px, -2px); }
+  10% { transform: translate(0, 0); }
 }
 
 @keyframes blinkCursor {
-  0%, 50% {
-    opacity: 1;
-  }
-  50.01%, 100% {
-    opacity: 0;
-  }
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
 }
 
-@keyframes pulseButton {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(242, 107, 58, 0.5);
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    transition: none !important;
   }
-  50% {
-    box-shadow: 0 0 0 14px rgba(242, 107, 58, 0);
+  .alertBanner {
+    animation: none !important;
+  }
+  .greenWash {
+    display: none !important;
+  }
+  .cursorUnderscore {
+    animation: none !important;
+    opacity: 1 !important;
   }
 }
