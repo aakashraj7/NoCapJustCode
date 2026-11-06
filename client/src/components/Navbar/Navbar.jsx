@@ -14,7 +14,6 @@ export default function Navbar({ onOpenRegister }) {
   const toggleRef = useRef(null);
   const menuRef = useRef(null);
   const firstLinkRef = useRef(null);
-  const prevOpenRef = useRef(false);
 
   const activeSection = useScrollSpy(['hero', 'about', 'schedule', 'events', 'connect']);
 
@@ -25,27 +24,33 @@ export default function Navbar({ onOpenRegister }) {
     { label: 'Connect', href: '#connect', id: 'connect' },
   ];
 
-  // Animate open / close (180ms) and manage focus
-  useEffect(() => {
-    let timer;
-    if (mobileMenuOpen) {
-      setMenuMounted(true);
+  const closeMenu = useCallback(() => {
+    setMobileMenuOpen(false);
+    setMenuActive(false);
+    setTimeout(() => {
+      setMenuMounted(false);
+      toggleRef.current?.focus();
+    }, 180);
+  }, []);
+
+  const openMenu = () => {
+    setMobileMenuOpen(true);
+    setMenuMounted(true);
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setMenuActive(true);
-          firstLinkRef.current?.focus();
-        });
+        setMenuActive(true);
+        firstLinkRef.current?.focus();
       });
-    } else if (prevOpenRef.current) {
-      setMenuActive(false);
-      timer = setTimeout(() => {
-        setMenuMounted(false);
-        toggleRef.current?.focus();
-      }, 180);
+    });
+  };
+
+  const toggleMenu = () => {
+    if (mobileMenuOpen) {
+      closeMenu();
+    } else {
+      openMenu();
     }
-    prevOpenRef.current = mobileMenuOpen;
-    return () => clearTimeout(timer);
-  }, [mobileMenuOpen]);
+  };
 
   // Pointerdown outside to close
   useEffect(() => {
@@ -57,12 +62,12 @@ export default function Navbar({ onOpenRegister }) {
         toggleRef.current &&
         !toggleRef.current.contains(e.target)
       ) {
-        setMobileMenuOpen(false);
+        closeMenu();
       }
     };
     document.addEventListener('pointerdown', handlePointerDown);
     return () => document.removeEventListener('pointerdown', handlePointerDown);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, closeMenu]);
 
   // Escape key to close
   useEffect(() => {
@@ -70,12 +75,12 @@ export default function Navbar({ onOpenRegister }) {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        setMobileMenuOpen(false);
+        closeMenu();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, closeMenu]);
 
   // Scroll > 40px closes menu
   useEffect(() => {
@@ -83,28 +88,28 @@ export default function Navbar({ onOpenRegister }) {
     const startY = window.scrollY;
     const handleScroll = () => {
       if (Math.abs(window.scrollY - startY) > 40) {
-        setMobileMenuOpen(false);
+        closeMenu();
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, closeMenu]);
 
   // Window resize to >= 1024px closes menu
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        setMobileMenuOpen(false);
+        closeMenu();
       }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, closeMenu]);
 
   const handleNavClick = (e, href) => {
     e.preventDefault();
-    setMobileMenuOpen(false);
+    closeMenu();
     const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
@@ -117,7 +122,7 @@ export default function Navbar({ onOpenRegister }) {
       {menuMounted && (
         <div
           className={`${styles.menuBackdrop} ${menuActive ? styles.backdropActive : ''}`}
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={closeMenu}
           aria-hidden="true"
         />
       )}
@@ -171,7 +176,7 @@ export default function Navbar({ onOpenRegister }) {
             ref={toggleRef}
             type="button"
             className={styles.mobileToggle}
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            onClick={toggleMenu}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-nav-menu"
@@ -214,7 +219,7 @@ export default function Navbar({ onOpenRegister }) {
             variant="primary"
             fullWidth
             onClick={() => {
-              setMobileMenuOpen(false);
+              closeMenu();
               onOpenRegister();
             }}
           >

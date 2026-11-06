@@ -9,15 +9,6 @@
   .eventsSection {
     padding-block: 96px;
   }
-  .cardsGrid {
-    gap: 16px;
-  }
-  .eventCard {
-    padding: 22px !important;
-  }
-  .cardTop {
-    gap: 18px !important;
-  }
 }
 
 .eventsContainer {
@@ -32,42 +23,46 @@
 .cardsGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 16px;
 }
 
 @media (min-width: 1024px) {
   .cardsGrid {
     grid-template-columns: 1fr 1fr;
+    gap: 2rem;
   }
 }
 
-/* Event Card as accessible whole-card control */
+/* ---------------------------------------------------- */
+/* EVENT CARD (Mobile First Accessible Button)         */
+/* ---------------------------------------------------- */
 .eventCard {
-  background-color: var(--surface-1);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: 2.25rem;
+  width: 100%;
+  border-radius: 24px;
+  padding: 20px;
+  background-color: #0B0B0D;
+  border: 1px solid rgba(247, 237, 216, 0.10);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  transition: border-color var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast);
-  position: relative;
   text-align: left;
-  width: 100%;
   cursor: pointer;
   outline: none;
   font-family: inherit;
   color: inherit;
+  position: relative;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
 }
 
 @media (hover: hover) {
   .eventCard:hover {
     transform: translateY(-4px);
     border-color: rgba(242, 107, 58, 0.5);
-    background-color: var(--surface-2);
+    background-color: #111115;
   }
-  .eventCard:hover .hintArrow {
+  .eventCard:hover .circularArrowBtn {
     transform: translateX(4px);
+    border-color: var(--accent-orange);
+    color: var(--accent-orange);
   }
 }
 
@@ -80,257 +75,865 @@
   outline-offset: 4px;
 }
 
-.cardTop {
+/* 1. Cover Area (16/9, radius 16px, overflow hidden) */
+.cardCover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #070709;
+  border: 1px solid rgba(247, 237, 216, 0.08);
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
 
-.tagRow {
+.coverPicture {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.coverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 2. Header Row */
+.cardHeaderRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
 }
 
-.trackBadge {
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trackNumber {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+}
+
+.trackTypeChip {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.7rem;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.55rem;
   border-radius: var(--radius-pill);
   background: rgba(242, 107, 58, 0.12);
   color: var(--accent-orange);
   border: 1px solid rgba(242, 107, 58, 0.25);
+  text-transform: uppercase;
 }
 
-.timeChip {
+.timeBadge {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
+/* 3. Title */
 .cardTitle {
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: clamp(1.35rem, 5.4vw, 1.75rem);
+  line-height: 1.15;
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.2;
+  margin-bottom: 0.5rem;
 }
 
-.cardBlurb {
-  font-size: 1rem;
+/* 4. Description (2 lines max, 15.5px, muted cream) */
+.cardDescription {
+  font-size: 15.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.9rem;
+}
+
+/* 5. Info Chips */
+.infoChipsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.infoChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-pill);
+}
+
+/* 6. Footer Row with decorative 44px arrow button */
+.cardFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(247, 237, 216, 0.08);
+  margin-top: auto;
+}
+
+.viewDetailsText {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.circularArrowBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-orange);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+/* ---------------------------------------------------- */
+/* MINI TUG VISUAL (Cover area)                         */
+/* ---------------------------------------------------- */
+.miniTugWrapper {
+  width: 100%;
+  height: 100%;
+  padding: 1.1rem;
+  background: radial-gradient(circle at 50% 50%, rgba(242, 107, 58, 0.08) 0%, #070709 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.miniTugHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.miniTugBadge {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  letter-spacing: 0.05em;
+}
+
+.miniTugAura {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--accent-yellow);
+}
+
+.miniTugTeams {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.miniTeamOmega { color: var(--accent-yellow); }
+.miniRopeCenter { color: var(--text-muted); font-size: 0.6875rem; }
+.miniTeamAlpha { color: var(--accent-orange); }
+
+.miniRopeTrack {
+  position: relative;
+  width: 100%;
+  height: 14px;
+  background-color: #000000;
+  border: 1px solid rgba(247, 237, 216, 0.12);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.miniCenterLine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--border-medium);
+}
+
+.miniRopeMarker {
+  position: absolute;
+  left: 54%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: miniOscillate 4s ease-in-out infinite alternate;
+}
+
+@keyframes miniOscillate {
+  0% { left: 42%; }
+  100% { left: 58%; }
+}
+
+.miniKnotGlow {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-orange);
+  box-shadow: 0 0 8px rgba(242, 107, 58, 0.9);
+}
+
+.miniKnotText {
+  position: absolute;
+  top: -14px;
+  font-size: 0.65rem;
+}
+
+.miniTugGrid {
+  display: flex;
+  gap: 6px;
+  height: 4px;
+}
+
+.miniForceBarLeft, .miniForceBarRight {
+  flex: 1;
+  height: 100%;
+  border-radius: 2px;
+}
+
+.miniForceBarLeft {
+  background: linear-gradient(90deg, transparent, rgba(245, 168, 28, 0.4));
+}
+
+.miniForceBarRight {
+  background: linear-gradient(90deg, rgba(242, 107, 58, 0.4), transparent);
+}
+
+/* ---------------------------------------------------- */
+/* DETAIL VIEW PORTAL & BOTTOM SHEET                   */
+/* ---------------------------------------------------- */
+.panelBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  animation: modalFadeIn 200ms ease-out;
+}
+
+@media (min-width: 768px) {
+  .panelBackdrop {
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.detailSheet {
+  background-color: #0B0B0D;
+  border: 1px solid var(--border-medium);
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95);
+  touch-action: pan-y;
+}
+
+/* Mobile: full-screen sheet (100dvh with 8px top gap and 24px rounded top) */
+@media (max-width: 767px) {
+  .detailSheet {
+    height: calc(100dvh - 8px);
+    margin-top: 8px;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-bottom: none;
+    animation: sheetSlideUp 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* Laptop: Centered modal */
+@media (min-width: 768px) {
+  .detailSheet {
+    width: min(1080px, 92vw);
+    height: min(86vh, 780px);
+    border-radius: 24px;
+    animation: modalScaleUp 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes sheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 1. Sticky Header (56px) */
+.sheetHeader {
+  height: 56px;
+  background-color: #0B0B0D;
+  border-bottom: 1px solid rgba(247, 237, 216, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  user-select: none;
+}
+
+.dragPillIndicator {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(247, 237, 216, 0.22);
+  margin: 4px auto 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .dragPillIndicator {
+    display: none;
+  }
+}
+
+.headerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  flex: 1;
+}
+
+.headerCloseBtn {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.headerCloseBtn:hover {
+  background-color: var(--surface-2);
+}
+
+.headerTruncatedTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 0.5rem;
+}
+
+.headerSpacer {
+  width: 48px;
+}
+
+/* Segmented Tab Bar for TLE */
+.segmentedTabBar {
+  display: flex;
+  gap: 0.5rem;
+  background-color: #0B0B0D;
+  border-bottom: 1px solid rgba(247, 237, 216, 0.1);
+  padding: 0.6rem 1.25rem;
+  position: sticky;
+  top: 56px;
+  z-index: 9;
+}
+
+.segmentedTab {
+  flex: 1;
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.activeSegment {
+  background: rgba(242, 107, 58, 0.15);
+  color: var(--accent-orange);
+  border-color: var(--accent-orange);
+}
+
+/* 2. Sheet Body / Content */
+.sheetBody {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 767px) {
+  .sheetBody {
+    padding: 1.25rem 1.25rem calc(88px + env(safe-area-inset-bottom)) 1.25rem;
+    gap: 28px;
+  }
+}
+
+@media (min-width: 768px) {
+  .sheetBody {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 2.25rem;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+}
+
+.leftContentCol {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.modalTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tagTimeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.modalMainTitle {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.metaPillsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.metaPill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-pill);
+}
+
+.sectionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sectionHeading {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sectionBodyText {
+  font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.6;
 }
 
-.cardMeta {
+/* Instructor Card */
+.instructorCard {
   display: flex;
   align-items: center;
   gap: 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--text-muted);
+  background-color: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
 }
 
-.cardBottomRow {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.viewDetailsHint {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  font-weight: 600;
+.instructorAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(242, 107, 58, 0.15);
+  border: 1px solid rgba(242, 107, 58, 0.35);
   color: var(--accent-orange);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  pointer-events: none;
-}
-
-.hintArrow {
-  transition: transform var(--transition-fast);
-  display: inline-block;
-}
-
-/* Event Detail Modal / Slide-in Panel */
-.panelBackdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 2000;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  animation: fadeIn 200ms ease-out;
+  flex-shrink: 0;
 }
 
-@media (max-width: 768px) {
-  .panelBackdrop {
-    align-items: flex-end;
-    padding: 0;
+.instructorMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.instructorName {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.instructorRole {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Photo Carousel */
+.mobileCarouselSlot {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .mobileCarouselSlot {
+    display: none;
   }
 }
 
-.detailPanel {
-  background-color: var(--surface-1);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-xl);
-  width: 100%;
-  max-width: 1000px;
-  max-height: 85vh;
-  max-height: 85dvh;
-  display: flex;
-  flex-direction: column;
+.carouselContainer {
   position: relative;
+  width: 100%;
+}
+
+.carouselTrack {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  border-radius: 16px;
+  border: 1px solid rgba(247, 237, 216, 0.12);
+  background-color: #070709;
+}
+
+.carouselTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.carouselSlide {
+  flex: 0 0 100%;
+  aspect-ratio: 16 / 10;
+  scroll-snap-align: center;
   overflow: hidden;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
-  animation: panelSlideUp 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
 }
 
-@media (max-width: 768px) {
-  .detailPanel {
-    max-height: 88vh;
-    max-height: 88dvh;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom: none;
-  }
+.carouselImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.panelHeader {
-  padding: 1.75rem 2rem 1.25rem;
-  border-bottom: 1px solid var(--border-subtle);
+.carouselControls {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
 }
 
-.headerInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.closeButton {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
+.carouselArrowBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   background: var(--surface-2);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.25rem;
   cursor: pointer;
-  flex-shrink: 0;
-  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  line-height: 1;
 }
 
-.closeButton:hover {
-  background-color: var(--surface-3);
-  border-color: var(--border-medium);
+@media (max-width: 767px) {
+  .carouselArrowBtn {
+    display: none;
+  }
 }
 
-.panelScrollContent {
-  padding: 2rem;
-  overflow-y: auto;
+.carouselDots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dotItem {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(247, 237, 216, 0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.activeDot {
+  background: var(--accent-orange);
+  width: 20px;
+  border-radius: 4px;
+}
+
+.carouselCaption {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+/* Tab Panels */
+.tabPanel {
   display: flex;
   flex-direction: column;
-  gap: 2.25rem;
+  gap: 20px;
 }
 
-.sectionBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+.visualContainer {
+  margin-top: 0.5rem;
 }
 
-.sectionHeading {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--accent-orange);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.speakersGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.speakerCard {
-  background-color: var(--surface-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-}
-
-.speakerName {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-}
-
-.speakerRole {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
+/* Bullet list (when unconfirmed enabled) */
 .bulletList {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.5rem;
 }
 
 .bulletItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
   font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.5;
 }
 
-.bulletIcon {
-  color: var(--accent-orange);
-  margin-top: 0.25rem;
-  flex-shrink: 0;
+/* Right Sticky Column (Laptop >= 768px) */
+.rightStickyCol {
+  display: none;
 }
 
-.panelFooter {
-  padding: 1.25rem 2rem;
+@media (min-width: 768px) {
+  .rightStickyCol {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: 0;
+  }
+}
+
+.desktopVisualArea {
+  width: 100%;
+}
+
+.desktopTleShowcase {
+  width: 100%;
+}
+
+.desktopStickyCard {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cardPriceRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.pricePrimary {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.priceSecondary {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.pairTagBadge {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  background: rgba(242, 107, 58, 0.12);
+  border: 1px solid rgba(242, 107, 58, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.cardDetailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   border-top: 1px solid var(--border-subtle);
-  background-color: var(--surface-1);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.85rem 0;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.detailLabel {
+  color: var(--text-muted);
+}
+
+.detailVal {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* 3. Sticky Bottom Bar on Phone (< 768px) */
+.sheetBottomBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(76px + env(safe-area-inset-bottom));
+  background-color: #0B0B0D;
+  border-top: 1px solid var(--border-medium);
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  flex-wrap: wrap;
+  z-index: 20;
 }
 
-.footerNote {
+@media (min-width: 768px) {
+  .sheetBottomBar {
+    display: none;
+  }
+}
+
+.bottomBarPricing {
+  display: flex;
+  flex-direction: column;
+}
+
+.bottomBarPrice {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.bottomBarSplit {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--text-muted);
 }
 
-/* Tug of War Visual */
+.bottomBarRegisterBtn {
+  min-height: 52px;
+  padding: 0 1.5rem;
+  background-color: var(--accent-orange);
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.bottomBarRegisterBtn:hover {
+  background-color: #f77f52;
+}
+
+.bottomBarRegisterBtn:active {
+  transform: scale(0.98);
+}
+
+/* ---------------------------------------------------- */
+/* TUG OF WAR & TERMINAL FULL INTERACTIVE VISUALS       */
+/* ---------------------------------------------------- */
 .tugContainer {
   background-color: var(--surface-2);
   border: 1px solid var(--border-subtle);
@@ -636,18 +1239,12 @@
   color: var(--accent-green);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes panelSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+@media (prefers-reduced-motion: reduce) {
+  .detailSheet,
+  .miniRopeMarker,
+  .eventCard,
+  .circularArrowBtn {
+    animation: none !important;
+    transition: none !important;
   }
 }

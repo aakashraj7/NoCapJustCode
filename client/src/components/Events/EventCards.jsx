@@ -36,10 +36,11 @@ export default function EventCards({ onOpenRegister }) {
         </div>
 
         <div className={styles.cardsGrid}>
-          {eventData.events.map((event) => (
+          {eventData.events.map((event, index) => (
             <EventCard
               key={event.id}
               event={event}
+              index={index}
               onOpenDetails={handleOpenDetails}
             />
           ))}

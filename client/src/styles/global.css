@@ -58,9 +58,14 @@ body {
   position: relative;
 }
 
+body.detail-panel-open,
 body.scroll-locked {
   overflow: hidden !important;
   touch-action: none;
+}
+
+body.detail-panel-open header {
+  display: none !important;
 }
 
 /* Headings */
