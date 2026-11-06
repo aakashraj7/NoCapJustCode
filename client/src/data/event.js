@@ -1,5 +1,5 @@
 // client/src/data/event.js
-// Single source of truth for the LARPER OR CODER event at CodeVerse 2026.
+// Single source of truth for the LARPER OR CODER event.
 // Any information not confirmed by organizers is explicitly tagged with PLACEHOLDER comments.
 
 export const PAIR_SIZE = 2;
@@ -14,11 +14,11 @@ export const PAYMENT_NOTE = "PLACEHOLDER: payment instructions will be shared by
 
 export const eventData = {
   name: "LARPER OR CODER",
-  edition: "CodeVerse 2026",
+  edition: null,
   presentedBy: "Celestials",
   tagline: "no larping. only coding.",
   description:
-    "Part of CodeVerse 2026, presented by Celestials. A battle ground where resume buzzwords don't save you — only pure logic and locked-in problem solving.",
+    "A battleground where resume buzzwords don't save you. Only pure logic and locked-in problem solving.",
 
   // PLACEHOLDER: confirm with organizers
   date: "TBA",
@@ -53,7 +53,7 @@ export const eventData = {
       startHour: "10:00 AM",
       title: "Inauguration",
       type: "Ceremony",
-      description: "Formal inauguration of CodeVerse 2026.",
+      description: "Formal inauguration.",
       highlight: false,
     },
     {
@@ -94,7 +94,7 @@ export const eventData = {
       title: "Results & Prize Distribution",
       type: "Closing",
       description:
-        "Winners announced, prizes handed out, concluding CodeVerse 2026.",
+        "Winners announced, prizes handed out, concluding the day.",
       highlight: false,
     },
   ],

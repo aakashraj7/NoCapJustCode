@@ -1,6 +1,6 @@
 # LARPER OR CODER — Frontend Client
 
-Frontend for **LARPER OR CODER** (part of **CodeVerse 2026**), presented by **Celestials**.
+Frontend for **LARPER OR CODER**, presented by **Celestials**.
 
 Built with React 19, Vite, CSS Modules, React Hook Form, and Zod v4.
 

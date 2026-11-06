@@ -48,7 +48,7 @@ export default function Hero({ onOpenRegister }) {
           {/* Left Column */}
           <div className={styles.leftCol}>
             <div className={styles.presenterPill}>
-              Presented by <span className={styles.presenterAccent}>{eventData.presentedBy}</span> // {eventData.edition}
+              PRESENTED BY CELESTIUS
             </div>
 
             <h1 className={styles.headline}>

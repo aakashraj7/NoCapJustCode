@@ -41,7 +41,7 @@ export default function Footer() {
             </div>
             <span className={styles.tagline}>{eventData.tagline}</span>
             <p className={styles.brandBio}>
-              Part of {eventData.edition}, presented by {eventData.presentedBy}.
+              Presented by {eventData.presentedBy}.
               The definitive battleground for developers and problem solvers.
             </p>
           </div>
@@ -54,7 +54,7 @@ export default function Footer() {
                 <a href="#hero" className={styles.colLink}>Home</a>
               </li>
               <li>
-                <a href="#about" className={styles.colLink}>About CodeVerse</a>
+                <a href="#about" className={styles.colLink}>About the Event</a>
               </li>
               <li>
                 <a href="#schedule" className={styles.colLink}>Full Schedule</a>
@@ -106,7 +106,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className={styles.bottomBar}>
           <p className={styles.copyright}>
-            &copy; 2026 {eventData.presentedBy}. All rights reserved. CodeVerse 2026.
+            &copy; {eventData.presentedBy}. All rights reserved.
           </p>
 
           <button type="button" className={styles.backToTopBtn} onClick={scrollToTop}>

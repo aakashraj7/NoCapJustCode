@@ -52,7 +52,7 @@ export default function Schedule() {
             // 02. FULL SCHEDULE
           </div>
           <h2 className="section-title">
-            The Timeline of CodeVerse 2026
+            Event Timeline
           </h2>
           <p className="section-subtitle">
             A single day structured for learning, testing your endurance, and crowning the problem-solving champions.
