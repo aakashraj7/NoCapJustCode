@@ -1,0 +1,20 @@
+/* client/src/components/ui/Chip.module.css */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.chipIcon {
+  color: var(--accent-orange);
+  display: flex;
+  align-items: center;
+}
