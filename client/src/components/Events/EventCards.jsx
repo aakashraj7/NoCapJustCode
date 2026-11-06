@@ -4,6 +4,7 @@ import styles from './Events.module.css';
 import { eventData } from '../../data/event.js';
 import EventCard from './EventCard.jsx';
 import EventDetailPanel from './EventDetailPanel.jsx';
+import { SectionScene } from '../Scene/index.js';
 
 export default function EventCards({ onOpenRegister }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -20,6 +21,7 @@ export default function EventCards({ onOpenRegister }) {
 
   return (
     <section id="events" className={`section ${styles.eventsSection}`}>
+      <SectionScene section="events" />
       <div className={`container ${styles.eventsContainer}`}>
         <div className={styles.eventsHeader}>
           <div className="section-tag">

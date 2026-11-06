@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './Schedule.module.css';
 import { eventData } from '../../data/event.js';
+import { SectionScene } from '../Scene/index.js';
 
 export default function Schedule() {
   const itemRefs = useRef([]);
@@ -30,6 +31,7 @@ export default function Schedule() {
 
   return (
     <section id="schedule" className={`section ${styles.scheduleSection}`}>
+      <SectionScene section="schedule" />
       <div className={`container ${styles.scheduleContainer}`}>
         <div className={styles.scheduleHeader}>
           <div className="section-tag">

@@ -7,6 +7,7 @@ import { eventData } from '../../data/event.js';
 import Button from '../ui/Button.jsx';
 import Chip from '../ui/Chip.jsx';
 import Marquee from './Marquee.jsx';
+import { SectionScene } from '../Scene/index.js';
 
 export default function Hero({ onOpenRegister }) {
   const scrollToEvents = (e) => {
@@ -19,6 +20,7 @@ export default function Hero({ onOpenRegister }) {
 
   return (
     <section id="hero" className={styles.heroSection}>
+      <SectionScene section="hero" />
       <div className={`container ${styles.heroContent}`}>
         <div className={styles.heroGrid}>
           {/* Left Column */}

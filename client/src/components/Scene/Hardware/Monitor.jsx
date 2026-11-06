@@ -1,22 +1,24 @@
 // client/src/components/Scene/Hardware/Monitor.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
-import { OPACITY } from '../hardwareConfig.js';
+import { THEME, hexToRgba } from '../hardwareConfig.js';
 
 export default function Monitor({
   width = 185,
   height = 145,
+  color = THEME.yellow,
+  opacity = THEME.bigPieceOpacity,
   floatVariant = 'A',
   hasHalo = true,
   haloStrong = false,
   className = '',
   style = {},
 }) {
-  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
-  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
-  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
-  const green = `rgba(74, 222, 128, ${OPACITY.accent})`;
-  const fillCream = OPACITY.fillCream;
+  const primary = hexToRgba(color, opacity);
+  const primaryFaint = hexToRgba(color, opacity * 0.75);
+  const cream = hexToRgba(THEME.cream, THEME.creamDetailOpacity);
+  const creamFaint = hexToRgba(THEME.cream, THEME.creamDetailOpacity * 0.7);
+  const accent = hexToRgba(color, Math.min(opacity + 0.08, 0.24));
 
   return (
     <div
@@ -42,9 +44,9 @@ export default function Monitor({
           width="165"
           height="100"
           rx="8"
-          fill={fillCream}
-          stroke={cream}
-          strokeWidth="1.8"
+          fill="none"
+          stroke={primary}
+          strokeWidth="2.2"
         />
 
         {/* Inner Screen Display */}
@@ -55,51 +57,27 @@ export default function Monitor({
           height="84"
           rx="4"
           fill="none"
-          stroke={creamFaint}
-          strokeWidth="1.2"
+          stroke={primaryFaint}
+          strokeWidth="1.4"
         />
 
         {/* Terminal Header Bar */}
-        <line x1="18" y1="32" x2="167" y2="32" stroke={creamFaint} strokeWidth="1" />
-        <circle cx="26" cy="25" r="2" fill={orange} />
-        <circle cx="33" cy="25" r="2" stroke={creamFaint} strokeWidth="1" />
-        <circle cx="40" cy="25" r="2" stroke={creamFaint} strokeWidth="1" />
+        <line x1="18" y1="32" x2="167" y2="32" stroke={primaryFaint} strokeWidth="1" />
+        <circle cx="26" cy="25" r="2" fill="none" stroke={accent} strokeWidth="1.2" />
+        <circle cx="33" cy="25" r="2" stroke={creamFaint} strokeWidth="1" fill="none" />
+        <circle cx="40" cy="25" r="2" stroke={creamFaint} strokeWidth="1" fill="none" />
 
-        {/* Terminal Content: $ run tests */}
-        <path d="M 28 44 L 32 47 L 28 50" stroke={orange} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <text
-          x="38"
-          y="49"
-          fill={cream}
-          fontSize="8.5"
-          fontFamily="monospace"
-          fontWeight="600"
-          letterSpacing="0.04em"
-        >
-          run tests
-        </text>
-
-        {/* Terminal Content: passed 12/12 */}
-        <path d="M 28 64 L 31 67 L 36 61" stroke={green} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <text
-          x="40"
-          y="66"
-          fill={cream}
-          fontSize="8"
-          fontFamily="monospace"
-          fontWeight="500"
-        >
-          passed 12/12
-        </text>
-
-        {/* Blinking Prompt Cursor */}
-        <rect x="28" y="74" width="5" height="8" fill={orange} className={styles.cursor} />
+        {/* Terminal Content: Prompt & code lines */}
+        <path d="M 28 44 L 32 47 L 28 50" stroke={accent} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <line x1="38" y1="47" x2="95" y2="47" stroke={cream} strokeWidth="1.8" strokeLinecap="round" />
+        <line x1="28" y1="62" x2="120" y2="62" stroke={creamFaint} strokeWidth="1.6" strokeLinecap="round" />
+        <rect x="28" y="72" width="5" height="8" fill="none" stroke={accent} strokeWidth="1.5" className={styles.cursor} />
 
         {/* Monitor Stand Vertical Neck */}
-        <rect x="86" y="110" width="13" height="20" rx="2" fill={fillCream} stroke={cream} strokeWidth="1.6" />
+        <rect x="86" y="110" width="13" height="20" rx="2" fill="none" stroke={primary} strokeWidth="1.8" />
 
         {/* Stand Baseplate */}
-        <ellipse cx="92.5" cy="133" rx="36" ry="6" fill={fillCream} stroke={cream} strokeWidth="1.8" />
+        <ellipse cx="92.5" cy="133" rx="36" ry="6" fill="none" stroke={primary} strokeWidth="2.2" />
       </svg>
     </div>
   );

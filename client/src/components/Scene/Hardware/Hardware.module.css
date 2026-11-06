@@ -21,10 +21,11 @@
   border-radius: 50%;
   background: radial-gradient(
     circle at center,
-    rgba(242, 107, 58, 0.10) 0%,
-    rgba(245, 168, 28, 0.04) 50%,
+    rgba(242, 107, 58, 0.04) 0%,
+    rgba(245, 168, 28, 0.02) 50%,
     transparent 72%
   );
+  opacity: var(--halo-opacity, 0.04);
   mix-blend-mode: screen;
   pointer-events: none;
   z-index: 0;
@@ -34,10 +35,11 @@
   inset: -28%;
   background: radial-gradient(
     circle at center,
-    rgba(242, 107, 58, 0.14) 0%,
-    rgba(245, 168, 28, 0.05) 52%,
+    rgba(242, 107, 58, 0.05) 0%,
+    rgba(245, 168, 28, 0.02) 52%,
     transparent 74%
   );
+  opacity: var(--halo-opacity, 0.05);
   mix-blend-mode: screen;
 }
 
@@ -48,7 +50,7 @@
   overflow: visible;
 }
 
-/* Base floating animation */
+/* Base floating animation (18 to 30s staggered, translateY < 12px, rotate < 2deg) */
 @keyframes hwFloatA {
   0% { transform: translateY(0px) rotate(-0.6deg); }
   50% { transform: translateY(-8px) rotate(0.8deg); }
@@ -68,15 +70,22 @@
 }
 
 .floatA {
-  animation: hwFloatA 16s ease-in-out infinite alternate;
+  animation: hwFloatA 20s ease-in-out infinite alternate;
 }
 
 .floatB {
-  animation: hwFloatB 19s ease-in-out infinite alternate;
+  animation: hwFloatB 24s ease-in-out infinite alternate;
 }
 
 .floatC {
-  animation: hwFloatC 22s ease-in-out infinite alternate;
+  animation: hwFloatC 28s ease-in-out infinite alternate;
+}
+
+/* Rotating fan blades (10 to 16s linear) */
+.fanBlades {
+  animation: spinLinear 12s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 /* Blinking cursor on laptop and monitor screens */
@@ -94,7 +103,10 @@
   .floatA,
   .floatB,
   .floatC,
-  .cursor {
+  .cursor,
+  .fanBlades,
+  .spinSlow,
+  .spinSlowReverse {
     animation: none !important;
     transform: none !important;
   }
@@ -103,6 +115,89 @@
 :global(.tab-hidden) .floatA,
 :global(.tab-hidden) .floatB,
 :global(.tab-hidden) .floatC,
-:global(.tab-hidden) .cursor {
+:global(.tab-hidden) .cursor,
+:global(.tab-hidden) .fanBlades,
+:global(.tab-hidden) .spinSlow,
+:global(.tab-hidden) .spinSlowReverse {
   animation-play-state: paused !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* SectionScene: Promptverse Gears Style Scattered Hardware                   */
+/* -------------------------------------------------------------------------- */
+.sectionScene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.parallaxLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.desktopScene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .desktopScene {
+    display: none !important;
+  }
+}
+
+.mobileScene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .mobileScene {
+    display: none !important;
+  }
+}
+
+.scatteredItem {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.smallBit {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+@keyframes spinLinear {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinLinearReverse {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
 }

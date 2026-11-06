@@ -4,6 +4,7 @@ import styles from './Footer.module.css';
 import navbarLogoWebp from '../../assets/logo-navbar.webp';
 import navbarLogoPng from '../../assets/logo-navbar.png';
 import { eventData } from '../../data/event.js';
+import { SectionScene } from '../Scene/index.js';
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -12,6 +13,7 @@ export default function Footer() {
 
   return (
     <footer id="contact" className={styles.footer}>
+      <SectionScene section="footer" />
       <div className={`container ${styles.footerContainer}`}>
         <div className={styles.footerGrid}>
           {/* Brand Column */}

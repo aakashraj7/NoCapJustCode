@@ -1,21 +1,23 @@
 // client/src/components/Scene/Hardware/Keyboard.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
-import { OPACITY } from '../hardwareConfig.js';
+import { THEME, hexToRgba } from '../hardwareConfig.js';
 
 export default function Keyboard({
   width = 200,
   height = 75,
+  color = THEME.yellow,
+  opacity = THEME.bigPieceOpacity,
   floatVariant = 'B',
   hasHalo = true,
   haloStrong = false,
   className = '',
   style = {},
 }) {
-  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
-  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
-  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
-  const fillCream = OPACITY.fillCream;
+  const primary = hexToRgba(color, opacity);
+  const primaryFaint = hexToRgba(color, opacity * 0.75);
+  const cream = hexToRgba(THEME.cream, THEME.creamDetailOpacity);
+  const accent = hexToRgba(color, Math.min(opacity + 0.08, 0.24));
 
   return (
     <div
@@ -41,72 +43,56 @@ export default function Keyboard({
           width="188"
           height="63"
           rx="8"
-          fill={fillCream}
-          stroke={cream}
-          strokeWidth="1.8"
+          fill="none"
+          stroke={primary}
+          strokeWidth="2.2"
         />
 
         {/* Row 1 Keys (Esc, Q..P, Backspace) */}
-        <rect x="14" y="13" width="12" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="30" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="45" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="60" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="75" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="90" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="105" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="120" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="135" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="150" y="13" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="165" y="13" width="20" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
+        <rect x="14" y="13" width="12" height="9" rx="2" fill="none" stroke={accent} strokeWidth="1.4" />
+        <rect x="30" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="45" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="60" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="75" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="90" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="105" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="120" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="135" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="150" y="13" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="165" y="13" width="20" height="9" rx="2" fill="none" stroke={cream} strokeWidth="1.4" />
 
         {/* Row 2 Keys (Tab, A..L, Enter) */}
-        <rect x="14" y="26" width="18" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="36" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="51" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="66" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="81" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="96" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="111" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="126" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="141" y="26" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        {/* ONE Orange Enter Key */}
-        <rect
-          x="156"
-          y="26"
-          width="29"
-          height="10"
-          rx="2"
-          fill="rgba(242, 107, 58, 0.08)"
-          stroke={orange}
-          strokeWidth="1.6"
-        />
-        <path d="M 176 31 L 170 31 L 173 29 M 170 31 L 173 33" stroke={orange} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <rect x="14" y="25" width="16" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="34" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="49" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="64" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="79" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="94" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="109" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="124" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="139" y="25" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="154" y="25" width="31" height="9" rx="2" fill="none" stroke={accent} strokeWidth="1.4" />
 
         {/* Row 3 Keys (Shift, Z..M, Shift) */}
-        <rect x="14" y="39" width="23" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="41" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="56" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="71" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="86" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="101" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="116" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="131" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="146" y="39" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="161" y="39" width="24" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
+        <rect x="14" y="37" width="22" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="40" y="37" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="55" y="37" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="70" y="37" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="85" y="37" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="100" y="37" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="115" y="37" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="130" y="37" width="11" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
+        <rect x="145" y="37" width="40" height="9" rx="2" fill="none" stroke={primaryFaint} strokeWidth="1.2" />
 
-        {/* Row 4 Keys (Ctrl, Alt, Spacebar, Arrows) */}
-        <rect x="14" y="52" width="15" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="33" y="52" width="13" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
+        {/* Row 4 Bottom Modifiers & Spacebar */}
+        <rect x="14" y="49" width="14" height="11" rx="2" fill="none" stroke={cream} strokeWidth="1.2" />
+        <rect x="32" y="49" width="13" height="11" rx="2" fill="none" stroke={cream} strokeWidth="1.2" />
+        <rect x="49" y="49" width="14" height="11" rx="2" fill="none" stroke={cream} strokeWidth="1.2" />
         {/* Spacebar */}
-        <rect x="50" y="52" width="76" height="9" rx="2" stroke={cream} strokeWidth="1.4" />
-        <rect x="130" y="52" width="13" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="147" y="52" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="162" y="52" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-        <rect x="177" y="52" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
-
-        {/* Keycap bevel lines */}
-        <line x1="14" y1="23" x2="26" y2="23" stroke={creamFaint} strokeWidth="1" />
-        <line x1="50" y1="62" x2="126" y2="62" stroke={creamFaint} strokeWidth="1" />
+        <rect x="67" y="49" width="68" height="11" rx="2" fill="none" stroke={primary} strokeWidth="1.6" />
+        <rect x="139" y="49" width="14" height="11" rx="2" fill="none" stroke={cream} strokeWidth="1.2" />
+        <rect x="157" y="49" width="13" height="11" rx="2" fill="none" stroke={cream} strokeWidth="1.2" />
+        <rect x="174" y="49" width="11" height="11" rx="2" fill="none" stroke={cream} strokeWidth="1.2" />
       </svg>
     </div>
   );

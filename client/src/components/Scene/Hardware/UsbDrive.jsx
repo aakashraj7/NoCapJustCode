@@ -1,26 +1,32 @@
 // client/src/components/Scene/Hardware/UsbDrive.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
-import { OPACITY } from '../hardwareConfig.js';
+import { THEME, hexToRgba } from '../hardwareConfig.js';
 
 export default function UsbDrive({
   width = 75,
   height = 36,
+  size,
+  color = THEME.orange,
+  opacity = THEME.smallPieceOpacity,
   floatVariant = 'C',
   hasHalo = true,
   haloStrong = false,
   className = '',
   style = {},
 }) {
-  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
-  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
-  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
-  const fillCream = OPACITY.fillCream;
+  const finalWidth = size || width;
+  const finalHeight = size ? Math.round(size * (36 / 75)) : height;
+  const primary = hexToRgba(color, opacity);
+  const primaryFaint = hexToRgba(color, opacity * 0.75);
+  const cream = hexToRgba(THEME.cream, THEME.creamDetailOpacity);
+  const creamFaint = hexToRgba(THEME.cream, THEME.creamDetailOpacity * 0.7);
+  const accent = hexToRgba(color, Math.min(opacity + 0.08, 0.24));
 
   return (
     <div
       className={`${styles.hardwarePiece} ${styles['float' + floatVariant]} ${className}`}
-      style={{ width, height, ...style }}
+      style={{ width: finalWidth, height: finalHeight, ...style }}
       aria-hidden="true"
     >
       {hasHalo && (
@@ -28,8 +34,8 @@ export default function UsbDrive({
       )}
       <svg
         className={styles.pieceSvg}
-        width={width}
-        height={height}
+        width={finalWidth}
+        height={finalHeight}
         viewBox="0 0 75 36"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +49,7 @@ export default function UsbDrive({
           rx="2"
           fill="none"
           stroke={cream}
-          strokeWidth="1.5"
+          strokeWidth="1.6"
         />
         {/* 2 Inner Contact Holes */}
         <rect x="10" y="14" width="3" height="3" fill="none" stroke={creamFaint} strokeWidth="1" />
@@ -53,17 +59,16 @@ export default function UsbDrive({
         {/* Plastic Case Body - Pure Line Art */}
         <path
           d="M 24 8 L 60 8 Q 68 8 68 18 Q 68 28 60 28 L 24 28 Z"
-          fill={fillCream}
-          stroke={cream}
-          strokeWidth="1.6"
+          fill="none"
+          stroke={primary}
+          strokeWidth="2.2"
         />
 
-        {/* Lanyard Loop Hole */}
-        <circle cx="61" cy="18" r="3" stroke={cream} strokeWidth="1.3" fill="none" />
+        {/* Activity Indicator LED */}
+        <circle cx="56" cy="18" r="1.5" fill="none" stroke={accent} strokeWidth="1.2" />
 
-        {/* Orange Activity LED */}
-        <circle cx="34" cy="18" r="2" fill={orange} />
-        <line x1="39" y1="18" x2="52" y2="18" stroke={creamFaint} strokeWidth="1.2" strokeLinecap="round" />
+        {/* Lanyard Hole Inset */}
+        <ellipse cx="63" cy="18" rx="2" ry="4" stroke={primaryFaint} strokeWidth="1.2" fill="none" />
       </svg>
     </div>
   );

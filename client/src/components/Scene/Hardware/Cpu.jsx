@@ -1,21 +1,24 @@
 // client/src/components/Scene/Hardware/Cpu.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
-import { OPACITY } from '../hardwareConfig.js';
+import { THEME, hexToRgba } from '../hardwareConfig.js';
 
 export default function Cpu({
   width = 95,
   height = 95,
+  color = THEME.orange,
+  opacity = THEME.bigPieceOpacity,
   floatVariant = 'C',
   hasHalo = true,
   haloStrong = false,
   className = '',
   style = {},
 }) {
-  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
-  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
-  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
-  const fillCream = OPACITY.fillCream;
+  const primary = hexToRgba(color, opacity);
+  const primaryFaint = hexToRgba(color, opacity * 0.75);
+  const cream = hexToRgba(THEME.cream, THEME.creamDetailOpacity);
+  const creamFaint = hexToRgba(THEME.cream, THEME.creamDetailOpacity * 0.7);
+  const accent = hexToRgba(color, Math.min(opacity + 0.08, 0.24));
 
   // 10 pins per side
   const pinPositions = [18, 24, 30, 36, 42, 48, 54, 60, 66, 72];
@@ -49,53 +52,58 @@ export default function Cpu({
 
         {/* 10 Pins per side (extending outward) */}
         {pinPositions.map((p, idx) => (
-          <g key={'pins-' + idx}>
-            <line x1={p} y1="7" x2={p} y2="14" stroke={cream} strokeWidth="1.6" strokeLinecap="round" />
-            <line x1={p} y1="81" x2={p} y2="88" stroke={cream} strokeWidth="1.6" strokeLinecap="round" />
-            <line x1="7" y1={p} x2="14" y2={p} stroke={cream} strokeWidth="1.6" strokeLinecap="round" />
-            <line x1="81" y1={p} x2="88" y2={p} stroke={cream} strokeWidth="1.6" strokeLinecap="round" />
+          <g key={`p-${idx}`}>
+            <rect x={p - 1.5} y="2" width="3" height="8" rx="0.5" fill="none" stroke={cream} strokeWidth="1" />
+            <rect x={p - 1.5} y="85" width="3" height="8" rx="0.5" fill="none" stroke={cream} strokeWidth="1" />
+            <rect x="2" y={p - 1.5} width="8" height="3" rx="0.5" fill="none" stroke={cream} strokeWidth="1" />
+            <rect x="85" y={p - 1.5} width="8" height="3" rx="0.5" fill="none" stroke={cream} strokeWidth="1" />
           </g>
         ))}
 
-        {/* Outer Package Substrate - Pure Line Art */}
+        {/* Green/Black PCB Substrate - Pure Line Art */}
         <rect
-          x="12"
-          y="12"
-          width="71"
-          height="71"
-          rx="6"
-          fill={fillCream}
-          stroke={cream}
+          x="10"
+          y="10"
+          width="75"
+          height="75"
+          rx="5"
+          fill="none"
+          stroke={primary}
+          strokeWidth="2.2"
+        />
+
+        {/* Gold Corner Alignment Triangle Indicator */}
+        <polygon points="12,12 21,12 12,21" fill="none" stroke={accent} strokeWidth="1.8" />
+
+        {/* Metallic Integrated Heat Spreader (IHS) */}
+        <rect
+          x="20"
+          y="20"
+          width="55"
+          height="55"
+          rx="5"
+          fill="none"
+          stroke={primary}
           strokeWidth="1.8"
         />
-
-        {/* Gold Corner Triangle Marker */}
-        <polygon points="15,15 22,15 15,22" fill={orange} />
-
-        {/* Inner Heat Spreader Die Square */}
         <rect
-          x="26"
-          y="26"
-          width="43"
-          height="43"
-          rx="4"
+          x="24"
+          y="24"
+          width="47"
+          height="47"
+          rx="3"
           fill="none"
-          stroke={cream}
-          strokeWidth="1.6"
+          stroke={primaryFaint}
+          strokeWidth="1.2"
         />
 
-        {/* Inner Diamond / Celestius Logo Mark in Orange */}
-        <path
-          d="M 47.5 35 L 56 47.5 L 47.5 60 L 39 47.5 Z"
-          fill="none"
-          stroke={orange}
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-        />
-        <circle cx="47.5" cy="47.5" r="2" fill={orange} />
+        {/* Die Engraving Laser Text & Logo Details */}
+        <line x1="32" y1="36" x2="63" y2="36" stroke={primary} strokeWidth="1.6" strokeLinecap="round" />
+        <line x1="32" y1="44" x2="55" y2="44" stroke={cream} strokeWidth="1.4" strokeLinecap="round" />
+        <line x1="32" y1="52" x2="48" y2="52" stroke={cream} strokeWidth="1.4" strokeLinecap="round" />
 
-        {/* Model Spec Tiny Mark */}
-        <line x1="33" y1="64" x2="62" y2="64" stroke={creamFaint} strokeWidth="1.2" strokeLinecap="round" />
+        {/* Silicon Die Accent Dot */}
+        <circle cx="60" cy="58" r="2.5" fill="none" stroke={accent} strokeWidth="1.5" />
       </svg>
     </div>
   );

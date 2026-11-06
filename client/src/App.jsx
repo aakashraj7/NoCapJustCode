@@ -36,6 +36,21 @@ export default function App() {
     });
   }, []);
 
+  // Handle tab visibility to pause animations when hidden
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        document.documentElement.classList.add('tab-hidden');
+      } else {
+        document.documentElement.classList.remove('tab-hidden');
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, []);
+
   // Lock scroll while intro or splash is active
   useEffect(() => {
     if (appFlow !== 'SITE') {

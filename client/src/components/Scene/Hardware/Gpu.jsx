@@ -1,24 +1,26 @@
 // client/src/components/Scene/Hardware/Gpu.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
-import { OPACITY } from '../hardwareConfig.js';
+import { THEME, hexToRgba } from '../hardwareConfig.js';
 
 export default function Gpu({
   width = 220,
   height = 95,
+  color = THEME.yellow,
+  opacity = THEME.bigPieceOpacity,
   floatVariant = 'B',
   hasHalo = true,
   haloStrong = false,
   className = '',
   style = {},
 }) {
-  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
-  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
-  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
-  const yellow = `rgba(248, 187, 58, ${OPACITY.accent})`;
-  const fillCream = OPACITY.fillCream;
+  const primary = hexToRgba(color, opacity);
+  const primaryFaint = hexToRgba(color, opacity * 0.75);
+  const creamFaint = hexToRgba(THEME.cream, THEME.creamDetailOpacity * 0.7);
+  const accent = hexToRgba(color, Math.min(opacity + 0.08, 0.24));
+  const gold = hexToRgba(THEME.yellow, Math.min(opacity + 0.08, 0.24));
 
-  // Helper for 7 fan blades in a circle
+  // Helper for 7 rotating fan blades in a circle
   const renderFan = (cx, cy, r = 24) => {
     const blades = [];
     for (let i = 0; i < 7; i++) {
@@ -33,7 +35,7 @@ export default function Gpu({
         <path
           key={i}
           d={`M ${cx} ${cy} Q ${cxCurv} ${cyCurv} ${x2} ${y2}`}
-          stroke={cream}
+          stroke={primaryFaint}
           strokeWidth="1.6"
           strokeLinecap="round"
         />
@@ -42,12 +44,13 @@ export default function Gpu({
     return (
       <g>
         {/* Fan shroud circle - Pure Line Art */}
-        <circle cx={cx} cy={cy} r={r} stroke={cream} strokeWidth="1.6" fill="none" />
-        {/* Blades */}
-        {blades}
-        {/* Central Hub with orange accent */}
-        <circle cx={cx} cy={cy} r="6.5" fill="none" stroke={orange} strokeWidth="1.6" />
-        <circle cx={cx} cy={cy} r="2.5" fill={orange} />
+        <circle cx={cx} cy={cy} r={r} stroke={primary} strokeWidth="1.8" fill="none" />
+        {/* Rotating Blades and Hub */}
+        <g className={styles.fanBlades}>
+          {blades}
+          <circle cx={cx} cy={cy} r="6.5" fill="none" stroke={accent} strokeWidth="1.8" />
+          <circle cx={cx} cy={cy} r="2.5" fill="none" stroke={accent} strokeWidth="1.2" />
+        </g>
       </g>
     );
   };
@@ -70,10 +73,10 @@ export default function Gpu({
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Left Metal I/O Bracket */}
-        <path d="M 12 8 L 22 8 L 22 84 L 12 84 Z" fill={fillCream} stroke={cream} strokeWidth="1.6" />
-        <line x1="8" y1="4" x2="16" y2="4" stroke={cream} strokeWidth="2.2" strokeLinecap="round" />
-        <circle cx="17" cy="24" r="2.5" stroke={creamFaint} strokeWidth="1.2" />
-        <circle cx="17" cy="48" r="2.5" stroke={creamFaint} strokeWidth="1.2" />
+        <path d="M 12 8 L 22 8 L 22 84 L 12 84 Z" fill="none" stroke={primary} strokeWidth="1.8" />
+        <line x1="8" y1="4" x2="16" y2="4" stroke={primary} strokeWidth="2.2" strokeLinecap="round" />
+        <circle cx="17" cy="24" r="2.5" stroke={creamFaint} strokeWidth="1.2" fill="none" />
+        <circle cx="17" cy="48" r="2.5" stroke={creamFaint} strokeWidth="1.2" fill="none" />
 
         {/* Main Shroud Body - Pure Line Art */}
         <rect
@@ -82,9 +85,9 @@ export default function Gpu({
           width="190"
           height="66"
           rx="8"
-          fill={fillCream}
-          stroke={cream}
-          strokeWidth="1.8"
+          fill="none"
+          stroke={primary}
+          strokeWidth="2.2"
         />
 
         {/* Heatsink Fin Lines behind shroud cutouts */}
@@ -104,15 +107,15 @@ export default function Gpu({
         {renderFan(72, 45, 24)}
         {renderFan(146, 45, 24)}
 
-        {/* 8-Pin PCIe Power Header on Top Edge in Orange */}
-        <rect x="180" y="6" width="22" height="8" rx="2" fill="none" stroke={orange} strokeWidth="1.5" />
-        <line x1="185" y1="6" x2="185" y2="12" stroke={orange} strokeWidth="1" />
-        <line x1="191" y1="6" x2="191" y2="12" stroke={orange} strokeWidth="1" />
-        <line x1="197" y1="6" x2="197" y2="12" stroke={orange} strokeWidth="1" />
+        {/* 8-Pin PCIe Power Header on Top Edge */}
+        <rect x="180" y="6" width="22" height="8" rx="2" fill="none" stroke={accent} strokeWidth="1.6" />
+        <line x1="185" y1="6" x2="185" y2="12" stroke={accent} strokeWidth="1" />
+        <line x1="191" y1="6" x2="191" y2="12" stroke={accent} strokeWidth="1" />
+        <line x1="197" y1="6" x2="197" y2="12" stroke={accent} strokeWidth="1" />
 
         {/* PCIe x16 Edge Connector at Bottom */}
-        <rect x="40" y="78" width="100" height="9" rx="1" fill="none" stroke={cream} strokeWidth="1.4" />
-        <line x1="44" y1="83" x2="136" y2="83" stroke={yellow} strokeWidth="3" strokeDasharray="3 2" />
+        <rect x="40" y="78" width="100" height="9" rx="1" fill="none" stroke={primary} strokeWidth="1.5" />
+        <line x1="44" y1="83" x2="136" y2="83" stroke={gold} strokeWidth="3" strokeDasharray="3 2" />
       </svg>
     </div>
   );

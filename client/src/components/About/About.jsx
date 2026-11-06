@@ -2,10 +2,12 @@
 import React from 'react';
 import styles from './About.module.css';
 import { eventData } from '../../data/event.js';
+import { SectionScene } from '../Scene/index.js';
 
 export default function About() {
   return (
     <section id="about" className={`section ${styles.aboutSection}`}>
+      <SectionScene section="about" />
       <div className={`container ${styles.aboutContainer}`}>
         <div className={styles.aboutGrid}>
           {/* Left Text */}
