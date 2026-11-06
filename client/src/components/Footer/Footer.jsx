@@ -23,14 +23,13 @@ export default function Footer() {
                 <source srcSet={navbarLogoWebp} type="image/webp" />
                 <img
                   src={navbarLogoPng}
-                  alt="LARPER OR CODER Logo"
+                  alt="Larper or Coder"
                   className={styles.footerLogo}
                   width={320}
                   height={163}
                   style={{ aspectRatio: '320 / 163' }}
                 />
               </picture>
-              <span className={styles.brandName}>{eventData.name}</span>
             </div>
             <span className={styles.tagline}>{eventData.tagline}</span>
             <p className={styles.brandBio}>

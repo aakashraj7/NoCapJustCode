@@ -19,7 +19,7 @@ export default function About() {
               Built for real problem solvers, not resume larpers.
             </h2>
             <p className={styles.description}>
-              {eventData.name} is the flagship coding fixture presented by {eventData.presentedBy}.
+              This is the flagship coding event presented by Celestius.
               It brings together developers and competitive programmers who prefer writing clean, working algorithms over talking about them.
             </p>
             <p className={styles.subDescription}>

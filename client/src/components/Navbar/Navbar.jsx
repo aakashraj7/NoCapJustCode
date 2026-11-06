@@ -36,14 +36,13 @@ export default function Navbar({ onOpenRegister }) {
             <source srcSet={navbarLogoWebp} type="image/webp" />
             <img
               src={navbarLogoPng}
-              alt="LARPER OR CODER Logo"
+              alt="Larper or Coder"
               className={styles.brandLogo}
               width={320}
               height={163}
               style={{ aspectRatio: '320 / 163' }}
             />
           </picture>
-          <span className={styles.brandTitle}>LARPER OR CODER</span>
           {EVENT_YEAR && <span className={styles.brandBadge}>{EVENT_YEAR}</span>}
         </a>
 

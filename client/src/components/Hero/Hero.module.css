@@ -13,6 +13,13 @@
   overflow: hidden;
 }
 
+@media (max-width: 767px) {
+  .heroSection {
+    padding-top: 140px;
+    padding-bottom: 140px;
+  }
+}
+
 .heroContent {
   flex: 1;
   display: flex;
@@ -64,13 +71,12 @@
   font-weight: 600;
 }
 
-.headline {
-  font-size: clamp(2.75rem, 6vw + 0.5rem, 4.75rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
+.heroTitleH1 {
+  margin: 0 0 1.25rem 0;
+  padding: 0;
+  line-height: 1;
+  display: block;
+  width: 100%;
 }
 
 .tagline {
@@ -109,48 +115,42 @@
   }
 }
 
-/* Right Column Brand Display */
+/* Right Column: Complete Hardware Laptop */
 .rightCol {
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   position: relative;
 }
 
-.heroLogoWrapper {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+@media (min-width: 1024px) {
+  .rightCol {
+    display: flex;
+  }
 }
 
-.heroLogoGlow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 130%;
-  height: 130%;
-  background: radial-gradient(circle at center, rgba(242, 107, 58, 0.12) 0%, rgba(242, 107, 58, 0.03) 50%, transparent 72%);
-  pointer-events: none;
-  z-index: 0;
+.heroLaptopWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .heroLogoImg {
   position: relative;
   z-index: 1;
-  width: clamp(280px, 85vw, 640px);
+  width: clamp(260px, 82vw, 480px);
   max-width: 100%;
   height: auto;
   display: block;
+  margin: 0 auto;
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
 }
 
 @media (min-width: 1024px) {
   .heroLogoImg {
-    width: clamp(320px, 38vw, 640px);
+    width: clamp(360px, 40vw, 720px);
+    margin: 0;
   }
 }
 

@@ -8,6 +8,7 @@ import Button from '../ui/Button.jsx';
 import Chip from '../ui/Chip.jsx';
 import Marquee from './Marquee.jsx';
 import { SectionScene } from '../Scene/index.js';
+import Laptop from '../Scene/Hardware/Laptop.jsx';
 
 export default function Hero({ onOpenRegister }) {
   const scrollToEvents = (e) => {
@@ -29,8 +30,19 @@ export default function Hero({ onOpenRegister }) {
               PRESENTED BY CELESTIUS
             </div>
 
-            <h1 className={styles.headline}>
-              LARPER OR CODER
+            <h1 className={styles.heroTitleH1}>
+              <picture>
+                <source srcSet={logoImg} type="image/webp" />
+                <img
+                  src={logoPngFallback}
+                  alt="Larper or Coder"
+                  className={`${styles.heroLogoImg} heroLogo`}
+                  loading="eager"
+                  width={617}
+                  height={314}
+                  style={{ aspectRatio: '617 / 314' }}
+                />
+              </picture>
             </h1>
 
             <div className={styles.tagline}>
@@ -87,25 +99,10 @@ export default function Hero({ onOpenRegister }) {
             </div>
           </div>
 
-          {/* Right Column Brand Display */}
+          {/* Right Column Brand Display - Shows only complete hardware laptop */}
           <div className={styles.rightCol}>
-            <div className={styles.heroLogoWrapper}>
-              <div className={styles.heroLogoGlow} aria-hidden="true" />
-              <picture>
-                <source srcSet={logoImg} type="image/webp" />
-                <img
-                  src={logoPngFallback}
-                  alt="LARPER OR CODER Logo"
-                  className={`${styles.heroLogoImg} heroLogo`}
-                  loading="eager"
-                  width={617}
-                  height={314}
-                  style={{ aspectRatio: '617 / 314' }}
-                />
-              </picture>
-              <div className={styles.showcaseFootnote}>
-                &gt; locked in. code only.
-              </div>
+            <div className={styles.heroLaptopWrapper}>
+              <Laptop width={380} height={238} floatVariant="A" hasHalo={true} isHero={true} />
             </div>
           </div>
         </div>
