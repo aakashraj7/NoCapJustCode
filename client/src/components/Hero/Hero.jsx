@@ -38,6 +38,7 @@ export default function Hero({ onOpenRegister }) {
                   alt="Larper or Coder"
                   className={`${styles.heroLogoImg} heroLogo`}
                   loading="eager"
+                  fetchPriority="high"
                   width={617}
                   height={314}
                   style={{ aspectRatio: '617 / 314' }}

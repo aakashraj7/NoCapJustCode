@@ -48,12 +48,14 @@
   box-shadow: none;
   background: transparent;
   flex-shrink: 0;
+  width: 63px;
+  height: 32px;
 }
 
 .brandLogo {
   height: 32px;
-  width: auto;
-  max-width: 180px;
+  width: 63px;
+  aspect-ratio: 320 / 163;
   object-fit: contain;
   border: none;
   outline: none;

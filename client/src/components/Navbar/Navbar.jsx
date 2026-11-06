@@ -1,5 +1,5 @@
 // client/src/components/Navbar/Navbar.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Navbar.module.css';
 import navbarLogoWebp from '../../assets/logo-navbar.webp';
 import navbarLogoPng from '../../assets/logo-navbar.png';
