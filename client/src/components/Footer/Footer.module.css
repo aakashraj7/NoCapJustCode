@@ -8,6 +8,13 @@
   overflow: hidden;
 }
 
+@media (max-width: 767px) {
+  .footer {
+    padding-top: 140px;
+    padding-bottom: 140px;
+  }
+}
+
 .footerContainer {
   position: relative;
   z-index: 2;

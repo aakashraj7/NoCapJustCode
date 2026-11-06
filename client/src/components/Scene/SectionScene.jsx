@@ -38,9 +38,8 @@ export default function SectionScene({ section }) {
         rafBox.id = null;
         if (!sceneRef.current || !parallaxRef.current) return;
         const rect = sceneRef.current.getBoundingClientRect();
-        // Parallax only when section is within active viewport range (< 0.1x factor)
         if (rect.bottom > -200 && rect.top < window.innerHeight + 200) {
-          const offset = (window.innerHeight - rect.top) * 0.04;
+          const offset = (window.innerHeight - rect.top) * 0.03;
           parallaxRef.current.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
         }
       });
@@ -57,7 +56,7 @@ export default function SectionScene({ section }) {
 
   if (!sceneConfig) return null;
 
-  const renderGroup = (config) => {
+  const renderTier = (config, tierName) => {
     if (!config) return null;
 
     const bigItems = (config.big || []).map((item, idx) => {
@@ -70,8 +69,10 @@ export default function SectionScene({ section }) {
 
       return (
         <div
-          key={`big-${item.type}-${idx}`}
+          key={`big-${item.type}-${tierName}-${idx}`}
           className={styles.scatteredItem}
+          data-hardware-piece={item.type.toLowerCase()}
+          data-hardware-tier={tierName}
           style={{
             ...item.pos,
             transform: `rotate(${item.rotate || 0}deg)`,
@@ -95,8 +96,10 @@ export default function SectionScene({ section }) {
 
       return (
         <div
-          key={`small-${item.type}-${idx}`}
+          key={`small-${item.type}-${tierName}-${idx}`}
           className={styles.scatteredItem}
+          data-hardware-piece={item.type.toLowerCase()}
+          data-hardware-tier={tierName}
           style={{
             ...item.pos,
             transform: `rotate(${item.rotate || 0}deg)`,
@@ -124,10 +127,13 @@ export default function SectionScene({ section }) {
     <div className={styles.sectionScene} ref={sceneRef} aria-hidden="true">
       <div className={styles.parallaxLayer} ref={parallaxRef}>
         <div className={styles.desktopScene}>
-          {renderGroup(sceneConfig.desktop)}
+          {renderTier(sceneConfig.desktop, 'desktop')}
         </div>
-        <div className={styles.mobileScene}>
-          {renderGroup(sceneConfig.mobile)}
+        <div className={styles.tabletScene}>
+          {renderTier(sceneConfig.tablet, 'tablet')}
+        </div>
+        <div className={styles.phoneScene}>
+          {renderTier(sceneConfig.phone, 'phone')}
         </div>
       </div>
     </div>

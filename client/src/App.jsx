@@ -14,6 +14,7 @@ import Schedule from './components/Schedule/Schedule.jsx';
 import EventCards from './components/Events/EventCards.jsx';
 import RegisterModal from './components/Register/RegisterModal.jsx';
 import Footer from './components/Footer/Footer.jsx';
+import { auditHardwarePlacement } from './utils/hardwareAudit.js';
 
 export default function App() {
   const [appFlow, setAppFlow] = useState(() => {
@@ -50,6 +51,21 @@ export default function App() {
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, []);
+
+  // Dev-only hardware placement audit
+  useEffect(() => {
+    if (import.meta.env.DEV && appFlow === 'SITE') {
+      const timer = setTimeout(() => {
+        auditHardwarePlacement();
+      }, 500);
+      const onResize = () => auditHardwarePlacement();
+      window.addEventListener('resize', onResize);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', onResize);
+      };
+    }
+  }, [appFlow]);
 
   // Lock scroll while intro or splash is active
   useEffect(() => {

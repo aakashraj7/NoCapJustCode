@@ -2,6 +2,14 @@
 .aboutSection {
   position: relative;
   overflow: hidden;
+  padding-block: 100px;
+}
+
+@media (max-width: 767px) {
+  .aboutSection {
+    padding-top: 140px;
+    padding-bottom: 140px;
+  }
 }
 
 .aboutContainer {
