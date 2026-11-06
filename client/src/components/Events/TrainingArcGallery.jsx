@@ -1,160 +1,209 @@
 // client/src/components/Events/TrainingArcGallery.jsx
-import React, { useState, useRef, useCallback, memo } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Events.module.css';
 import { workshopPhotos } from '../../data/workshopPhotos.js';
 
-function TrainingArcGallery({ caption = 'From our past workshops' }) {
+function TrainingArcGallery() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const total = workshopPhotos.length;
-  const currentPhoto = workshopPhotos[activeIndex] || workshopPhotos[0];
 
-  const goTo = useCallback((idx) => {
-    setActiveIndex((idx + total) % total);
-  }, [total]);
+  const goTo = useCallback(
+    (idx) => {
+      setActiveIndex(Math.max(0, Math.min(total - 1, idx)));
+    },
+    [total]
+  );
 
   const prev = useCallback(() => {
-    setActiveIndex((prevIdx) => (prevIdx - 1 + total) % total);
-  }, [total]);
+    goTo(activeIndex - 1);
+  }, [activeIndex, goTo]);
 
   const next = useCallback(() => {
-    setActiveIndex((prevIdx) => (prevIdx + 1) % total);
-  }, [total]);
+    goTo(activeIndex + 1);
+  }, [activeIndex, goTo]);
 
-  // Touch swipe handling for mobile
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.changedTouches[0].screenX;
-  };
+  const openLightbox = useCallback(() => {
+    setLightboxIndex(activeIndex);
+    setIsLightboxOpen(true);
+  }, [activeIndex]);
 
-  const handleTouchEnd = (e) => {
-    touchEndX.current = e.changedTouches[0].screenX;
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) next();
-      else prev();
-    }
-  };
+  const closeLightbox = useCallback(() => {
+    setActiveIndex(lightboxIndex);
+    setIsLightboxOpen(false);
+  }, [lightboxIndex]);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      prev();
-    } else if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      next();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goTo(activeIndex - 1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goTo(activeIndex + 1);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goTo(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goTo(total - 1);
+      }
+    },
+    [activeIndex, goTo, total]
+  );
+
+  // Lightbox keyboard controls: Escape, ArrowLeft, ArrowRight
+  useEffect(() => {
+    if (!isLightboxOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setLightboxIndex((prevIdx) => Math.max(0, prevIdx - 1));
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setLightboxIndex((prevIdx) => Math.min(total - 1, prevIdx + 1));
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isLightboxOpen, closeLightbox, total]);
 
   return (
-    <div className={styles.galleryWrapper} onKeyDown={handleKeyDown}>
+    <div
+      className={styles.galleryWrapper}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Workshop photos"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+    >
+      {/* Visually hidden aria-live status */}
+      <div className={styles.srOnly} aria-live="polite">
+        Photo {activeIndex + 1} of {total}
+      </div>
+
       {/* 1. Framed Card: 2px solid #F26B3A, radius 24px, padding 6px, bg #0B0B0D */}
-      <div
-        className={styles.framedPhotoCard}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
+      <div className={styles.framedPhotoCard}>
+        {/* Viewport: overflow hidden, radius 18px, aspect-ratio 4/3 */}
         <button
           type="button"
-          className={styles.innerImageBtn}
-          onClick={() => setIsLightboxOpen(true)}
+          className={styles.galleryViewport}
+          onClick={openLightbox}
           aria-label="Click to enlarge photo"
         >
-          <picture>
-            <source srcSet={currentPhoto.srcset} type="image/webp" />
-            <img
-              src={currentPhoto.src}
-              alt={currentPhoto.alt}
-              width={currentPhoto.width}
-              height={currentPhoto.height}
-              loading="eager"
-              decoding="async"
-              className={styles.innerFramedImg}
-              style={{ aspectRatio: '4 / 3' }}
-            />
-          </picture>
-        </button>
+          {/* Top-left pill: PAST WORKSHOP */}
+          <span className={styles.categoryPill} aria-hidden="true">
+            PAST WORKSHOP
+          </span>
 
-        {/* Small dark 1/4 counter pill in top-right corner */}
-        <div className={styles.counterPill} aria-hidden="true">
-          {activeIndex + 1}/{total}
-        </div>
-      </div>
+          {/* Top-right pill: 1/4 counter */}
+          <span className={styles.counterPill} aria-hidden="true">
+            {activeIndex + 1}/{total}
+          </span>
 
-      {/* 2. Dots BELOW the frame, centered: 8px dots, active 22px orange pill, inactive cream 0.3, 12px under frame */}
-      <div className={styles.dotsRow} aria-label="Photo gallery navigation">
-        {workshopPhotos.map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            className={`${styles.galleryDot} ${activeIndex === i ? styles.galleryDotActive : ''}`}
-            onClick={() => goTo(i)}
-            aria-label={`Go to photo ${i + 1}`}
-            aria-pressed={activeIndex === i}
-          />
-        ))}
-      </div>
-
-      {/* 3. Caption under the dots: muted cream, 13px */}
-      <p className={styles.galleryCaptionText}>{caption}</p>
-
-      {/* 4. Laptop-only Controls: Arrow buttons and thumbnail strip of 4 (64px, radius 12px, active 2px orange border) */}
-      <div className={styles.laptopGalleryControls}>
-        <div className={styles.laptopArrowRow}>
-          <button
-            type="button"
-            className={styles.laptopArrowBtn}
-            onClick={prev}
-            aria-label="Previous photo"
+          {/* Track: flex row of slides moved by transform */}
+          <div
+            className={styles.galleryTrack}
+            style={{ '--index': activeIndex }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-
-          <div className={styles.thumbStrip}>
             {workshopPhotos.map((photo, i) => (
-              <button
+              <div
                 key={photo.id}
-                type="button"
-                className={`${styles.thumbBtn} ${activeIndex === i ? styles.thumbBtnActive : ''}`}
-                onClick={() => goTo(i)}
-                aria-label={`Select photo ${i + 1}`}
+                className={styles.gallerySlide}
+                aria-hidden={activeIndex !== i}
               >
-                <img
-                  src={photo.src}
-                  alt=""
-                  width={64}
-                  height={64}
-                  loading="lazy"
-                  className={styles.thumbImg}
-                />
-              </button>
+                <picture>
+                  <source srcSet={photo.srcset} type="image/webp" />
+                  <img
+                    src={photo.src}
+                    alt={photo.alt}
+                    width={photo.width}
+                    height={photo.height}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    draggable={false}
+                    className={styles.galleryImg}
+                  />
+                </picture>
+              </div>
             ))}
           </div>
-
-          <button
-            type="button"
-            className={styles.laptopArrowBtn}
-            onClick={next}
-            aria-label="Next photo"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        </div>
+        </button>
       </div>
 
-      {/* 5. Lightbox: Portal, opaque backdrop, image keeps rounded corners and orange border */}
+      {/* 2. Navigation Row: [arrow] [4 dots] [arrow] */}
+      <div className={styles.galleryNavRow}>
+        <button
+          type="button"
+          className={styles.galleryArrowBtn}
+          onClick={prev}
+          disabled={activeIndex === 0}
+          aria-disabled={activeIndex === 0}
+          aria-label="Previous photo"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
+        <div className={styles.dotsGroup} role="group" aria-label="Choose photo">
+          {workshopPhotos.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`${styles.galleryDotBtn} ${activeIndex === i ? styles.galleryDotBtnActive : ''}`}
+              onClick={() => goTo(i)}
+              aria-label={`Show photo ${i + 1}`}
+              aria-current={activeIndex === i ? 'true' : undefined}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className={styles.galleryArrowBtn}
+          onClick={next}
+          disabled={activeIndex === total - 1}
+          aria-disabled={activeIndex === total - 1}
+          aria-label="Next photo"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+
+      {/* 3. Lightbox: Portal, opaque backdrop, image keeps rounded corners and orange border */}
       {isLightboxOpen && typeof document !== 'undefined' && createPortal(
         <div
           className={styles.lightboxOverlay}
           onClick={(e) => {
-            if (e.target === e.currentTarget) setIsLightboxOpen(false);
+            if (e.target === e.currentTarget) closeLightbox();
           }}
           role="dialog"
           aria-modal="true"
@@ -163,7 +212,7 @@ function TrainingArcGallery({ caption = 'From our past workshops' }) {
           <button
             type="button"
             className={styles.lightboxCloseBtn}
-            onClick={() => setIsLightboxOpen(false)}
+            onClick={closeLightbox}
             aria-label="Close enlarged view"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
@@ -177,8 +226,10 @@ function TrainingArcGallery({ caption = 'From our past workshops' }) {
             className={`${styles.lightboxNavBtn} ${styles.lightboxPrev}`}
             onClick={(e) => {
               e.stopPropagation();
-              prev();
+              setLightboxIndex((prevIdx) => Math.max(0, prevIdx - 1));
             }}
+            disabled={lightboxIndex === 0}
+            aria-disabled={lightboxIndex === 0}
             aria-label="Previous image"
           >
             ‹
@@ -186,13 +237,18 @@ function TrainingArcGallery({ caption = 'From our past workshops' }) {
 
           <div className={styles.lightboxContent}>
             <div className={styles.lightboxFramedBox}>
-              <img
-                src={currentPhoto.src}
-                alt={currentPhoto.alt}
-                className={styles.lightboxImg}
-              />
+              <picture>
+                <source srcSet={workshopPhotos[lightboxIndex].srcset} type="image/webp" />
+                <img
+                  src={workshopPhotos[lightboxIndex].src}
+                  alt={workshopPhotos[lightboxIndex].alt}
+                  className={styles.lightboxImg}
+                />
+              </picture>
             </div>
-            <p className={styles.lightboxCaption}>{currentPhoto.caption || currentPhoto.alt}</p>
+            <p className={styles.lightboxCaption}>
+              {workshopPhotos[lightboxIndex].caption || workshopPhotos[lightboxIndex].alt}
+            </p>
           </div>
 
           <button
@@ -200,8 +256,10 @@ function TrainingArcGallery({ caption = 'From our past workshops' }) {
             className={`${styles.lightboxNavBtn} ${styles.lightboxNext}`}
             onClick={(e) => {
               e.stopPropagation();
-              next();
+              setLightboxIndex((prevIdx) => Math.min(total - 1, prevIdx + 1));
             }}
+            disabled={lightboxIndex === total - 1}
+            aria-disabled={lightboxIndex === total - 1}
             aria-label="Next image"
           >
             ›
