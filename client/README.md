@@ -58,14 +58,11 @@ All event details, timings, speaker profiles, dates, venues, contact links, and 
 
 📁 `client/src/data/event.js`
 
-Any field awaiting final organizer confirmation is marked with a `// PLACEHOLDER: confirm with organizers` comment:
-- `date`: Currently `"TBA"`
-- `venue`: Currently `"TBA"`
-- `contact.email` / `contact.phone`: Placeholder contact channels
-- `fees`: Free / TBA
-- `topics`: Workshop curriculum points
-- `targetAudience` / `prerequisites`: Workshop checklist
-- `rules` / `prizes`: Competition guidelines
+- `date`: `"13 November 2026"`
+- `venue`: `"Pega Lab"`
+- `instructor`: `"Navadeep Anna, 3rd year senior"`
+- `connect`: Website and Instagram links
+- `SHOW_UNCONFIRMED`: Controls visibility of unconfirmed placeholder content
 
 To update the website content, edit `event.js` directly — all UI components dynamically derive their values from this configuration.
 

@@ -8,13 +8,13 @@ import { useScrollSpy } from '../../hooks/useScrollSpy.js';
 
 export default function Navbar({ onOpenRegister }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const activeSection = useScrollSpy(['hero', 'about', 'schedule', 'events', 'contact']);
+  const activeSection = useScrollSpy(['hero', 'about', 'schedule', 'events', 'connect']);
 
   const navItems = [
     { label: 'About', href: '#about', id: 'about' },
     { label: 'Schedule', href: '#schedule', id: 'schedule' },
     { label: 'Events', href: '#events', id: 'events' },
-    { label: 'Contact', href: '#contact', id: 'contact' },
+    { label: 'Connect', href: '#connect', id: 'connect' },
   ];
 
   const handleNavClick = (e, href) => {

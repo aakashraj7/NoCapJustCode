@@ -4,8 +4,9 @@
 
 export const CLUB_NAME = "Celestius";
 
-// PLACEHOLDER: confirm with organizers
-export const EVENT_YEAR = null;
+export const EVENT_YEAR = 2026;
+
+export const SHOW_UNCONFIRMED = false;
 
 export const PAIR_SIZE = 2;
 
@@ -25,16 +26,12 @@ export const eventData = {
   description:
     "A battleground where resume buzzwords don't save you. Only pure logic and locked-in problem solving.",
 
-  // PLACEHOLDER: confirm with organizers
-  date: "TBA",
-  // PLACEHOLDER: confirm with organizers
-  venue: "TBA",
-  // PLACEHOLDER: confirm with organizers
-  contact: {
-    email: "contact.celestius@example.com", // PLACEHOLDER: confirm with organizers
-    phone: "TBA", // PLACEHOLDER: confirm with organizers
-    instagram: "https://instagram.com/celestius", // PLACEHOLDER: confirm with organizers
-    discord: "https://discord.gg/celestius", // PLACEHOLDER: confirm with organizers
+  date: "13 November 2026",
+  venue: "Pega Lab",
+  connect: {
+    website: "https://www.celestius.in/",
+    instagram: "https://www.instagram.com/celestius_cit/",
+    instagramLabel: "@celestius_cit",
   },
 
   // PLACEHOLDER: confirm with organizers
@@ -68,7 +65,7 @@ export const eventData = {
       title: "The Training Arc",
       type: "Workshop",
       description:
-        "Competitive Coding & Problem-Solving Workshop conducted by Navadeep Anna and his friend.",
+        "A hands-on workshop on competitive coding and problem-solving, conducted by Navadeep Anna, a 3rd year senior.",
       highlight: true,
       eventId: "training-arc",
     },
@@ -112,15 +109,11 @@ export const eventData = {
       time: "10:15 AM - 11:15 AM",
       registrationType: "pair", // Single pair registration covers both tracks
       blurb:
-        "Competitive Coding & Problem-Solving Workshop conducted by Navadeep Anna and his friend.",
+        "A hands-on workshop on competitive coding and problem-solving, conducted by Navadeep Anna, a 3rd year senior.",
       speakers: [
         {
           name: "Navadeep Anna",
-          role: "Competitive Programmer",
-        },
-        {
-          name: "Friend of Navadeep", // PLACEHOLDER: confirm with organizers
-          role: "Co-Instructor",
+          role: "3rd year senior",
         },
       ],
       // PLACEHOLDER: confirm with organizers

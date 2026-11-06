@@ -12,7 +12,7 @@ export default function Footer() {
   };
 
   return (
-    <footer id="contact" className={styles.footer}>
+    <footer id="connect" className={styles.footer}>
       <SectionScene section="footer" />
       <div className={`container ${styles.footerContainer}`}>
         <div className={styles.footerGrid}>
@@ -57,38 +57,28 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Details */}
+          {/* Connect Details */}
           <div className={styles.footerCol}>
-            <span className={styles.colTitle}>Contact & Community</span>
+            <span className={styles.colTitle}>Connect</span>
             <ul className={styles.colList}>
-              <li className={styles.contactItem}>
-                <span>Email:</span>
-                <a href={`mailto:${eventData.contact.email}`} className={styles.colLink}>
-                  {eventData.contact.email}
-                </a>
-              </li>
-              <li className={styles.contactItem}>
-                <span>Phone:</span>
-                <span className={styles.colLink}>{eventData.contact.phone}</span>
-              </li>
               <li>
                 <a
-                  href={eventData.contact.instagram}
+                  href={eventData.connect.website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.colLink}
                 >
-                  Instagram ({eventData.presentedBy}) &rarr;
+                  Website &rarr;
                 </a>
               </li>
               <li>
                 <a
-                  href={eventData.contact.discord}
+                  href={eventData.connect.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.colLink}
                 >
-                  Discord Server &rarr;
+                  Instagram ({eventData.connect.instagramLabel}) &rarr;
                 </a>
               </li>
             </ul>
