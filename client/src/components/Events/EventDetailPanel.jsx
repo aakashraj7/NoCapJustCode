@@ -2,15 +2,15 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Events.module.css';
-import Button from '../ui/Button.jsx';
 import TugOfAuraVisual from './TugOfAuraVisual.jsx';
 import GoatTerminalVisual from './GoatTerminalVisual.jsx';
-import { SHOW_UNCONFIRMED } from '../../data/event.js';
 import { workshopPhotos } from '../../data/workshopPhotos.js';
+import { eventData } from '../../data/event.js';
 
 export default function EventDetailPanel({ event, isOpen, onClose, onRegister, triggerRef }) {
   const [activeTab, setActiveTab] = useState('overview'); // For TLE: 'overview' | 'round1' | 'round2'
-  const [activeSlide, setActiveSlide] = useState(0); // For workshop carousel
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0); // For Training Arc gallery
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [prevEventId, setPrevEventId] = useState(null);
@@ -18,18 +18,20 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
   if (event?.id !== prevEventId) {
     setPrevEventId(event?.id);
     setActiveTab('overview');
-    setActiveSlide(0);
+    setActivePhotoIndex(0);
+    setIsLightboxOpen(false);
     setDragY(0);
   }
 
   const panelRef = useRef(null);
   const closeBtnRef = useRef(null);
-  const carouselRef = useRef(null);
+  const phoneCarouselRef = useRef(null);
   const dragStartY = useRef(0);
   const pushedHistoryRef = useRef(false);
 
-  // Handle closing cleanly: pop history if pushed, call onClose, return focus
+  // Close handler: handles history pop cleanly and notifies parent
   const handleClose = useCallback(() => {
+    setIsLightboxOpen(false);
     if (pushedHistoryRef.current) {
       pushedHistoryRef.current = false;
       window.history.back();
@@ -37,7 +39,7 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
     onClose();
   }, [onClose]);
 
-  // Lock body scroll, hide navbar, manage browser history
+  // Lock body scroll, manage browser history, and manage focus
   useEffect(() => {
     if (!isOpen || !event) return;
 
@@ -54,7 +56,7 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
 
     window.addEventListener('popstate', handlePopState);
 
-    // Focus close button
+    // Initial focus on close button for accessibility
     const timer = setTimeout(() => {
       closeBtnRef.current?.focus();
     }, 50);
@@ -71,53 +73,49 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
     };
   }, [isOpen, event, triggerRef, onClose]);
 
-  // Escape key closes panel
+  // Focus trap inside the modal
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        handleClose();
+        if (isLightboxOpen) {
+          setIsLightboxOpen(false);
+        } else {
+          handleClose();
+        }
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const modalEl = panelRef.current;
+        if (!modalEl) return;
+        const focusable = modalEl.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, handleClose]);
+  }, [isOpen, isLightboxOpen, handleClose]);
 
-  // Carousel touch/scroll synchronization
-  const handleCarouselScroll = () => {
-    const el = carouselRef.current;
-    if (!el) return;
-    const slideWidth = el.offsetWidth;
-    if (slideWidth > 0) {
-      const index = Math.round(el.scrollLeft / slideWidth);
-      if (index !== activeSlide && index >= 0 && index < workshopPhotos.length) {
-        setActiveSlide(index);
-      }
-    }
-  };
-
-  const goToSlide = (idx) => {
-    const el = carouselRef.current;
-    if (!el) return;
-    el.scrollTo({
-      left: idx * el.offsetWidth,
-      behavior: 'smooth',
-    });
-    setActiveSlide(idx);
-  };
-
-  const scrollCarousel = (dir) => {
-    const next = Math.max(0, Math.min(workshopPhotos.length - 1, activeSlide + dir));
-    goToSlide(next);
-  };
-
-  // Drag down to dismiss on mobile (<768px)
+  // Drag down to close on mobile (< 768px)
   const handlePointerDown = (e) => {
     if (window.innerWidth >= 768) return;
-    if (e.target.closest('button')) return; // don't drag if clicking buttons
+    if (e.target.closest('button')) return; // do not drag if clicking button
     dragStartY.current = e.clientY;
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -138,7 +136,9 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
     setIsDragging(false);
     try {
       e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch {}
+    } catch {
+      // ignore
+    }
     if (dragY >= 80) {
       handleClose();
     } else {
@@ -164,12 +164,55 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
     }
   };
 
+  // Gallery keyboard navigation (ArrowLeft / ArrowRight)
+  const handleGalleryKeyDown = (e) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : workshopPhotos.length - 1));
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      setActivePhotoIndex((prev) => (prev < workshopPhotos.length - 1 ? prev + 1 : 0));
+    }
+  };
+
+  // Phone carousel scroll sync
+  const handlePhoneCarouselScroll = () => {
+    const el = phoneCarouselRef.current;
+    if (!el) return;
+    const width = el.offsetWidth;
+    if (width > 0) {
+      const idx = Math.round(el.scrollLeft / width);
+      if (idx !== activePhotoIndex && idx >= 0 && idx < workshopPhotos.length) {
+        setActivePhotoIndex(idx);
+      }
+    }
+  };
+
+  const scrollPhoneCarouselTo = (idx) => {
+    const el = phoneCarouselRef.current;
+    if (!el) return;
+    el.scrollTo({
+      left: idx * el.offsetWidth,
+      behavior: 'smooth',
+    });
+    setActivePhotoIndex(idx);
+  };
+
   if (!isOpen || !event) return null;
 
   const isTrainingArc = event.id === 'training-arc';
   const isTle = event.id === 'tle';
+  const eyebrowText = event.eyebrow || (isTrainingArc ? 'WORKSHOP 01' : 'COMPETITION 02');
+  const activePhoto = workshopPhotos[activePhotoIndex] || workshopPhotos[0];
 
-  // RENDER MODAL VIA PORTAL INTO DOCUMENT.BODY
+  const handleRegisterClick = () => {
+    if (onRegister) {
+      onRegister(event.id);
+    } else if (eventData.ticketUrl) {
+      window.open(eventData.ticketUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return createPortal(
     <div
       className={styles.panelBackdrop}
@@ -188,7 +231,7 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
           transition: isDragging ? 'none' : undefined,
         }}
       >
-        {/* 1. STICKY HEADER (56px) with drag handle on mobile */}
+        {/* (a) HEADER (64px laptop, 56px phone, border-bottom) */}
         <div
           className={styles.sheetHeader}
           onPointerDown={handlePointerDown}
@@ -198,6 +241,7 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
         >
           <div className={styles.dragPillIndicator} aria-hidden="true" />
           <div className={styles.headerBar}>
+            <span className={styles.headerEyebrow}>{eyebrowText}</span>
             <button
               ref={closeBtnRef}
               type="button"
@@ -205,398 +249,539 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
               onClick={handleClose}
               aria-label="Close details"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <path d="M19 12H5M12 19l-7-7 7-7" />
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
-            <h2 id="detail-panel-title" className={styles.headerTruncatedTitle}>
-              {event.title}
-            </h2>
-            <div className={styles.headerSpacer} />
           </div>
         </div>
 
-        {/* Segmented Tab Bar for TLE (Sticky under header) */}
-        {isTle && (
-          <div className={styles.segmentedTabBar} role="tablist" aria-label="TLE Competition Sections">
-            <button
-              id="tab-btn-overview"
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'overview'}
-              aria-controls="panel-overview"
-              tabIndex={activeTab === 'overview' ? 0 : -1}
-              className={`${styles.segmentedTab} ${activeTab === 'overview' ? styles.activeSegment : ''}`}
-              onClick={() => setActiveTab('overview')}
-              onKeyDown={(e) => handleTabKeyDown(e, 0)}
-            >
-              Overview
-            </button>
-            <button
-              id="tab-btn-round1"
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'round1'}
-              aria-controls="panel-round1"
-              tabIndex={activeTab === 'round1' ? 0 : -1}
-              className={`${styles.segmentedTab} ${activeTab === 'round1' ? styles.activeSegment : ''}`}
-              onClick={() => setActiveTab('round1')}
-              onKeyDown={(e) => handleTabKeyDown(e, 1)}
-            >
-              Round 1
-            </button>
-            <button
-              id="tab-btn-round2"
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'round2'}
-              aria-controls="panel-round2"
-              tabIndex={activeTab === 'round2' ? 0 : -1}
-              className={`${styles.segmentedTab} ${activeTab === 'round2' ? styles.activeSegment : ''}`}
-              onClick={() => setActiveTab('round2')}
-              onKeyDown={(e) => handleTabKeyDown(e, 2)}
-            >
-              Round 2
-            </button>
-          </div>
-        )}
-
-        {/* 2. SCROLLABLE CONTENT (Laptop: 2 Columns, Mobile: 1 Column) */}
+        {/* (b) BODY (scrolls internally on an inner element so scrollbar stays inside rounded clip) */}
         <div className={styles.sheetBody}>
-          {/* LEFT COLUMN: Scrolls on laptop */}
-          <div className={styles.leftContentCol}>
-            {/* Title Block */}
-            <div className={styles.modalTitleBlock}>
-              <div className={styles.tagTimeRow}>
-                <span className={styles.trackBadge}>{event.badge}</span>
-                <span className={styles.timeBadge}>{event.time}</span>
+          {/* PHONE: Training Arc Full-Bleed Carousel first */}
+          {isTrainingArc && (
+            <div className={styles.phoneCarouselArea}>
+              <div
+                className={styles.phoneCarouselTrack}
+                ref={phoneCarouselRef}
+                onScroll={handlePhoneCarouselScroll}
+              >
+                {workshopPhotos.map((photo, idx) => (
+                  <div key={photo.id} className={styles.phoneCarouselSlide}>
+                    <picture>
+                      <source srcSet={photo.srcset} type="image/webp" />
+                      <img
+                        src={photo.src}
+                        alt={photo.alt}
+                        width={photo.width}
+                        height={photo.height}
+                        loading={idx === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        className={styles.phoneCarouselImg}
+                        style={{ aspectRatio: '4 / 3' }}
+                      />
+                    </picture>
+                  </div>
+                ))}
               </div>
-              <h1 className={styles.modalMainTitle}>{event.title}</h1>
-              <div className={styles.metaPillsRow}>
-                <span className={styles.metaPill}>📅 13 November 2026</span>
-                <span className={styles.metaPill}>📍 Pega Lab</span>
-                <span className={styles.metaPill}>👥 Pairs (2 coders)</span>
+
+              {/* Overlaid 1/4 Counter top-right */}
+              <div className={styles.phoneCarouselCounter} aria-hidden="true">
+                {activePhotoIndex + 1}/{workshopPhotos.length}
+              </div>
+
+              {/* Overlaid dots at bottom */}
+              <div className={styles.phoneCarouselDots} aria-hidden="true">
+                {workshopPhotos.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`${styles.phoneDot} ${activePhotoIndex === idx ? styles.phoneDotActive : ''}`}
+                    onClick={() => scrollPhoneCarouselTo(idx)}
+                    aria-label={`Go to photo ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              <p className={styles.galleryCaptionPhone}>{event.photoCaption || 'From our past workshops'}</p>
+            </div>
+          )}
+
+          {/* LEFT COLUMN */}
+          <div className={styles.leftCol}>
+            {/* Title & Meta Row */}
+            <div className={styles.detailTitleSection}>
+              <h1 id="detail-panel-title" className={styles.detailTitle}>
+                {event.title}
+              </h1>
+
+              {/* Meta Chips Row */}
+              <div className={styles.detailMetaRow}>
+                <span className={styles.detailMetaChip}>
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  13 Nov 2026
+                </span>
+
+                <span className={styles.detailMetaChip}>
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  Pega Lab
+                </span>
+
+                <span className={styles.detailMetaChip}>
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  Pair entry
+                </span>
               </div>
             </div>
 
             {/* TRAINING ARC CONTENT */}
             {isTrainingArc && (
-              <>
-                {/* On mobile: Carousel shows inline inside content */}
-                <div className={styles.mobileCarouselSlot}>
-                  <div className={styles.carouselContainer}>
-                    <div
-                      className={styles.carouselTrack}
-                      ref={carouselRef}
-                      onScroll={handleCarouselScroll}
-                    >
-                      {workshopPhotos.map((photo, i) => (
-                        <div key={photo.id} className={styles.carouselSlide}>
-                          <picture>
-                            <source srcSet={photo.srcset} type="image/webp" />
-                            <img
-                              src={photo.src}
-                              alt={photo.alt}
-                              width={photo.width}
-                              height={photo.height}
-                              loading={i === 0 ? 'eager' : 'lazy'}
-                              decoding="async"
-                              className={styles.carouselImg}
-                              style={{ aspectRatio: '16 / 10' }}
-                            />
-                          </picture>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className={styles.carouselControls}>
-                      <button
-                        type="button"
-                        className={styles.carouselArrowBtn}
-                        onClick={() => scrollCarousel(-1)}
-                        aria-label="Previous photo"
-                      >
-                        ‹
-                      </button>
-                      <div className={styles.carouselDots}>
-                        {workshopPhotos.map((_, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            className={`${styles.dotItem} ${activeSlide === i ? styles.activeDot : ''}`}
-                            onClick={() => goToSlide(i)}
-                            aria-label={`Slide ${i + 1}`}
-                          />
-                        ))}
-                      </div>
-                      <button
-                        type="button"
-                        className={styles.carouselArrowBtn}
-                        onClick={() => scrollCarousel(1)}
-                        aria-label="Next photo"
-                      >
-                        ›
-                      </button>
-                    </div>
-                    <p className={styles.carouselCaption}>From our past workshops</p>
-                  </div>
-                </div>
-
-                {/* About Paragraph */}
-                <div className={styles.sectionBlock}>
-                  <h3 className={styles.sectionHeading}>// WORKSHOP OVERVIEW</h3>
-                  <p className={styles.sectionBodyText}>
-                    Competitive Coding &amp; Problem-Solving Workshop. {event.blurb}
+              <div className={styles.detailSectionsStack}>
+                {/* 1. About: ONE paragraph */}
+                <section className={styles.detailSection}>
+                  <h2 className={styles.sectionMonoLabel}>ABOUT</h2>
+                  <p className={styles.sectionParagraph}>
+                    {event.about || 'A hands-on workshop on competitive coding and problem-solving, conducted by Navadeep Anna, a 3rd year senior.'}
                   </p>
-                </div>
+                </section>
 
-                {/* Instructor Card */}
-                <div className={styles.sectionBlock}>
-                  <h3 className={styles.sectionHeading}>// YOUR INSTRUCTOR</h3>
+                {/* 2. Your instructor: compact card */}
+                <section className={styles.detailSection}>
+                  <h2 className={styles.sectionMonoLabel}>YOUR INSTRUCTOR</h2>
                   <div className={styles.instructorCard}>
                     <div className={styles.instructorAvatar} aria-hidden="true">
-                      NA
+                      {event.instructor?.initials || 'NA'}
                     </div>
-                    <div className={styles.instructorMeta}>
-                      <h4 className={styles.instructorName}>Navadeep Anna</h4>
-                      <p className={styles.instructorRole}>3rd year senior</p>
+                    <div className={styles.instructorInfo}>
+                      <span className={styles.instructorName}>
+                        {event.instructor?.name || 'Navadeep Anna'}
+                      </span>
+                      <span className={styles.instructorRole}>
+                        {event.instructor?.role || '3rd year senior'}
+                      </span>
                     </div>
                   </div>
-                </div>
+                </section>
 
-                {/* Unconfirmed sections are conditionally rendered */}
-                {SHOW_UNCONFIRMED && (
-                  <>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// WHAT YOU WILL LEARN</h3>
-                      <ul className={styles.bulletList}>
-                        {event.topics?.map((t, idx) => (
-                          <li key={idx} className={styles.bulletItem}>
-                            ▸ {t}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// WHO IS THIS FOR</h3>
-                      <p className={styles.sectionBodyText}>{event.targetAudience}</p>
-                    </div>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// WHAT TO BRING</h3>
-                      <ul className={styles.bulletList}>
-                        {event.prerequisites?.map((p, idx) => (
-                          <li key={idx} className={styles.bulletItem}>
-                            ▸ {p}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </>
-                )}
-              </>
+                {/* 3. At a glance: definition list */}
+                <section className={styles.detailSection}>
+                  <h2 className={styles.sectionMonoLabel}>AT A GLANCE</h2>
+                  <dl className={styles.glanceList}>
+                    {event.atAGlance?.map((item, idx) => (
+                      <div key={idx} className={styles.glanceRow}>
+                        <dt className={styles.glanceLabel}>{item.label}</dt>
+                        <dd className={styles.glanceValue}>{item.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              </div>
             )}
 
-            {/* TLE COMPETITION CONTENT */}
+            {/* TLE CONTENT */}
             {isTle && (
-              <>
+              <div className={styles.detailSectionsStack}>
+                {/* Segmented Control (auto width laptop, full width sticky phone) */}
+                <div
+                  className={styles.segmentedControl}
+                  role="tablist"
+                  aria-label="TLE Competition Sections"
+                >
+                  <button
+                    id="tab-btn-overview"
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'overview'}
+                    aria-controls="panel-overview"
+                    tabIndex={activeTab === 'overview' ? 0 : -1}
+                    className={`${styles.tabBtn} ${activeTab === 'overview' ? styles.tabBtnActive : ''}`}
+                    onClick={() => setActiveTab('overview')}
+                    onKeyDown={(e) => handleTabKeyDown(e, 0)}
+                  >
+                    Overview
+                  </button>
+                  <button
+                    id="tab-btn-round1"
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'round1'}
+                    aria-controls="panel-round1"
+                    tabIndex={activeTab === 'round1' ? 0 : -1}
+                    className={`${styles.tabBtn} ${activeTab === 'round1' ? styles.tabBtnActive : ''}`}
+                    onClick={() => setActiveTab('round1')}
+                    onKeyDown={(e) => handleTabKeyDown(e, 1)}
+                  >
+                    Round 1
+                  </button>
+                  <button
+                    id="tab-btn-round2"
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'round2'}
+                    aria-controls="panel-round2"
+                    tabIndex={activeTab === 'round2' ? 0 : -1}
+                    className={`${styles.tabBtn} ${activeTab === 'round2' ? styles.tabBtnActive : ''}`}
+                    onClick={() => setActiveTab('round2')}
+                    onKeyDown={(e) => handleTabKeyDown(e, 2)}
+                  >
+                    Round 2
+                  </button>
+                </div>
+
+                {/* Tab 1: Overview */}
                 {activeTab === 'overview' && (
-                  <div id="panel-overview" role="tabpanel" aria-labelledby="tab-btn-overview" className={styles.tabPanel}>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// DEADLOCK OVERVIEW</h3>
-                      <p className={styles.sectionBodyText}>{event.blurb}</p>
-                    </div>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// COMPETITION FORMAT</h3>
-                      <p className={styles.sectionBodyText}>
-                        Participate in pairs (2 coders per team). Both tracks (Round 1: Tug of Aura and Round 2: Who's the GOAT?) are fully included under the single team pass.
+                  <div
+                    id="panel-overview"
+                    role="tabpanel"
+                    aria-labelledby="tab-btn-overview"
+                    className={styles.tabPanelFade}
+                  >
+                    <section className={styles.detailSection}>
+                      <h2 className={styles.sectionMonoLabel}>ABOUT</h2>
+                      <p className={styles.sectionParagraph}>
+                        {event.overview?.about}
                       </p>
-                    </div>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// TIME & ARENA</h3>
-                      <p className={styles.sectionBodyText}>
-                        12:00 PM – 2:30 PM at Pega Lab. Immediate live leaderboard and instant verification.
+                    </section>
+
+                    <section className={styles.detailSection}>
+                      <h2 className={styles.sectionMonoLabel}>FORMAT</h2>
+                      <p className={styles.sectionParagraph}>
+                        {event.overview?.format}
                       </p>
+                    </section>
+
+                    <section className={styles.detailSection}>
+                      <h2 className={styles.sectionMonoLabel}>AT A GLANCE</h2>
+                      <dl className={styles.glanceList}>
+                        {event.overview?.atAGlance?.map((item, idx) => (
+                          <div key={idx} className={styles.glanceRow}>
+                            <dt className={styles.glanceLabel}>{item.label}</dt>
+                            <dd className={styles.glanceValue}>{item.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </section>
+
+                    {/* On phone: Event Day stepper is displayed at the end of Overview */}
+                    <div className={styles.phoneStepperBlock}>
+                      <section className={styles.detailSection}>
+                        <h2 className={styles.sectionMonoLabel}>EVENT DAY</h2>
+                        <div className={styles.stepperCard}>
+                          <div className={styles.stepperTrack}>
+                            {event.stepper?.map((step, idx) => (
+                              <div key={idx} className={styles.stepperItem}>
+                                <div className={styles.stepperLineWrap}>
+                                  <span className={styles.stepperDot} />
+                                  {idx < event.stepper.length - 1 && <span className={styles.stepperLine} />}
+                                </div>
+                                <div className={styles.stepperContent}>
+                                  <span className={styles.stepperTime}>{step.time}</span>
+                                  <span className={styles.stepperTitle}>{step.title}</span>
+                                  {step.subItems && (
+                                    <ul className={styles.stepperSublist}>
+                                      {step.subItems.map((sub, sIdx) => (
+                                        <li key={sIdx} className={styles.stepperSubitem}>
+                                          {sub}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className={styles.noteCard}>
+                          <p className={styles.noteCardText}>{event.noteCard}</p>
+                        </div>
+                      </section>
                     </div>
                   </div>
                 )}
 
+                {/* Tab 2: Round 1 (Tug of Aura) */}
                 {activeTab === 'round1' && (
-                  <div id="panel-round1" role="tabpanel" aria-labelledby="tab-btn-round1" className={styles.tabPanel}>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// ROUND 1: TUG OF AURA</h3>
-                      <p className={styles.sectionBodyText}>
-                        {event.rounds?.[0]?.description}
+                  <div
+                    id="panel-round1"
+                    role="tabpanel"
+                    aria-labelledby="tab-btn-round1"
+                    className={styles.tabPanelFade}
+                  >
+                    <section className={styles.detailSection}>
+                      <h2 className={styles.sectionMonoLabel}>ROUND 1: TUG OF AURA</h2>
+                      <p className={styles.sectionParagraph}>
+                        {event.round1?.description}
                       </p>
-                    </div>
-                    <div className={styles.visualContainer}>
+                    </section>
+
+                    <div className={styles.visualSlot}>
                       <TugOfAuraVisual />
                     </div>
                   </div>
                 )}
 
+                {/* Tab 3: Round 2 (Who's the GOAT?) */}
                 {activeTab === 'round2' && (
-                  <div id="panel-round2" role="tabpanel" aria-labelledby="tab-btn-round2" className={styles.tabPanel}>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// ROUND 2: WHO'S THE GOAT?</h3>
-                      <p className={styles.sectionBodyText}>
-                        {event.rounds?.[1]?.description}
+                  <div
+                    id="panel-round2"
+                    role="tabpanel"
+                    aria-labelledby="tab-btn-round2"
+                    className={styles.tabPanelFade}
+                  >
+                    <section className={styles.detailSection}>
+                      <h2 className={styles.sectionMonoLabel}>ROUND 2: WHO'S THE GOAT?</h2>
+                      <p className={styles.sectionParagraph}>
+                        {event.round2?.description}
                       </p>
-                    </div>
-                    <div className={styles.visualContainer}>
+                    </section>
+
+                    <div className={styles.visualSlot}>
                       <GoatTerminalVisual />
                     </div>
                   </div>
                 )}
-
-                {SHOW_UNCONFIRMED && (
-                  <>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// RULES</h3>
-                      <ul className={styles.bulletList}>
-                        {event.rules?.map((r, idx) => (
-                          <li key={idx} className={styles.bulletItem}>
-                            ▸ {r}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className={styles.sectionBlock}>
-                      <h3 className={styles.sectionHeading}>// PRIZES</h3>
-                      <p className={styles.sectionBodyText}>{event.prizes}</p>
-                    </div>
-                  </>
-                )}
-              </>
+              </div>
             )}
           </div>
 
-          {/* RIGHT COLUMN: Sticky on laptop (>= 768px) */}
-          <div className={styles.rightStickyCol}>
-            {/* Desktop visual showcase */}
-            <div className={styles.desktopVisualArea}>
-              {isTrainingArc ? (
-                <div className={styles.carouselContainer}>
-                  <div
-                    className={styles.carouselTrack}
-                    ref={carouselRef}
-                    onScroll={handleCarouselScroll}
-                  >
-                    {workshopPhotos.map((photo, i) => (
-                      <div key={photo.id} className={styles.carouselSlide}>
-                        <picture>
-                          <source srcSet={photo.srcset} type="image/webp" />
-                          <img
-                            src={photo.src}
-                            alt={photo.alt}
-                            width={photo.width}
-                            height={photo.height}
-                            loading={i === 0 ? 'eager' : 'lazy'}
-                            decoding="async"
-                            className={styles.carouselImg}
-                            style={{ aspectRatio: '16 / 10' }}
-                          />
-                        </picture>
-                      </div>
-                    ))}
-                  </div>
+          {/* RIGHT COLUMN (Laptop >= 768px) */}
+          <div className={styles.rightCol}>
+            {/* TRAINING ARC: Photo Gallery */}
+            {isTrainingArc && (
+              <div className={styles.desktopGalleryArea}>
+                {/* Main 4:3 Image Frame */}
+                <button
+                  type="button"
+                  className={styles.mainImageFrame}
+                  onClick={() => setIsLightboxOpen(true)}
+                  onKeyDown={handleGalleryKeyDown}
+                  aria-label="Click to enlarge photo"
+                >
+                  <picture>
+                    <source srcSet={activePhoto.srcset} type="image/webp" />
+                    <img
+                      src={activePhoto.src}
+                      alt={activePhoto.alt}
+                      width={activePhoto.width}
+                      height={activePhoto.height}
+                      loading="eager"
+                      decoding="async"
+                      className={styles.mainPhotoImg}
+                      style={{ aspectRatio: '4 / 3' }}
+                    />
+                  </picture>
+                </button>
 
-                  <div className={styles.carouselControls}>
+                {/* Thumbnail Strip (64px thumbs, radius 10px) */}
+                <div
+                  className={styles.thumbStrip}
+                  role="region"
+                  aria-label="Photo gallery thumbnails"
+                  onKeyDown={handleGalleryKeyDown}
+                >
+                  {workshopPhotos.map((photo, idx) => (
                     <button
+                      key={photo.id}
                       type="button"
-                      className={styles.carouselArrowBtn}
-                      onClick={() => scrollCarousel(-1)}
-                      aria-label="Previous photo"
+                      className={`${styles.thumbBtn} ${activePhotoIndex === idx ? styles.thumbBtnActive : ''}`}
+                      onClick={() => setActivePhotoIndex(idx)}
+                      aria-label={`Select photo ${idx + 1}`}
+                      aria-pressed={activePhotoIndex === idx}
                     >
-                      ‹
+                      <img
+                        src={photo.src}
+                        alt=""
+                        width={64}
+                        height={64}
+                        loading="lazy"
+                        className={styles.thumbImg}
+                      />
                     </button>
-                    <div className={styles.carouselDots}>
-                      {workshopPhotos.map((_, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          className={`${styles.dotItem} ${activeSlide === i ? styles.activeDot : ''}`}
-                          onClick={() => goToSlide(i)}
-                          aria-label={`Slide ${i + 1}`}
-                        />
+                  ))}
+                </div>
+
+                <p className={styles.galleryCaption}>
+                  {event.photoCaption || 'From our past workshops'}
+                </p>
+              </div>
+            )}
+
+            {/* TLE: Stepper & Note Card */}
+            {isTle && (
+              <div className={styles.desktopTleFactsArea}>
+                <section className={styles.detailSection}>
+                  <h2 className={styles.sectionMonoLabel}>EVENT DAY</h2>
+                  <div className={styles.stepperCard}>
+                    <div className={styles.stepperTrack}>
+                      {event.stepper?.map((step, idx) => (
+                        <div key={idx} className={styles.stepperItem}>
+                          <div className={styles.stepperLineWrap}>
+                            <span className={styles.stepperDot} />
+                            {idx < event.stepper.length - 1 && <span className={styles.stepperLine} />}
+                          </div>
+                          <div className={styles.stepperContent}>
+                            <span className={styles.stepperTime}>{step.time}</span>
+                            <span className={styles.stepperTitle}>{step.title}</span>
+                            {step.subItems && (
+                              <ul className={styles.stepperSublist}>
+                                {step.subItems.map((sub, sIdx) => (
+                                  <li key={sIdx} className={styles.stepperSubitem}>
+                                    {sub}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        </div>
                       ))}
                     </div>
-                    <button
-                      type="button"
-                      className={styles.carouselArrowBtn}
-                      onClick={() => scrollCarousel(1)}
-                      aria-label="Next photo"
-                    >
-                      ›
-                    </button>
                   </div>
-                  <p className={styles.carouselCaption}>From our past workshops</p>
-                </div>
-              ) : (
-                <div className={styles.desktopTleShowcase}>
-                  <TugOfAuraVisual />
-                </div>
-              )}
-            </div>
 
-            {/* Desktop Sticky Booking / Summary Card */}
-            <div className={styles.desktopStickyCard}>
-              <div className={styles.cardPriceRow}>
-                <div>
-                  <div className={styles.pricePrimary}>₹298 per pair</div>
-                  <div className={styles.priceSecondary}>₹149 x 2 coders</div>
-                </div>
-                <div className={styles.pairTagBadge}>PAIR ENTRY</div>
+                  <div className={styles.noteCard}>
+                    <p className={styles.noteCardText}>{event.noteCard}</p>
+                  </div>
+                </section>
               </div>
-
-              <div className={styles.cardDetailsList}>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Date:</span>
-                  <span className={styles.detailVal}>13 November 2026</span>
-                </div>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Venue:</span>
-                  <span className={styles.detailVal}>Pega Lab</span>
-                </div>
-                <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Pass:</span>
-                  <span className={styles.detailVal}>Full Day (Workshop + DEADLOCK)</span>
-                </div>
-              </div>
-
-              <Button
-                size="lg"
-                variant="primary"
-                fullWidth
-                onClick={() => {
-                  handleClose();
-                  onRegister(event.id);
-                }}
-              >
-                Register as a pair
-              </Button>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* 3. STICKY BOTTOM BAR (Mobile only < 768px, fully opaque #0B0B0D) */}
-        <div className={styles.sheetBottomBar}>
-          <div className={styles.bottomBarPricing}>
-            <span className={styles.bottomBarPrice}>₹298 per pair</span>
-            <span className={styles.bottomBarSplit}>₹149 x 2</span>
+        {/* (c) STICKY FOOTER BAR */}
+        <div className={styles.stickyFooterBar}>
+          <div className={styles.footerPricingBlock}>
+            <span className={styles.footerPricePrimary}>
+              {eventData.pricingSummary.pair}
+            </span>
+            <span className={styles.footerPriceSplitLaptop}>
+              {eventData.pricingSummary.split}
+            </span>
+            <span className={styles.footerPriceSplitPhone}>
+              {eventData.pricingSummary.splitShort}
+            </span>
           </div>
 
           <button
             type="button"
-            className={styles.bottomBarRegisterBtn}
-            onClick={() => {
-              handleClose();
-              onRegister(event.id);
-            }}
+            className={styles.primaryRegisterBtn}
+            onClick={handleRegisterClick}
           >
             Register as a pair
           </button>
         </div>
       </div>
+
+      {/* FULL-SCREEN LIGHTBOX MODAL (Training Arc) */}
+      {isLightboxOpen && (
+        <div
+          className={styles.lightboxOverlay}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsLightboxOpen(false);
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged photo view"
+        >
+          <button
+            type="button"
+            className={styles.lightboxCloseBtn}
+            onClick={() => setIsLightboxOpen(false)}
+            aria-label="Close enlarged view"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className={`${styles.lightboxNavBtn} ${styles.lightboxPrev}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActivePhotoIndex((prev) => (prev > 0 ? prev - 1 : workshopPhotos.length - 1));
+            }}
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+
+          <div className={styles.lightboxContent}>
+            <img
+              src={activePhoto.src}
+              alt={activePhoto.alt}
+              className={styles.lightboxImg}
+            />
+            <p className={styles.lightboxCaption}>{activePhoto.caption || activePhoto.alt}</p>
+          </div>
+
+          <button
+            type="button"
+            className={`${styles.lightboxNavBtn} ${styles.lightboxNext}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActivePhotoIndex((prev) => (prev < workshopPhotos.length - 1 ? prev + 1 : 0));
+            }}
+            aria-label="Next image"
+          >
+            ›
+          </button>
+        </div>
+      )}
     </div>,
     document.body
   );

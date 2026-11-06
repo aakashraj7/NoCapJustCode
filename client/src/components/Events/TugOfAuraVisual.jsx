@@ -3,64 +3,65 @@ import React, { useState } from 'react';
 import styles from './Events.module.css';
 
 export default function TugOfAuraVisual() {
-  // Kinetic force position: -50 (full Omega) to +50 (full Alpha), default 0 (balanced)
-  const [force, setForce] = useState(6);
+  // Kinetic position offset: -45 (full Omega) to +45 (full Alpha), default 0
+  const [offset, setOffset] = useState(0);
 
-  const pullAlpha = () => setForce((prev) => Math.min(prev + 12, 45));
-  const pullOmega = () => setForce((prev) => Math.max(prev - 12, -45));
-  const reset = () => setForce(0);
+  const pullOmega = () => setOffset((prev) => Math.max(prev - 12, -45));
+  const pullAlpha = () => setOffset((prev) => Math.min(prev + 12, 45));
+  const reset = () => setOffset(0);
 
-  // Position percentage: 0% = Omega edge, 50% = Center, 100% = Alpha edge
-  const positionPct = 50 + force;
+  // Position percentage along the rope track (0% to 100%, 50% is center)
+  const positionPct = 50 + offset;
 
   return (
-    <div className={styles.tugContainer}>
-      <div className={styles.tugHeader}>
-        <span className={styles.tugBadge}>ROUND 1 SIMULATION</span>
-        <span className={styles.tugLabel}>Live Kinetic Force Engine</span>
+    <div className={styles.demoCard}>
+      <div className={styles.demoHeader}>
+        <span className={styles.demoLabel}>INTERACTIVE DEMO</span>
       </div>
 
-      {/* Teams Indicator */}
+      {/* Team names at the ends */}
       <div className={styles.teamsRow}>
-        <div className={`${styles.teamCol} ${styles.teamOmega}`}>
-          <span className={styles.teamTag}>[TEAM OMEGA]</span>
-          <span className={styles.teamStatus}>{force < 0 ? 'Surging' : 'Defending'}</span>
-        </div>
-        <div className={styles.ropeCenterPin}>CENTER</div>
-        <div className={`${styles.teamCol} ${styles.teamAlpha}`}>
-          <span className={styles.teamTag}>[TEAM ALPHA]</span>
-          <span className={styles.teamStatus}>{force > 0 ? 'Surging' : 'Defending'}</span>
-        </div>
+        <span className={styles.teamOmega}>[TEAM OMEGA]</span>
+        <span className={styles.teamAlpha}>[TEAM ALPHA]</span>
       </div>
 
-      {/* The Digital Rope Bar */}
+      {/* Thick rounded rope bar with a marker */}
       <div className={styles.ropeTrack} aria-label="Digital Tug of War Track">
-        <div className={styles.ropeCenterMarker} />
-        {/* Kinetic Marker Node */}
+        <div className={styles.ropeCenterMark} />
         <div
-          className={styles.ropeKnot}
+          className={styles.ropeMarker}
           style={{ left: `${positionPct}%` }}
-        >
-          <div className={styles.knotPulse} />
-          <span className={styles.knotFlag}>FORCE</span>
-        </div>
+          aria-label={`Rope position: ${positionPct}%`}
+        />
       </div>
 
-      {/* Controls to demonstrate the dynamic force */}
-      <div className={styles.tugControls}>
-        <button type="button" className={styles.tugActionBtn} onClick={pullOmega}>
-          &larr; Omega Solve (+force)
+      {/* Single row of 3 buttons on laptop; 2 on top row + Reset below on phone (all 48px tall) */}
+      <div className={styles.demoControlsGrid}>
+        <button
+          type="button"
+          className={`${styles.demoBtn} ${styles.btnOmega}`}
+          onClick={pullOmega}
+          aria-label="Omega solves"
+        >
+          Omega solves
         </button>
-        <button type="button" className={styles.tugResetBtn} onClick={reset}>
+        <button
+          type="button"
+          className={`${styles.demoBtn} ${styles.btnReset}`}
+          onClick={reset}
+          aria-label="Reset position"
+        >
           Reset
         </button>
-        <button type="button" className={styles.tugActionBtn} onClick={pullAlpha}>
-          Alpha Solve (+force) &rarr;
+        <button
+          type="button"
+          className={`${styles.demoBtn} ${styles.btnAlpha}`}
+          onClick={pullAlpha}
+          aria-label="Alpha solves"
+        >
+          Alpha solves
         </button>
       </div>
-      <p className={styles.tugFootnote}>
-        Every accepted challenge exerts Kinetic Force pulling the center marker toward your team.
-      </p>
     </div>
   );
 }
