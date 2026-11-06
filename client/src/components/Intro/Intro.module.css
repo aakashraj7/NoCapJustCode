@@ -1,0 +1,319 @@
+/* client/src/components/Intro/Intro.module.css */
+.overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #000000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow: hidden;
+  transition: opacity 400ms ease-out, visibility 400ms ease-out;
+}
+
+.overlay.fadingOut {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Skip Button - Always top right, 44px tall */
+.skipButton {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  height: 44px;
+  min-width: 80px;
+  padding: 0 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  background: rgba(20, 20, 22, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  z-index: 10000;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.skipButton:hover {
+  border-color: var(--accent-orange);
+  background: var(--surface-2);
+}
+
+.stage {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 280px;
+}
+
+/* Loading section */
+.loadingBox {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.loadingLabel {
+  font-family: var(--font-intro-pixel);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.progressBarContainer {
+  width: 100%;
+  max-width: 380px;
+  height: 12px;
+  background-color: #141416;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: var(--accent-orange);
+  transition: width 80ms linear, background-color 0s;
+}
+
+.progressBarFill.green {
+  background-color: var(--accent-green);
+}
+
+/* Larper Detected Popup Box */
+.popupWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1.5rem;
+  animation: popIn 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.popupWrapper.poppingOut {
+  animation: popOut 180ms ease-in forwards;
+}
+
+.popupBox {
+  position: relative;
+  background-color: #F7EDD8;
+  color: #000000;
+  padding: 0.85rem 1.75rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 3px rgba(242, 107, 58, 0.4);
+  animation: blinkOrange 1s ease-in-out infinite;
+}
+
+.popupBox.greenCut {
+  box-shadow: 0 0 0 3px rgba(61, 220, 132, 0.7);
+  animation: none;
+}
+
+/* Orange/Green Side Handles */
+.sideHandleLeft,
+.sideHandleRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 20px;
+  background-color: var(--accent-orange);
+  border-radius: 2px;
+}
+
+.sideHandleLeft {
+  left: -8px;
+}
+
+.sideHandleRight {
+  right: -8px;
+}
+
+.popupBox.greenCut .sideHandleLeft,
+.popupBox.greenCut .sideHandleRight {
+  background-color: var(--accent-green);
+}
+
+.popupText {
+  font-family: var(--font-intro-pixel);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Logo Presentation */
+.logoScene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  user-select: none;
+}
+
+.larperRow {
+  font-family: var(--font-intro-pixel);
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  color: var(--accent-orange);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
+}
+
+.orRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-intro-pixel);
+  font-size: 0.85rem;
+  color: var(--accent-yellow);
+}
+
+.orBracket {
+  letter-spacing: 0.1em;
+}
+
+.orBadge {
+  background: var(--accent-yellow);
+  color: #000000;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  transform: skewX(-12deg);
+  font-weight: 700;
+}
+
+.coderRow {
+  font-family: var(--font-intro-pixel);
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  color: var(--text-primary);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.15em;
+  background-color: var(--accent-yellow);
+  margin-left: 0.1em;
+  animation: blinkCursor 800ms steps(1, start) infinite;
+}
+
+/* Presenter Scene */
+.presenterScene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.presenterLabel {
+  font-family: var(--font-intro-pixel);
+  font-size: clamp(0.95rem, 2.5vw, 1.35rem);
+  color: var(--text-primary);
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+}
+
+.presenterHighlight {
+  color: var(--accent-orange);
+  font-weight: 700;
+}
+
+/* Enter Button (pulsing) */
+.enterButton {
+  margin-top: 2rem;
+  height: 52px;
+  padding: 0 2.5rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--accent-orange);
+  color: #000000;
+  font-family: var(--font-intro-pixel);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  animation: pulseButton 1.5s ease-in-out infinite;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.enterButton:hover {
+  background-color: var(--accent-orange-hover);
+  transform: scale(1.04);
+}
+
+/* Keyframes */
+@keyframes popIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes popOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes blinkOrange {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(242, 107, 58, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(242, 107, 58, 0.7);
+  }
+}
+
+@keyframes blinkCursor {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.01%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulseButton {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(242, 107, 58, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(242, 107, 58, 0);
+  }
+}
