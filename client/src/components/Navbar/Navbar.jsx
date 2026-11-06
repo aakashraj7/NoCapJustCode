@@ -34,7 +34,14 @@ export default function Navbar({ onOpenRegister }) {
         <a href="#hero" className={styles.brand} onClick={(e) => handleNavClick(e, '#hero')}>
           <picture className={styles.brandLogoWrapper}>
             <source srcSet={navbarLogoWebp} type="image/webp" />
-            <img src={navbarLogoPng} alt="LARPER OR CODER Logo" className={styles.brandLogo} width={160} height={80} />
+            <img
+              src={navbarLogoPng}
+              alt="LARPER OR CODER Logo"
+              className={styles.brandLogo}
+              width={320}
+              height={163}
+              style={{ aspectRatio: '320 / 163' }}
+            />
           </picture>
           <span className={styles.brandTitle}>LARPER OR CODER</span>
           {EVENT_YEAR && <span className={styles.brandBadge}>{EVENT_YEAR}</span>}

@@ -19,7 +19,14 @@ export default function Footer() {
             <div className={styles.brandHeading}>
               <picture>
                 <source srcSet={navbarLogoWebp} type="image/webp" />
-                <img src={navbarLogoPng} alt="LARPER OR CODER Logo" className={styles.footerLogo} width={160} height={80} />
+                <img
+                  src={navbarLogoPng}
+                  alt="LARPER OR CODER Logo"
+                  className={styles.footerLogo}
+                  width={320}
+                  height={163}
+                  style={{ aspectRatio: '320 / 163' }}
+                />
               </picture>
               <span className={styles.brandName}>{eventData.name}</span>
             </div>

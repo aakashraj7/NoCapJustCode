@@ -28,9 +28,9 @@
   --hero-glow: radial-gradient(ellipse 60% 40% at 50% 12%, rgba(242, 107, 58, 0.10), transparent 70%);
 
   /* Typography */
-  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-display: 'Space Grotesk', 'Space Grotesk Fallback', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', 'Inter Fallback', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, SFMono-Regular, monospace;
   --font-intro-pixel: 'Press Start 2P', monospace; /* Used strictly in Intro */
 
   /* Radii */

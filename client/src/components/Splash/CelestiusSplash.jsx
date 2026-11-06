@@ -97,6 +97,7 @@ export default function CelestiusSplash({ onComplete }) {
               className={styles.logoImg}
               width={773}
               height={241}
+              style={{ aspectRatio: '773 / 241' }}
               loading="eager"
             />
           </picture>

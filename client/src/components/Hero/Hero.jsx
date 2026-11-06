@@ -102,6 +102,7 @@ export default function Hero({ onOpenRegister }) {
                   loading="eager"
                   width={617}
                   height={314}
+                  style={{ aspectRatio: '617 / 314' }}
                 />
               </picture>
               <div className={styles.showcaseFootnote}>
