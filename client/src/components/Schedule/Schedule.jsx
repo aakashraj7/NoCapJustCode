@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './Schedule.module.css';
 import { eventData } from '../../data/event.js';
-import Prop from '../Scene/Prop.jsx';
+import { CodeCard, KeyCaps } from '../Scene/DevCards/index.js';
 
 export default function Schedule() {
   const itemRefs = useRef([]);
@@ -31,19 +31,16 @@ export default function Schedule() {
 
   return (
     <section id="schedule" className={`section ${styles.scheduleSection}`}>
-      {/* Background Coding Props */}
-      <Prop
-        name="folderTree"
-        parallaxFactor={-0.03}
-        variant="fadeToRight"
-        style={{ top: '10%', left: '-6%', width: 'clamp(210px, 28vw, 440px)' }}
+      {/* Floating Dev Cards in Margins */}
+      <CodeCard
+        className={styles.scheduleCodeCard}
+        parallaxFactor={-0.04}
+        floatVariant="B"
       />
-      <Prop
-        name="keycaps"
+      <KeyCaps
+        className={styles.scheduleKeyCaps}
         parallaxFactor={0.035}
-        variant="fadeToLeft"
-        className="phoneHide"
-        style={{ bottom: '8%', right: '-5%', width: 'clamp(200px, 28vw, 450px)' }}
+        floatVariant="A"
       />
 
       <div className={`container ${styles.scheduleContainer}`}>

@@ -4,6 +4,24 @@
   overflow: hidden;
 }
 
+/* DevCards in Margins */
+.scheduleCodeCard {
+  top: 18%;
+  left: 2%;
+}
+
+.scheduleKeyCaps {
+  bottom: 16%;
+  right: 2%;
+}
+
+@media (max-width: 1279px) {
+  .scheduleCodeCard,
+  .scheduleKeyCaps {
+    display: none;
+  }
+}
+
 .scheduleContainer {
   position: relative;
   z-index: 2;

@@ -4,7 +4,7 @@ import styles from './Events.module.css';
 import { eventData } from '../../data/event.js';
 import EventCard from './EventCard.jsx';
 import EventDetailPanel from './EventDetailPanel.jsx';
-import Prop from '../Scene/Prop.jsx';
+import { TerminalCard, StatusPill } from '../Scene/DevCards/index.js';
 
 export default function EventCards({ onOpenRegister }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -21,18 +21,17 @@ export default function EventCards({ onOpenRegister }) {
 
   return (
     <section id="events" className={`section ${styles.eventsSection}`}>
-      {/* Background Coding Props */}
-      <Prop
-        name="terminal"
+      {/* Floating Dev Cards in Outer Gutters Only (never behind cards) */}
+      <TerminalCard
+        className={styles.eventsTerminal}
         parallaxFactor={0.03}
-        variant="fadeToLeft"
-        style={{ top: '6%', right: '-7%', width: 'clamp(230px, 30vw, 480px)' }}
+        floatVariant="A"
       />
-      <Prop
-        name="bug"
-        parallaxFactor={-0.035}
-        variant="fadeToRight"
-        style={{ bottom: '8%', left: '-5%', width: 'clamp(180px, 24vw, 380px)' }}
+      <StatusPill
+        text="pair ready"
+        className={styles.eventsStatusPill}
+        parallaxFactor={-0.03}
+        floatVariant="C"
       />
 
       <div className={`container ${styles.eventsContainer}`}>

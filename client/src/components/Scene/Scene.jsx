@@ -7,7 +7,7 @@ import styles from './Scene.module.css';
  * - #000 base
  * - Faint dot grid at 4-5% opacity
  * - Subtle ambient radial tints (hero warm glow & edge vignette)
- * - Lightweight canvas of slow-rising embers (10 phone, 16 tablet, 24 laptop)
+ * - Lightweight canvas of slow-rising embers (8 phone, 12 tablet, 16 laptop)
  * - Aria-hidden, pointer-events: none, z-index: 0
  * - Paused on hidden tabs, disabled on prefers-reduced-motion
  */
@@ -28,11 +28,11 @@ export default function Scene() {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Particle count: 10 on phone, 16 on tablet, 24 on laptop/desktop
+    // Particle count: 8 on phone, 12 on tablet, 16 on laptop/desktop
     const getEmbersCount = (w) => {
-      if (w >= 1200) return 24;
-      if (w >= 768) return 16;
-      return 10;
+      if (w >= 1200) return 16;
+      if (w >= 768) return 12;
+      return 8;
     };
 
     let embersCount = getEmbersCount(width);

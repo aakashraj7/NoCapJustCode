@@ -2,24 +2,21 @@
 import React from 'react';
 import styles from './About.module.css';
 import { eventData } from '../../data/event.js';
-import Prop from '../Scene/Prop.jsx';
+import { GitGraphCard, TestCaseChip } from '../Scene/DevCards/index.js';
 
 export default function About() {
   return (
     <section id="about" className={`section ${styles.aboutSection}`}>
-      {/* Background Coding Props */}
-      <Prop
-        name="gitBranch"
+      {/* Floating Dev Cards in Margins */}
+      <GitGraphCard
+        className={styles.aboutGitGraph}
         parallaxFactor={0.035}
-        variant="fadeToLeft"
-        style={{ top: '8%', right: '-6%', width: 'clamp(220px, 30vw, 480px)' }}
+        floatVariant="C"
       />
-      <Prop
-        name="chip"
+      <TestCaseChip
+        className={styles.aboutTestCase}
         parallaxFactor={-0.03}
-        variant="fadeToRight"
-        className="phoneHide"
-        style={{ bottom: '4%', left: '-5%', width: 'clamp(190px, 25vw, 380px)' }}
+        floatVariant="B"
       />
 
       <div className={`container ${styles.aboutContainer}`}>

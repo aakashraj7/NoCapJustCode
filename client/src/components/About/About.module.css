@@ -4,6 +4,24 @@
   overflow: hidden;
 }
 
+/* DevCards in Margins */
+.aboutGitGraph {
+  top: 22%;
+  right: 2%;
+}
+
+.aboutTestCase {
+  bottom: 18%;
+  left: 2%;
+}
+
+@media (max-width: 1279px) {
+  .aboutGitGraph,
+  .aboutTestCase {
+    display: none;
+  }
+}
+
 .aboutContainer {
   position: relative;
   z-index: 2;

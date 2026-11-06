@@ -1,0 +1,374 @@
+/* client/src/components/Scene/DevCards/DevCards.module.css */
+
+.devCard {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  border-radius: 16px;
+  border: 1px solid rgba(247, 237, 216, 0.14);
+  background: rgba(11, 11, 13, 0.55);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  font-family: var(--font-mono, 'JetBrains Mono', 'Fira Code', monospace);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--color-cream, #f7edd8);
+  opacity: 0.44;
+  overflow: hidden;
+  box-sizing: border-box;
+  will-change: transform;
+}
+
+/* Blur on laptop/desktop only - no blur on phones or tablets */
+@media (min-width: 1024px) {
+  .devCard {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+}
+
+/* Phone responsive sizing and opacity */
+@media (max-width: 767px) {
+  .devCard {
+    opacity: 0.28;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    max-width: 130px;
+    font-size: 9.5px;
+  }
+}
+
+/* Float Keyframe Animations */
+@keyframes floatA {
+  0% {
+    transform: translateY(var(--parallax-y, 0px)) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(calc(var(--parallax-y, 0px) - 8px)) rotate(0.8deg);
+  }
+  100% {
+    transform: translateY(calc(var(--parallax-y, 0px) + 6px)) rotate(-0.5deg);
+  }
+}
+
+@keyframes floatB {
+  0% {
+    transform: translateY(var(--parallax-y, 0px)) rotate(1.2deg);
+  }
+  50% {
+    transform: translateY(calc(var(--parallax-y, 0px) + 9px)) rotate(-0.7deg);
+  }
+  100% {
+    transform: translateY(calc(var(--parallax-y, 0px) - 7px)) rotate(1deg);
+  }
+}
+
+@keyframes floatC {
+  0% {
+    transform: translateY(var(--parallax-y, 0px)) rotate(-0.6deg);
+  }
+  50% {
+    transform: translateY(calc(var(--parallax-y, 0px) - 9px)) rotate(-1.4deg);
+  }
+  100% {
+    transform: translateY(calc(var(--parallax-y, 0px) + 7px)) rotate(0.5deg);
+  }
+}
+
+.floatA {
+  animation: floatA 16s ease-in-out infinite alternate;
+}
+
+.floatB {
+  animation: floatB 19s ease-in-out infinite alternate;
+}
+
+.floatC {
+  animation: floatC 22s ease-in-out infinite alternate;
+}
+
+/* Blinking cursor */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor {
+  display: inline-block;
+  color: var(--color-orange, #f26b3a);
+  font-weight: 700;
+  animation: blink 1s step-start infinite;
+}
+
+/* Status Pill glowing green pulse */
+@keyframes greenPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+.greenDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #4ade80;
+  animation: greenPulse 2.4s infinite;
+  flex-shrink: 0;
+}
+
+/* Prefers-reduced-motion disables all card float and pulse */
+@media (prefers-reduced-motion: reduce) {
+  .devCard,
+  .floatA,
+  .floatB,
+  .floatC,
+  .cursor,
+  .greenDot {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Global paused state when document tab is hidden */
+:global(.tab-hidden) .devCard,
+:global(.tab-hidden) .cursor,
+:global(.tab-hidden) .greenDot {
+  animation-play-state: paused !important;
+}
+
+/* --- Terminal Card --- */
+.terminalCard {
+  width: 230px;
+  padding: 10px 12px;
+}
+
+.terminalHeader {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(247, 237, 216, 0.08);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(247, 237, 216, 0.25);
+}
+
+.dotAccent {
+  background: var(--color-orange, #f26b3a);
+}
+
+.terminalTitle {
+  margin-left: auto;
+  font-size: 9px;
+  color: rgba(247, 237, 216, 0.4);
+  letter-spacing: 0.05em;
+}
+
+.terminalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.terminalLine {
+  white-space: nowrap;
+}
+
+.prompt {
+  color: var(--color-orange, #f26b3a);
+  margin-right: 5px;
+}
+
+.passedCheck {
+  color: #4ade80;
+  margin-right: 4px;
+}
+
+/* --- Code Card --- */
+.codeCard {
+  width: 250px;
+  padding: 10px 12px;
+}
+
+.codeTable {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.lineNum {
+  color: rgba(247, 237, 216, 0.25);
+  text-align: right;
+  padding-right: 8px;
+  user-select: none;
+  font-size: 10px;
+}
+
+.codeText {
+  white-space: pre;
+  font-size: 11px;
+}
+
+.kwOrange {
+  color: var(--color-orange, #f26b3a);
+  font-weight: 600;
+}
+
+.kwYellow {
+  color: var(--color-yellow, #f8bb3a);
+}
+
+.codeComment {
+  color: rgba(247, 237, 216, 0.4);
+}
+
+/* --- Git Graph Card --- */
+.gitGraphCard {
+  width: 200px;
+  padding: 8px 12px;
+}
+
+.gitGraphContent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gitTags {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gitTagMain {
+  font-size: 9.5px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(247, 237, 216, 0.1);
+  color: rgba(247, 237, 216, 0.8);
+  border: 1px solid rgba(247, 237, 216, 0.15);
+}
+
+.gitTagPair {
+  font-size: 9.5px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(242, 107, 58, 0.15);
+  color: var(--color-orange, #f26b3a);
+  border: 1px solid rgba(242, 107, 58, 0.3);
+  font-weight: 600;
+}
+
+/* --- Key Caps --- */
+.keyCapsCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.keyCap {
+  background: rgba(22, 22, 28, 0.9);
+  border: 1px solid rgba(247, 237, 216, 0.22);
+  border-bottom: 3px solid rgba(247, 237, 216, 0.36);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(247, 237, 216, 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.01em;
+}
+
+.keyCapAccent {
+  border-color: rgba(242, 107, 58, 0.4);
+  border-bottom-color: var(--color-orange, #f26b3a);
+  color: var(--color-orange, #f26b3a);
+}
+
+/* --- Test Case Chip --- */
+.testCaseChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.passBadge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  letter-spacing: 0.05em;
+}
+
+.testCaseText {
+  font-size: 10.5px;
+  color: rgba(247, 237, 216, 0.85);
+}
+
+/* --- Big O Badge --- */
+.bigOBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.bigOText {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-yellow, #f8bb3a);
+}
+
+.sparklineSvg {
+  width: 38px;
+  height: 16px;
+}
+
+/* --- Status Pill --- */
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.statusText {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: rgba(247, 237, 216, 0.85);
+}
+
+/* --- Laptop Card --- */
+.laptopCard {
+  width: 200px;
+  padding: 10px 12px;
+  border-radius: 16px;
+}
+
+.laptopSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}

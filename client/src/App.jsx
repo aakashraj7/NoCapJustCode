@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { checkHealth } from './services/api.js';
 import Scene from './components/Scene/Scene.jsx';
+import { initDevOverlapChecker } from './components/Scene/index.js';
 import Intro from './components/Intro/Intro.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 import Hero from './components/Hero/Hero.jsx';
@@ -25,6 +26,10 @@ export default function App() {
         console.info('[System] Backend server offline or mock mode active. Mock adapter will handle registrations.');
       }
     });
+
+    if (import.meta.env.DEV) {
+      return initDevOverlapChecker();
+    }
   }, []);
 
   const handleOpenRegister = () => {

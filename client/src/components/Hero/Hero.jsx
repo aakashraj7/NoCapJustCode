@@ -7,7 +7,13 @@ import { eventData } from '../../data/event.js';
 import Button from '../ui/Button.jsx';
 import Chip from '../ui/Chip.jsx';
 import Marquee from './Marquee.jsx';
-import Prop from '../Scene/Prop.jsx';
+import {
+  LaptopCard,
+  TerminalCard,
+  KeyCaps,
+  BigOBadge,
+  StatusPill,
+} from '../Scene/DevCards/index.js';
 
 export default function Hero({ onOpenRegister }) {
   const scrollToEvents = (e) => {
@@ -20,28 +26,12 @@ export default function Hero({ onOpenRegister }) {
 
   return (
     <section id="hero" className={styles.heroSection}>
-      {/* Background Coding Props */}
-      <Prop
-        name="braces"
-        parallaxFactor={-0.03}
-        variant="fadeToRight"
-        className={`${styles.heroBracesProp} phoneHide`}
-        style={{ top: '6%', left: '-5%', width: 'clamp(180px, 22vw, 360px)' }}
-      />
-      <Prop
-        name="terminal"
-        parallaxFactor={0.03}
-        variant="fadeToRight"
-        className={styles.heroTerminalProp}
-        style={{ bottom: '8%', left: '-4%', width: 'clamp(200px, 26vw, 420px)' }}
-      />
-      <Prop
-        name="laptop"
-        parallaxFactor={-0.04}
-        variant="fadeToLeft"
-        className={styles.heroLaptopProp}
-        style={{ top: '16%', right: '-8%', width: 'clamp(300px, 40vw, 620px)' }}
-      />
+      {/* Floating Dev Cards */}
+      <BigOBadge className={styles.heroBigO} floatVariant="C" parallaxFactor={-0.03} />
+      <StatusPill className={styles.heroStatusPill} floatVariant="A" parallaxFactor={0.025} />
+      <LaptopCard className={styles.heroLaptop} floatVariant="B" parallaxFactor={-0.04} />
+      <TerminalCard className={styles.heroTerminal} floatVariant="A" parallaxFactor={0.035} />
+      <KeyCaps className={styles.heroKeyCaps} floatVariant="A" parallaxFactor={-0.03} />
 
       <div className={`container ${styles.heroContent}`}>
         <div className={styles.heroGrid}>
@@ -118,7 +108,7 @@ export default function Hero({ onOpenRegister }) {
                 <img
                   src={logoPngFallback}
                   alt="LARPER OR CODER Logo"
-                  className={styles.heroLogoImg}
+                  className={`${styles.heroLogoImg} heroLogo`}
                   loading="eager"
                   width={617}
                   height={314}
