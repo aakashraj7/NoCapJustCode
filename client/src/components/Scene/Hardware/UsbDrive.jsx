@@ -1,6 +1,7 @@
 // client/src/components/Scene/Hardware/UsbDrive.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
+import { OPACITY } from '../hardwareConfig.js';
 
 export default function UsbDrive({
   width = 75,
@@ -11,10 +12,10 @@ export default function UsbDrive({
   className = '',
   style = {},
 }) {
-  const cream = 'rgba(247, 237, 216, 0.85)';
-  const creamFaint = 'rgba(247, 237, 216, 0.35)';
-  const orange = '#F26B3A';
-  const fillDark = 'rgba(11, 11, 13, 0.9)';
+  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
+  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
+  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
+  const fillCream = OPACITY.fillCream;
 
   return (
     <div
@@ -40,25 +41,25 @@ export default function UsbDrive({
           width="18"
           height="14"
           rx="2"
-          fill="rgba(30, 30, 38, 0.95)"
+          fill="none"
+          stroke={cream}
+          strokeWidth="1.5"
+        />
+        {/* 2 Inner Contact Holes */}
+        <rect x="10" y="14" width="3" height="3" fill="none" stroke={creamFaint} strokeWidth="1" />
+        <rect x="10" y="19" width="3" height="3" fill="none" stroke={creamFaint} strokeWidth="1" />
+        <line x1="16" y1="13" x2="16" y2="23" stroke={creamFaint} strokeWidth="1" />
+
+        {/* Plastic Case Body - Pure Line Art */}
+        <path
+          d="M 24 8 L 60 8 Q 68 8 68 18 Q 68 28 60 28 L 24 28 Z"
+          fill={fillCream}
           stroke={cream}
           strokeWidth="1.6"
         />
-        {/* 2 Inner Contact Holes */}
-        <rect x="10" y="14" width="3" height="3" fill={creamFaint} />
-        <rect x="10" y="19" width="3" height="3" fill={creamFaint} />
-        <line x1="16" y1="13" x2="16" y2="23" stroke={creamFaint} strokeWidth="1" />
-
-        {/* Plastic Case Body */}
-        <path
-          d="M 24 8 L 60 8 Q 68 8 68 18 Q 68 28 60 28 L 24 28 Z"
-          fill={fillDark}
-          stroke={cream}
-          strokeWidth="1.8"
-        />
 
         {/* Lanyard Loop Hole */}
-        <circle cx="61" cy="18" r="3" stroke={cream} strokeWidth="1.4" fill="none" />
+        <circle cx="61" cy="18" r="3" stroke={cream} strokeWidth="1.3" fill="none" />
 
         {/* Orange Activity LED */}
         <circle cx="34" cy="18" r="2" fill={orange} />

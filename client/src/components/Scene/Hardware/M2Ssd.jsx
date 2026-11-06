@@ -1,6 +1,7 @@
 // client/src/components/Scene/Hardware/M2Ssd.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
+import { OPACITY } from '../hardwareConfig.js';
 
 export default function M2Ssd({
   width = 135,
@@ -11,11 +12,11 @@ export default function M2Ssd({
   className = '',
   style = {},
 }) {
-  const cream = 'rgba(247, 237, 216, 0.85)';
-  const creamFaint = 'rgba(247, 237, 216, 0.35)';
-  const orange = '#F26B3A';
-  const yellow = '#F8BB3A';
-  const fillDark = 'rgba(11, 11, 13, 0.9)';
+  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
+  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
+  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
+  const yellow = `rgba(248, 187, 58, ${OPACITY.accent})`;
+  const fillCream = OPACITY.fillCream;
 
   return (
     <div
@@ -34,16 +35,16 @@ export default function M2Ssd({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* PCB Board Outline with Rear Screw Notch */}
+        {/* PCB Board Outline with Rear Screw Notch - Pure Line Art */}
         <path
           d="M 12 8 L 126 8 L 126 16 L 131 16 L 131 26 L 126 26 L 126 34 L 12 34 Q 6 34 6 28 L 6 24 C 9 24 11 22.5 11 21 C 11 19.5 9 18 6 18 L 6 14 Q 6 8 12 8 Z"
-          fill={fillDark}
+          fill={fillCream}
           stroke={cream}
-          strokeWidth="1.8"
+          strokeWidth="1.6"
         />
 
         {/* Semi-circular mounting screw hole pad */}
-        <circle cx="8" cy="21" r="3" stroke={cream} strokeWidth="1.4" fill="none" />
+        <circle cx="8" cy="21" r="3" stroke={cream} strokeWidth="1.3" fill="none" />
 
         {/* 3 Rectangular NAND Flash Storage Chips */}
         {[20, 48, 76].map((x, i) => (
@@ -54,9 +55,9 @@ export default function M2Ssd({
               width="24"
               height="18"
               rx="2"
-              fill="rgba(18, 18, 24, 0.95)"
+              fill="none"
               stroke={cream}
-              strokeWidth="1.3"
+              strokeWidth="1.2"
             />
             <circle cx={x + 3.5} cy="15.5" r="0.8" fill={creamFaint} />
             <line x1={x + 6} y1="21" x2={x + 18} y2="21" stroke={creamFaint} strokeWidth="1" />
@@ -70,9 +71,9 @@ export default function M2Ssd({
           width="16"
           height="16"
           rx="2"
-          fill="rgba(242, 107, 58, 0.18)"
+          fill="none"
           stroke={orange}
-          strokeWidth="1.6"
+          strokeWidth="1.5"
         />
         <circle cx="112" cy="21" r="2" fill={orange} />
 

@@ -1,6 +1,7 @@
 // client/src/components/Scene/Hardware/Keyboard.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
+import { OPACITY } from '../hardwareConfig.js';
 
 export default function Keyboard({
   width = 200,
@@ -11,10 +12,10 @@ export default function Keyboard({
   className = '',
   style = {},
 }) {
-  const cream = 'rgba(247, 237, 216, 0.85)';
-  const creamFaint = 'rgba(247, 237, 216, 0.35)';
-  const orange = '#F26B3A';
-  const fillDark = 'rgba(11, 11, 13, 0.88)';
+  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
+  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
+  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
+  const fillCream = OPACITY.fillCream;
 
   return (
     <div
@@ -33,16 +34,16 @@ export default function Keyboard({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Chassis Frame */}
+        {/* Chassis Frame - Pure Line Art */}
         <rect
           x="6"
           y="6"
           width="188"
           height="63"
           rx="8"
-          fill={fillDark}
+          fill={fillCream}
           stroke={cream}
-          strokeWidth="2"
+          strokeWidth="1.8"
         />
 
         {/* Row 1 Keys (Esc, Q..P, Backspace) */}
@@ -75,9 +76,9 @@ export default function Keyboard({
           width="29"
           height="10"
           rx="2"
-          fill="rgba(242, 107, 58, 0.18)"
+          fill="rgba(242, 107, 58, 0.08)"
           stroke={orange}
-          strokeWidth="1.8"
+          strokeWidth="1.6"
         />
         <path d="M 176 31 L 170 31 L 173 29 M 170 31 L 173 33" stroke={orange} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
 
@@ -97,15 +98,15 @@ export default function Keyboard({
         <rect x="14" y="52" width="15" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
         <rect x="33" y="52" width="13" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
         {/* Spacebar */}
-        <rect x="50" y="52" width="76" height="9" rx="2" stroke={cream} strokeWidth="1.5" />
+        <rect x="50" y="52" width="76" height="9" rx="2" stroke={cream} strokeWidth="1.4" />
         <rect x="130" y="52" width="13" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
         <rect x="147" y="52" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
         <rect x="162" y="52" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
         <rect x="177" y="52" width="11" height="9" rx="2" stroke={cream} strokeWidth="1.2" />
 
-        {/* 3D bottom bevel shadow lines on keycaps */}
+        {/* Keycap bevel lines */}
         <line x1="14" y1="23" x2="26" y2="23" stroke={creamFaint} strokeWidth="1" />
-        <line x1="50" y1="62" x2="126" y2="62" stroke={creamFaint} strokeWidth="1.2" />
+        <line x1="50" y1="62" x2="126" y2="62" stroke={creamFaint} strokeWidth="1" />
       </svg>
     </div>
   );

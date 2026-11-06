@@ -1,6 +1,7 @@
 // client/src/components/Scene/Hardware/Monitor.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
+import { OPACITY } from '../hardwareConfig.js';
 
 export default function Monitor({
   width = 185,
@@ -11,11 +12,11 @@ export default function Monitor({
   className = '',
   style = {},
 }) {
-  const cream = 'rgba(247, 237, 216, 0.85)';
-  const creamFaint = 'rgba(247, 237, 216, 0.35)';
-  const orange = '#F26B3A';
-  const green = '#4ADE80';
-  const fillDark = 'rgba(11, 11, 13, 0.9)';
+  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
+  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
+  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
+  const green = `rgba(74, 222, 128, ${OPACITY.accent})`;
+  const fillCream = OPACITY.fillCream;
 
   return (
     <div
@@ -34,16 +35,16 @@ export default function Monitor({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Monitor Screen Frame */}
+        {/* Monitor Screen Frame - Pure Line Art */}
         <rect
           x="10"
           y="10"
           width="165"
           height="100"
           rx="8"
-          fill={fillDark}
+          fill={fillCream}
           stroke={cream}
-          strokeWidth="2"
+          strokeWidth="1.8"
         />
 
         {/* Inner Screen Display */}
@@ -53,7 +54,7 @@ export default function Monitor({
           width="149"
           height="84"
           rx="4"
-          fill="rgba(5, 5, 8, 0.95)"
+          fill="none"
           stroke={creamFaint}
           strokeWidth="1.2"
         />
@@ -65,7 +66,6 @@ export default function Monitor({
         <circle cx="40" cy="25" r="2" stroke={creamFaint} strokeWidth="1" />
 
         {/* Terminal Content: $ run tests */}
-        {/* Prompt symbol '$' */}
         <path d="M 28 44 L 32 47 L 28 50" stroke={orange} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         <text
           x="38"
@@ -96,10 +96,10 @@ export default function Monitor({
         <rect x="28" y="74" width="5" height="8" fill={orange} className={styles.cursor} />
 
         {/* Monitor Stand Vertical Neck */}
-        <rect x="86" y="110" width="13" height="20" rx="2" fill={fillDark} stroke={cream} strokeWidth="1.8" />
+        <rect x="86" y="110" width="13" height="20" rx="2" fill={fillCream} stroke={cream} strokeWidth="1.6" />
 
         {/* Stand Baseplate */}
-        <ellipse cx="92.5" cy="133" rx="36" ry="6" fill={fillDark} stroke={cream} strokeWidth="2" />
+        <ellipse cx="92.5" cy="133" rx="36" ry="6" fill={fillCream} stroke={cream} strokeWidth="1.8" />
       </svg>
     </div>
   );

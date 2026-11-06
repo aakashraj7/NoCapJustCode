@@ -1,6 +1,7 @@
 // client/src/components/Scene/Hardware/CaseFan.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
+import { OPACITY } from '../hardwareConfig.js';
 
 export default function CaseFan({
   width = 85,
@@ -11,10 +12,10 @@ export default function CaseFan({
   className = '',
   style = {},
 }) {
-  const cream = 'rgba(247, 237, 216, 0.85)';
-  const creamFaint = 'rgba(247, 237, 216, 0.35)';
-  const orange = '#F26B3A';
-  const fillDark = 'rgba(11, 11, 13, 0.9)';
+  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
+  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
+  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
+  const fillCream = OPACITY.fillCream;
 
   const blades = [];
   const cx = 42.5;
@@ -34,7 +35,7 @@ export default function CaseFan({
         key={i}
         d={`M ${cx} ${cy} Q ${cxCurv} ${cyCurv} ${x2} ${y2}`}
         stroke={cream}
-        strokeWidth="1.8"
+        strokeWidth="1.6"
         strokeLinecap="round"
       />
     );
@@ -57,32 +58,32 @@ export default function CaseFan({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Square Housing Frame with Rounded Corners */}
+        {/* Square Housing Frame with Rounded Corners - Pure Line Art */}
         <rect
           x="6"
           y="6"
           width="73"
           height="73"
           rx="10"
-          fill={fillDark}
+          fill={fillCream}
           stroke={cream}
-          strokeWidth="2"
+          strokeWidth="1.8"
         />
 
         {/* 4 Corner Screw Holes */}
-        <circle cx="14" cy="14" r="3" stroke={creamFaint} strokeWidth="1.4" fill="none" />
-        <circle cx="71" cy="14" r="3" stroke={creamFaint} strokeWidth="1.4" fill="none" />
-        <circle cx="14" cy="71" r="3" stroke={creamFaint} strokeWidth="1.4" fill="none" />
-        <circle cx="71" cy="71" r="3" stroke={creamFaint} strokeWidth="1.4" fill="none" />
+        <circle cx="14" cy="14" r="3" stroke={creamFaint} strokeWidth="1.3" fill="none" />
+        <circle cx="71" cy="14" r="3" stroke={creamFaint} strokeWidth="1.3" fill="none" />
+        <circle cx="14" cy="71" r="3" stroke={creamFaint} strokeWidth="1.3" fill="none" />
+        <circle cx="71" cy="71" r="3" stroke={creamFaint} strokeWidth="1.3" fill="none" />
 
         {/* Circular Fan Cowling Duct */}
-        <circle cx="42.5" cy="42.5" r="31" stroke={cream} strokeWidth="1.8" fill="rgba(6, 6, 8, 0.85)" />
+        <circle cx="42.5" cy="42.5" r="31" stroke={cream} strokeWidth="1.6" fill="none" />
 
         {/* 9 Aerofoil Blades */}
         {blades}
 
-        {/* Center Motor Hub with Orange Spiral Accent */}
-        <circle cx="42.5" cy="42.5" r="11" fill={fillDark} stroke={orange} strokeWidth="1.8" />
+        {/* Center Motor Hub with Orange Accent */}
+        <circle cx="42.5" cy="42.5" r="11" fill="none" stroke={orange} strokeWidth="1.6" />
         <circle cx="42.5" cy="42.5" r="4" fill={orange} />
       </svg>
     </div>

@@ -1,6 +1,7 @@
 // client/src/components/Scene/Hardware/Mouse.jsx
 import React from 'react';
 import styles from './Hardware.module.css';
+import { OPACITY } from '../hardwareConfig.js';
 
 export default function Mouse({
   width = 56,
@@ -11,10 +12,10 @@ export default function Mouse({
   className = '',
   style = {},
 }) {
-  const cream = 'rgba(247, 237, 216, 0.85)';
-  const creamFaint = 'rgba(247, 237, 216, 0.35)';
-  const orange = '#F26B3A';
-  const fillDark = 'rgba(11, 11, 13, 0.9)';
+  const cream = `rgba(247, 237, 216, ${OPACITY.strokeStandard})`;
+  const creamFaint = `rgba(247, 237, 216, ${OPACITY.strokeStandard * 0.7})`;
+  const orange = `rgba(242, 107, 58, ${OPACITY.accent})`;
+  const fillCream = OPACITY.fillCream;
 
   return (
     <div
@@ -33,15 +34,15 @@ export default function Mouse({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Ergonomic Contour Body */}
+        {/* Ergonomic Contour Body - Pure Line Art */}
         <path
           d="M 14 18 Q 28 8 42 18 Q 48 30 48 54 Q 48 72 28 72 Q 8 72 8 54 Q 8 30 14 18 Z"
-          fill={fillDark}
+          fill={fillCream}
           stroke={cream}
-          strokeWidth="2"
+          strokeWidth="1.8"
         />
         {/* Left/Right Button Seam */}
-        <line x1="28" y1="12" x2="28" y2="34" stroke={cream} strokeWidth="1.6" />
+        <line x1="28" y1="12" x2="28" y2="34" stroke={cream} strokeWidth="1.4" />
         <path d="M 12 34 Q 28 36 44 34" stroke={creamFaint} strokeWidth="1.2" />
 
         {/* Textured Scroll Wheel in Orange Accent */}
@@ -51,7 +52,7 @@ export default function Mouse({
           width="5"
           height="12"
           rx="2"
-          fill="rgba(242, 107, 58, 0.2)"
+          fill="none"
           stroke={orange}
           strokeWidth="1.5"
         />
