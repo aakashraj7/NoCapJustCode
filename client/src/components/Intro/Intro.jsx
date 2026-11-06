@@ -1,11 +1,11 @@
 // client/src/components/Intro/Intro.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Intro.module.css';
 import { INTRO_STATES, TIMINGS, SESSION_KEY } from './introConstants.js';
 
 export default function Intro({ onComplete }) {
   // Check session storage before rendering
-  const [alreadySeen, setAlreadySeen] = useState(() => {
+  const [alreadySeen] = useState(() => {
     try {
       return sessionStorage.getItem(SESSION_KEY) === 'true';
     } catch {
@@ -13,13 +13,21 @@ export default function Intro({ onComplete }) {
     }
   });
 
-  const [state, setState] = useState(INTRO_STATES.LOADING);
-  const [progress, setProgress] = useState(0);
-  const [logoPhase, setLogoPhase] = useState('TYPING'); // TYPING, HOLD, BACKSPACE, PRESENTER, READY
-  const [typedLarper, setTypedLarper] = useState('');
-  const [showOrBadge, setShowOrBadge] = useState(false);
-  const [typedCoder, setTypedCoder] = useState('');
-  const [typedPresenter, setTypedPresenter] = useState('');
+  // Check prefers-reduced-motion initially: show final enter screen immediately, do not skip silently
+  const isReducedMotion = typeof window !== 'undefined' &&
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const [state, setState] = useState(() =>
+    isReducedMotion ? INTRO_STATES.ENTER_READY : INTRO_STATES.LOADING
+  );
+  const [progress, setProgress] = useState(() => (isReducedMotion ? 100 : 0));
+  const [typedLarper, setTypedLarper] = useState(() => (isReducedMotion ? 'LARPER' : ''));
+  const [showOrBadge, setShowOrBadge] = useState(() => isReducedMotion);
+  const [typedCoder, setTypedCoder] = useState(() => (isReducedMotion ? 'CODER' : ''));
+  const [typedPresenter, setTypedPresenter] = useState(() =>
+    isReducedMotion ? 'PRESENTED BY CELESTIALS' : ''
+  );
   const [isPoppingOut, setIsPoppingOut] = useState(false);
 
   const skipBtnRef = useRef(null);
@@ -48,7 +56,7 @@ export default function Intro({ onComplete }) {
   }, [alreadySeen]);
 
   // Dismiss handler
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     setState(INTRO_STATES.FADING_OUT);
     try {
       sessionStorage.setItem(SESSION_KEY, 'true');
@@ -58,7 +66,7 @@ export default function Intro({ onComplete }) {
     setTimeout(() => {
       onComplete?.();
     }, 400);
-  };
+  }, [onComplete]);
 
   // Keyboard shortcut listener (Enter, Escape)
   useEffect(() => {
@@ -73,28 +81,11 @@ export default function Intro({ onComplete }) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [alreadySeen]);
+  }, [alreadySeen, dismiss]);
 
-  // Check prefers-reduced-motion: show final enter screen immediately, do not skip silently
+  // State machine progression: Loading -> Detected -> Freeze/Green Cut
   useEffect(() => {
-    if (alreadySeen) return;
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) {
-      setState(INTRO_STATES.ENTER_READY);
-      setTypedLarper('LARPER');
-      setShowOrBadge(true);
-      setTypedCoder('CODER');
-      setTypedPresenter('PRESENTED BY CELESTIALS');
-    }
-  }, [alreadySeen]);
-
-  // State machine progression
-  useEffect(() => {
-    if (alreadySeen) return;
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) return;
+    if (alreadySeen || isReducedMotion) return;
 
     // Phase 1: LOADING (0% -> 99% in ~2000ms)
     if (state === INTRO_STATES.LOADING) {
@@ -102,7 +93,6 @@ export default function Intro({ onComplete }) {
       const interval = setInterval(() => {
         const elapsed = performance.now() - startTime;
         const ratio = Math.min(elapsed / TIMINGS.LOADING, 1);
-        // Non-linear easing to 99%
         const currentProgress = Math.min(Math.floor(ratio * 99), 99);
         setProgress(currentProgress);
 
@@ -125,7 +115,6 @@ export default function Intro({ onComplete }) {
 
     // Phase 3: CUT_TO_GREEN (Popup, handles, blink, and bar turn green in one cut, freeze 1000ms, bar hits 100%, pops out)
     if (state === INTRO_STATES.CUT_TO_GREEN) {
-      setProgress(100);
       const timer = setTimeout(() => {
         setIsPoppingOut(true);
         setTimeout(() => {
@@ -134,14 +123,11 @@ export default function Intro({ onComplete }) {
       }, TIMINGS.FREEZE_GREEN);
       return () => clearTimeout(timer);
     }
-  }, [state, alreadySeen]);
+  }, [state, alreadySeen, isReducedMotion]);
 
   // Phase 4: Type logo letter by letter
   useEffect(() => {
-    if (alreadySeen || state !== INTRO_STATES.TYPE_LOGO) return;
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) return;
+    if (alreadySeen || isReducedMotion || state !== INTRO_STATES.TYPE_LOGO) return;
 
     const fullLarper = 'LARPER';
     const fullCoder = 'CODER';
@@ -176,27 +162,27 @@ export default function Intro({ onComplete }) {
     }, TIMINGS.TYPE_INTERVAL);
 
     return () => clearInterval(typeLarperTimer);
-  }, [state, alreadySeen]);
+  }, [state, alreadySeen, isReducedMotion]);
 
   // Phase 5: Backspace logo
   useEffect(() => {
-    if (alreadySeen || state !== INTRO_STATES.BACKSPACE) return;
+    if (alreadySeen || isReducedMotion || state !== INTRO_STATES.BACKSPACE) return;
 
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) return;
+    const fullCoder = 'CODER';
+    const fullLarper = 'LARPER';
+    let coderChars = fullCoder.length;
 
-    let totalChars = typedCoder.length;
     const backspaceCoder = setInterval(() => {
-      totalChars--;
-      setTypedCoder((prev) => prev.slice(0, Math.max(0, totalChars)));
-      if (totalChars <= 0) {
+      coderChars--;
+      setTypedCoder(fullCoder.slice(0, Math.max(0, coderChars)));
+      if (coderChars <= 0) {
         clearInterval(backspaceCoder);
         setShowOrBadge(false);
 
-        let larperChars = typedLarper.length;
+        let larperChars = fullLarper.length;
         const backspaceLarper = setInterval(() => {
           larperChars--;
-          setTypedLarper((prev) => prev.slice(0, Math.max(0, larperChars)));
+          setTypedLarper(fullLarper.slice(0, Math.max(0, larperChars)));
           if (larperChars <= 0) {
             clearInterval(backspaceLarper);
             setState(INTRO_STATES.TYPE_PRESENTER);
@@ -206,14 +192,11 @@ export default function Intro({ onComplete }) {
     }, TIMINGS.BACKSPACE_INTERVAL);
 
     return () => clearInterval(backspaceCoder);
-  }, [state, alreadySeen]);
+  }, [state, alreadySeen, isReducedMotion]);
 
   // Phase 6: Type PRESENTED BY CELESTIALS
   useEffect(() => {
-    if (alreadySeen || state !== INTRO_STATES.TYPE_PRESENTER) return;
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) return;
+    if (alreadySeen || isReducedMotion || state !== INTRO_STATES.TYPE_PRESENTER) return;
 
     const fullPresenter = 'PRESENTED BY CELESTIALS';
     let pIndex = 0;
@@ -229,7 +212,7 @@ export default function Intro({ onComplete }) {
     }, TIMINGS.TYPE_INTERVAL);
 
     return () => clearInterval(typePresenterTimer);
-  }, [state, alreadySeen]);
+  }, [state, alreadySeen, isReducedMotion]);
 
   if (alreadySeen) {
     return null;
@@ -238,6 +221,7 @@ export default function Intro({ onComplete }) {
   const isCutToGreen = state === INTRO_STATES.CUT_TO_GREEN;
   const isLogoStage = state === INTRO_STATES.TYPE_LOGO || state === INTRO_STATES.BACKSPACE;
   const isPresenterStage = state === INTRO_STATES.TYPE_PRESENTER || state === INTRO_STATES.ENTER_READY;
+  const displayProgress = isCutToGreen ? 100 : progress;
 
   return (
     <div
@@ -264,13 +248,13 @@ export default function Intro({ onComplete }) {
           state === INTRO_STATES.CUT_TO_GREEN) && (
           <div className={styles.loadingBox}>
             <div className={styles.loadingLabel}>
-              loading.. {progress}%
+              loading.. {displayProgress}%
             </div>
 
             <div className={styles.progressBarContainer}>
               <div
                 className={`${styles.progressBarFill} ${isCutToGreen ? styles.green : ''}`}
-                style={{ width: `${progress}%` }}
+                style={{ width: `${displayProgress}%` }}
               />
             </div>
 

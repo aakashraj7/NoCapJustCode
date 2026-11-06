@@ -11,10 +11,10 @@
  * 3. Verify server-side payment signature.
  * 4. Return { status: "success" | "cancelled" | "failed", transactionId?: string }.
  *
- * @param {Object} registration - Successful registration object returned from API
+ * @param {Object} _registration - Successful registration object returned from API
  * @returns {Promise<{ status: string, transactionId?: string }>}
  */
-export async function startPayment(registration) {
+export async function startPayment(_registration) {
   // Teammate: implement Razorpay here. Called after a successful registration.
   return Promise.resolve({
     status: "skipped",

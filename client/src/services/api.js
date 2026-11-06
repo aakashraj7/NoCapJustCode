@@ -1,5 +1,5 @@
 // client/src/services/api.js
-import { mockCheckHealth, mockRegister } from "./mockApi.js";
+import { mockRegister } from "./mockApi.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const FORCE_MOCK = import.meta.env.VITE_USE_MOCK === "true";

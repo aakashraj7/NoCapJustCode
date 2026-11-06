@@ -15,11 +15,13 @@ export default function EventDetailPanel({ event, isOpen, onClose, onRegister, t
     document.body.classList.add('scroll-locked');
     closeBtnRef.current?.focus();
 
+    const triggerEl = triggerRef?.current;
+
     return () => {
       document.body.classList.remove('scroll-locked');
       // Return focus to trigger button
-      if (triggerRef?.current) {
-        triggerRef.current.focus();
+      if (triggerEl) {
+        triggerEl.focus();
       }
     };
   }, [isOpen, triggerRef]);
