@@ -1,5 +1,5 @@
 // client/src/components/Navbar/Navbar.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './Navbar.module.css';
 import navbarLogoWebp from '../../assets/logo-navbar.webp';
 import navbarLogoPng from '../../assets/logo-navbar.png';
@@ -8,6 +8,14 @@ import { useScrollSpy } from '../../hooks/useScrollSpy.js';
 
 export default function Navbar({ onOpenRegister }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuMounted, setMenuMounted] = useState(false);
+  const [menuActive, setMenuActive] = useState(false);
+
+  const toggleRef = useRef(null);
+  const menuRef = useRef(null);
+  const firstLinkRef = useRef(null);
+  const prevOpenRef = useRef(false);
+
   const activeSection = useScrollSpy(['hero', 'about', 'schedule', 'events', 'connect']);
 
   const navItems = [
@@ -16,6 +24,83 @@ export default function Navbar({ onOpenRegister }) {
     { label: 'Events', href: '#events', id: 'events' },
     { label: 'Connect', href: '#connect', id: 'connect' },
   ];
+
+  // Animate open / close (180ms) and manage focus
+  useEffect(() => {
+    let timer;
+    if (mobileMenuOpen) {
+      setMenuMounted(true);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setMenuActive(true);
+          firstLinkRef.current?.focus();
+        });
+      });
+    } else if (prevOpenRef.current) {
+      setMenuActive(false);
+      timer = setTimeout(() => {
+        setMenuMounted(false);
+        toggleRef.current?.focus();
+      }, 180);
+    }
+    prevOpenRef.current = mobileMenuOpen;
+    return () => clearTimeout(timer);
+  }, [mobileMenuOpen]);
+
+  // Pointerdown outside to close
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handlePointerDown = (e) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target) &&
+        toggleRef.current &&
+        !toggleRef.current.contains(e.target)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [mobileMenuOpen]);
+
+  // Escape key to close
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
+  // Scroll > 40px closes menu
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const startY = window.scrollY;
+    const handleScroll = () => {
+      if (Math.abs(window.scrollY - startY) > 40) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [mobileMenuOpen]);
+
+  // Window resize to >= 1024px closes menu
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [mobileMenuOpen]);
 
   const handleNavClick = (e, href) => {
     e.preventDefault();
@@ -28,8 +113,17 @@ export default function Navbar({ onOpenRegister }) {
 
   return (
     <header className={styles.headerWrapper}>
+      {/* Mobile full-screen backdrop */}
+      {menuMounted && (
+        <div
+          className={`${styles.menuBackdrop} ${menuActive ? styles.backdropActive : ''}`}
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       <nav className={styles.navbar} aria-label="Main Navigation">
-        {/* Brand with Logo Image Only (No duplicated pixel text) */}
+        {/* Brand: Logo + Wordmark on mobile (<1024px) */}
         <a href="#hero" className={styles.brand} onClick={(e) => handleNavClick(e, '#hero')}>
           <picture className={styles.brandLogoWrapper}>
             <source srcSet={navbarLogoWebp} type="image/webp" />
@@ -42,9 +136,14 @@ export default function Navbar({ onOpenRegister }) {
               style={{ aspectRatio: '320 / 163' }}
             />
           </picture>
+          <span className={styles.brandNameMobile}>
+            <span className={styles.nameCream}>LARPER</span>{' '}
+            <span className={styles.nameOrange}>OR</span>{' '}
+            <span className={styles.nameCream}>CODER</span>
+          </span>
         </a>
 
-        {/* Desktop Links */}
+        {/* Desktop Links (>= 1024px) */}
         <ul className={styles.navLinks}>
           {navItems.map((item) => (
             <li key={item.id}>
@@ -67,13 +166,15 @@ export default function Navbar({ onOpenRegister }) {
             </Button>
           </div>
 
-          {/* Mobile Hamburger Toggle (44px tap target) */}
+          {/* Mobile Hamburger Toggle (48px tap target) */}
           <button
+            ref={toggleRef}
             type="button"
             className={styles.mobileToggle}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav-menu"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               {mobileMenuOpen ? (
@@ -87,12 +188,17 @@ export default function Navbar({ onOpenRegister }) {
       </nav>
 
       {/* Mobile Dropdown Menu */}
-      {mobileMenuOpen && (
-        <div className={styles.mobileMenu}>
+      {menuMounted && (
+        <div
+          id="mobile-nav-menu"
+          ref={menuRef}
+          className={`${styles.mobileMenu} ${menuActive ? styles.menuActive : ''}`}
+        >
           <ul className={styles.mobileNavList}>
-            {navItems.map((item) => (
+            {navItems.map((item, index) => (
               <li key={item.id}>
                 <a
+                  ref={index === 0 ? firstLinkRef : null}
                   href={item.href}
                   className={`${styles.mobileNavLink} ${activeSection === item.id ? styles.active : ''}`}
                   onClick={(e) => handleNavClick(e, item.href)}
@@ -102,10 +208,16 @@ export default function Navbar({ onOpenRegister }) {
               </li>
             ))}
           </ul>
-          <Button fullWidth size="md" variant="primary" onClick={() => {
-            setMobileMenuOpen(false);
-            onOpenRegister();
-          }}>
+
+          <Button
+            size="md"
+            variant="primary"
+            fullWidth
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenRegister();
+            }}
+          >
             Register as a pair
           </Button>
         </div>
