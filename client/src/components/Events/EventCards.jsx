@@ -41,7 +41,6 @@ export default function EventCards({ onOpenRegister }) {
               key={event.id}
               event={event}
               onOpenDetails={handleOpenDetails}
-              onRegister={(eventId) => onOpenRegister(eventId)}
             />
           ))}
         </div>

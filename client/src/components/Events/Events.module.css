@@ -2,13 +2,12 @@
 .eventsSection {
   position: relative;
   overflow: hidden;
-  padding-block: 100px;
+  padding-block: 4.5rem;
 }
 
 @media (max-width: 767px) {
   .eventsSection {
-    padding-top: 140px;
-    padding-bottom: 140px;
+    padding-block: 3.5rem;
   }
 }
 
@@ -33,7 +32,7 @@
   }
 }
 
-/* Event Card */
+/* Event Card as accessible whole-card control */
 .eventCard {
   background-color: var(--surface-1);
   border: 1px solid var(--border-subtle);
@@ -44,13 +43,32 @@
   justify-content: space-between;
   transition: border-color var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast);
   position: relative;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  color: inherit;
 }
 
 @media (hover: hover) {
   .eventCard:hover {
-    border-color: var(--border-medium);
+    transform: translateY(-4px);
+    border-color: rgba(242, 107, 58, 0.5);
     background-color: var(--surface-2);
   }
+  .eventCard:hover .hintArrow {
+    transform: translateX(4px);
+  }
+}
+
+.eventCard:active {
+  transform: scale(0.99);
+}
+
+.eventCard:focus-visible {
+  outline: 2px solid var(--accent-orange);
+  outline-offset: 4px;
 }
 
 .cardTop {
@@ -109,33 +127,28 @@
   color: var(--text-muted);
 }
 
-.cardActions {
+.cardBottomRow {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--border-subtle);
-  flex-wrap: wrap;
 }
 
-.viewDetailsBtn {
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
+.viewDetailsHint {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--text-primary);
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  color: var(--accent-orange);
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.5rem 0;
-  transition: color var(--transition-fast);
+  pointer-events: none;
 }
 
-.viewDetailsBtn:hover {
-  color: var(--accent-orange);
+.hintArrow {
+  transition: transform var(--transition-fast);
+  display: inline-block;
 }
 
 /* Event Detail Modal / Slide-in Panel */

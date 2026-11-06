@@ -1,13 +1,27 @@
 // client/src/components/Events/EventCard.jsx
 import React, { useRef } from 'react';
 import styles from './Events.module.css';
-import Button from '../ui/Button.jsx';
 
-export default function EventCard({ event, onOpenDetails, onRegister }) {
-  const detailsBtnRef = useRef(null);
+export default function EventCard({ event, onOpenDetails }) {
+  const cardRef = useRef(null);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onOpenDetails(event, cardRef);
+    }
+  };
 
   return (
-    <div className={styles.eventCard}>
+    <button
+      ref={cardRef}
+      type="button"
+      className={styles.eventCard}
+      onClick={() => onOpenDetails(event, cardRef)}
+      onKeyDown={handleKeyDown}
+      aria-haspopup="dialog"
+      aria-label={`Open details: ${event.title}`}
+    >
       <div className={styles.cardTop}>
         <div className={styles.tagRow}>
           <span className={styles.trackBadge}>{event.badge}</span>
@@ -22,24 +36,11 @@ export default function EventCard({ event, onOpenDetails, onRegister }) {
         </div>
       </div>
 
-      <div className={styles.cardActions}>
-        <button
-          ref={detailsBtnRef}
-          type="button"
-          className={styles.viewDetailsBtn}
-          onClick={() => onOpenDetails(event, detailsBtnRef)}
-        >
-          View Full Details <span>&rarr;</span>
-        </button>
-
-        <Button
-          size="md"
-          variant="primary"
-          onClick={() => onRegister()}
-        >
-          Register as a pair
-        </Button>
+      <div className={styles.cardBottomRow}>
+        <span className={styles.viewDetailsHint} aria-hidden="true">
+          View details <span className={styles.hintArrow}>&rarr;</span>
+        </span>
       </div>
-    </div>
+    </button>
   );
 }
