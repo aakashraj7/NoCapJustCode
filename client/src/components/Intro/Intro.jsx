@@ -1,13 +1,17 @@
 // client/src/components/Intro/Intro.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Intro.module.css';
+import PixelText from './PixelText.jsx';
 import {
   INTRO_STATES,
   PRESENTER_NAME,
   TIMINGS,
+  COLORS,
   TOTAL_SEGMENTS,
-  STATUS_LINES,
+  AREA_PER_PARTICLE,
+  STATUS_LINE_LOADING,
   SESSION_KEYS,
+  GLYPHS,
 } from './introConstants.js';
 
 export default function Intro({ onComplete }) {
@@ -20,7 +24,7 @@ export default function Intro({ onComplete }) {
     }
   });
 
-  // Sound enabled state (persisted in sessionStorage)
+  // Sound enabled state (persisted in sessionStorage, OFF by default)
   const [soundEnabled, setSoundEnabled] = useState(() => {
     try {
       return sessionStorage.getItem(SESSION_KEYS.SOUND_ENABLED) === 'true';
@@ -42,12 +46,11 @@ export default function Intro({ onComplete }) {
 
   // Loading & status values
   const [progress, setProgress] = useState(0);
-  const [activeStatusIndex, setActiveStatusIndex] = useState(0);
 
   // Logo typing states
   const [typedTop, setTypedTop] = useState(() => (isReducedMotion ? 'PRESENTED' : ''));
-  const [showTag, setShowTag] = useState(() => isReducedMotion);
-  const [tagText, setTagText] = useState(() => (isReducedMotion ? 'BY' : 'OR'));
+  const [showMiddleRow, setShowMiddleRow] = useState(() => isReducedMotion);
+  const [middleTagText, setMiddleTagText] = useState(() => (isReducedMotion ? 'BY' : 'OR'));
   const [typedBottom, setTypedBottom] = useState(() => (isReducedMotion ? PRESENTER_NAME : ''));
 
   const skipBtnRef = useRef(null);
@@ -105,14 +108,14 @@ export default function Intro({ onComplete }) {
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(1400, ctx.currentTime);
-      gain.gain.setValueAtTime(0.03, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.018);
+      gain.gain.setValueAtTime(0.025, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.015);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.02);
+      osc.stop(ctx.currentTime + 0.018);
     } catch {
-      // Audio errors must never break the intro
+      // Audio safety
     }
   }, [soundEnabled, getAudioCtx]);
 
@@ -124,8 +127,8 @@ export default function Intro({ onComplete }) {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(480, ctx.currentTime);
-      osc.frequency.setValueAtTime(640, ctx.currentTime + 0.08);
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.setValueAtTime(620, ctx.currentTime + 0.08);
       gain.gain.setValueAtTime(0.08, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
       osc.connect(gain);
@@ -147,12 +150,12 @@ export default function Intro({ onComplete }) {
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(targetFreq, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.38);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.42);
+      osc.stop(ctx.currentTime + 0.4);
     } catch {
       // Audio safety
     }
@@ -167,12 +170,12 @@ export default function Intro({ onComplete }) {
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(750, ctx.currentTime);
-      gain.gain.setValueAtTime(0.025, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.015);
+      gain.gain.setValueAtTime(0.02, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.012);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.016);
+      osc.stop(ctx.currentTime + 0.015);
     } catch {
       // Audio safety
     }
@@ -230,7 +233,7 @@ export default function Intro({ onComplete }) {
     return () => clearTimeout(timer);
   }, [alreadySeen, isReducedMotion, dismiss]);
 
-  // Canvas particle background (drifting dim code glyphs)
+  // Canvas particle background with screen-scaled density & glyph size
   useEffect(() => {
     if (alreadySeen || isReducedMotion) return;
     const canvas = canvasRef.current;
@@ -242,24 +245,40 @@ export default function Intro({ onComplete }) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    const glyphs = ['{', '}', '<', '/', '>', ';', '_', '0', '1'];
+
+    // Derive particle count and size scaling from screen dimensions
+    const calculateParticles = (w, h) => {
+      const targetCount = Math.min(
+        180,
+        Math.max(24, Math.round((w * h) / AREA_PER_PARTICLE))
+      );
+      const scale = Math.min(1.8, Math.max(1.0, Math.min(w, 1200) / 400));
+      return Array.from({ length: targetCount }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vy: 0.28 + Math.random() * 0.45,
+        char: glyphs[Math.floor(Math.random() * glyphs.length)],
+        size: Math.round((11 + Math.random() * 5) * scale),
+        alpha: 0.06 + Math.random() * 0.04,
+        isOrange: Math.random() > 0.45,
+      }));
+    };
+
+    let particles = calculateParticles(canvas.width, canvas.height);
+
+    const timerRef = { current: null };
     const handleResize = () => {
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        if (canvas) {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          particles = calculateParticles(canvas.width, canvas.height);
+        }
+      }, 150);
     };
     window.addEventListener('resize', handleResize);
-
-    const glyphs = ['{', '}', '<', '/', '>', ';', '_', '0', '1'];
-    const particles = Array.from({ length: 36 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      vy: 0.3 + Math.random() * 0.45,
-      char: glyphs[Math.floor(Math.random() * glyphs.length)],
-      size: 11 + Math.random() * 6,
-      alpha: 0.05 + Math.random() * 0.05,
-      isOrange: Math.random() > 0.4,
-    }));
 
     const isGreen = state === INTRO_STATES.TURN_GREEN || state === INTRO_STATES.COMPLETE;
 
@@ -278,11 +297,11 @@ export default function Intro({ onComplete }) {
           }
 
           if (isGreen) {
-            ctx.fillStyle = `rgba(61, 220, 132, ${p.alpha * 1.2})`;
+            ctx.fillStyle = `rgba(61, 220, 132, ${p.alpha * 1.3})`;
           } else if (p.isOrange) {
-            ctx.fillStyle = `rgba(242, 107, 58, ${p.alpha})`;
+            ctx.fillStyle = `rgba(245, 117, 70, ${p.alpha})`;
           } else {
-            ctx.fillStyle = `rgba(247, 237, 216, ${p.alpha})`;
+            ctx.fillStyle = `rgba(249, 237, 210, ${p.alpha})`;
           }
 
           ctx.font = `${p.size}px monospace`;
@@ -296,6 +315,7 @@ export default function Intro({ onComplete }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      clearTimeout(timerRef.current);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -315,12 +335,10 @@ export default function Intro({ onComplete }) {
         const elapsed = performance.now() - startTime;
         const ratio = Math.min(elapsed / TIMINGS.LOADING_DURATION, 1);
 
-        // Realistic non-linear progress with micro-stutters
         let target;
         if (ratio < 0.35) {
           target = Math.floor(ratio * 1.5 * 100);
         } else if (ratio < 0.6) {
-          // slight stutter hold
           target = 54 + Math.floor((ratio - 0.35) * 60);
         } else if (ratio < 0.85) {
           target = 76 + Math.floor((ratio - 0.6) * 70);
@@ -336,13 +354,6 @@ export default function Intro({ onComplete }) {
           playTick();
         }
 
-        // Status lines progression
-        if (ratio > 0.65) {
-          setActiveStatusIndex(2);
-        } else if (ratio > 0.3) {
-          setActiveStatusIndex(1);
-        }
-
         if (ratio >= 1) {
           clearInterval(progressInterval);
           setProgress(99);
@@ -353,7 +364,8 @@ export default function Intro({ onComplete }) {
       return () => clearInterval(progressInterval);
     }
 
-    // 2. ALERT (2400ms to 4400ms, 2000ms duration): "LARPER DETECTED" banner slides in above
+    // 2. ALERT (2400ms to 4400ms, 2000ms duration):
+    // "LARPER DETECTED" banner appears above loader, 3x soft orange screen wash
     if (state === INTRO_STATES.ALERT) {
       playAlarm();
       const timer = setTimeout(() => {
@@ -362,32 +374,52 @@ export default function Intro({ onComplete }) {
       return () => clearTimeout(timer);
     }
 
-    // 3. TURN_GREEN (4400ms to 5600ms, 1200ms duration): Banner & bar turn green, 3x soft green wash, VERIFIED
+    // 3. TURN_GREEN (4400ms to 5900ms, 1500ms duration):
+    // In one cut: banner & handles & bar turn green (#3DDC84), 3x soft green wash.
+    // Counter animates from 99% to 100% over the 1.5s window!
     if (state === INTRO_STATES.TURN_GREEN) {
       playDing(587, 880);
+      const greenStartTime = performance.now();
+
+      const greenInterval = setInterval(() => {
+        const elapsed = performance.now() - greenStartTime;
+        const ratio = Math.min(elapsed / TIMINGS.TURN_GREEN_DURATION, 1);
+        if (ratio >= 0.85) {
+          setProgress(100);
+        }
+      }, 50);
+
       const timer = setTimeout(() => {
+        clearInterval(greenInterval);
+        setProgress(100);
         setState(INTRO_STATES.COMPLETE);
       }, TIMINGS.TURN_GREEN_DURATION);
-      return () => clearTimeout(timer);
+
+      return () => {
+        clearInterval(greenInterval);
+        clearTimeout(timer);
+      };
     }
 
-    // 4. COMPLETE (5600ms to 6400ms, 800ms duration): Snaps to 100% with flash, clears loader & banner
+    // 4. COMPLETE (5900ms to 6300ms, 400ms hold at 100%):
+    // Snaps to 100% with clean flash, 0.4s hold, clears loader & banner
     if (state === INTRO_STATES.COMPLETE) {
       playDing(880, 1174);
       const timer = setTimeout(() => {
         setState(INTRO_STATES.TYPE_LOGO);
-      }, TIMINGS.COMPLETE_DURATION);
+      }, TIMINGS.COMPLETE_HOLD);
       return () => clearTimeout(timer);
     }
   }, [state, alreadySeen, isReducedMotion, playTick, playAlarm, playDing]);
 
-  // 5. TYPE_LOGO (6.4s to 8.8s): LARPER OR CODER letter-by-letter in real logo style
+  // 5. TYPE_LOGO (6.3s to 8.7s): LARPER OR CODER in exact real logo style
   useEffect(() => {
     if (alreadySeen || isReducedMotion || state !== INTRO_STATES.TYPE_LOGO) return;
 
     const fullTop = 'LARPER';
     const fullBottom = 'CODER';
 
+    // Step A: Type LARPER on top line (cursor after last letter)
     let topIndex = 0;
     const typeTopInterval = setInterval(() => {
       topIndex++;
@@ -397,13 +429,13 @@ export default function Intro({ onComplete }) {
       if (topIndex >= fullTop.length) {
         clearInterval(typeTopInterval);
 
-        // Reveal middle slanted tag & brackets
+        // Step B: Reveal middle row (tag OR, brackets, checkers, dashes)
         setTimeout(() => {
-          setShowTag(true);
-          setTagText('OR');
+          setShowMiddleRow(true);
+          setMiddleTagText('OR');
           playKeyClick();
 
-          // Type bottom row CODER
+          // Step C: Type bottom row CODER with cursor
           let bottomIndex = 0;
           const typeBottomInterval = setInterval(() => {
             bottomIndex++;
@@ -413,20 +445,20 @@ export default function Intro({ onComplete }) {
             if (bottomIndex >= fullBottom.length) {
               clearInterval(typeBottomInterval);
 
-              // Hold for 1 second, then swap to presenter
+              // Step D: Hold 1.0s, then swap
               setTimeout(() => {
                 setState(INTRO_STATES.SWAP);
               }, TIMINGS.HOLD_LOGO);
             }
           }, TIMINGS.TYPE_CHAR_SPEED);
-        }, 180);
+        }, 160);
       }
     }, TIMINGS.TYPE_CHAR_SPEED);
 
     return () => clearInterval(typeTopInterval);
   }, [state, alreadySeen, isReducedMotion, playKeyClick]);
 
-  // 6. SWAP (8.8s to 11.0s): Backspaces logo, then types PRESENTED BY CELESTIUS in exact same style
+  // 6. SWAP (8.7s to 11.0s): Backspaces logo, then types PRESENTED BY CELESTIUS in exact same style
   useEffect(() => {
     if (alreadySeen || isReducedMotion || state !== INTRO_STATES.SWAP) return;
 
@@ -452,7 +484,7 @@ export default function Intro({ onComplete }) {
 
           if (larperCount <= 0) {
             clearInterval(backspaceTop);
-            setShowTag(false);
+            setShowMiddleRow(false);
 
             // Step C: Type PRESENTED
             let pTopIdx = 0;
@@ -464,10 +496,10 @@ export default function Intro({ onComplete }) {
               if (pTopIdx >= fullPresenterTop.length) {
                 clearInterval(typePresentTop);
 
-                // Reveal middle tag with BY
+                // Reveal middle row with BY
                 setTimeout(() => {
-                  setTagText('BY');
-                  setShowTag(true);
+                  setMiddleTagText('BY');
+                  setShowMiddleRow(true);
                   playKeyClick();
 
                   // Step D: Type CELESTIUS
@@ -486,7 +518,7 @@ export default function Intro({ onComplete }) {
                       }, TIMINGS.HOLD_SWAP);
                     }
                   }, TIMINGS.TYPE_CHAR_SPEED);
-                }, 160);
+                }, 150);
               }
             }, TIMINGS.TYPE_CHAR_SPEED);
           }
@@ -510,9 +542,16 @@ export default function Intro({ onComplete }) {
   const showAlert = state === INTRO_STATES.ALERT || state === INTRO_STATES.TURN_GREEN;
   const isLogoStage = state === INTRO_STATES.TYPE_LOGO || state === INTRO_STATES.SWAP;
 
-  // Segment count calculation (snaps to 100% on complete)
+  // Segment count calculation
   const displayProgress = state === INTRO_STATES.COMPLETE ? 100 : progress;
   const activeSegmentsCount = Math.floor((displayProgress / 100) * TOTAL_SEGMENTS);
+
+  // Derive which line has active cursor
+  const isTopTarget = state === INTRO_STATES.TYPE_LOGO ? 'LARPER' : 'PRESENTED';
+  const isBottomTarget = state === INTRO_STATES.TYPE_LOGO ? 'CODER' : PRESENTER_NAME;
+
+  const showTopCursor = isLogoStage && (typedTop.length < isTopTarget.length || typedBottom.length === 0);
+  const showBottomCursor = isLogoStage && typedTop.length === isTopTarget.length && typedBottom.length <= isBottomTarget.length;
 
   // Screen reader text announcement derived directly from state
   const liveAnnouncement = (() => {
@@ -542,13 +581,23 @@ export default function Intro({ onComplete }) {
       {/* Background canvas for floating code glyphs */}
       {!isReducedMotion && <canvas ref={canvasRef} className={styles.particleCanvas} />}
 
-      {/* Full-screen soft green wash on VERIFIED cut */}
+      {/* ALERT PHASE: 3 soft orange blinks over ~1.0s (peak opacity 0.25) */}
+      {state === INTRO_STATES.ALERT && !isReducedMotion && (
+        <div className={styles.orangeWash} aria-hidden="true" />
+      )}
+
+      {/* GREEN PHASE: 3 soft green blinks over ~1.0s (peak opacity 0.28) */}
       {state === INTRO_STATES.TURN_GREEN && !isReducedMotion && (
         <div className={styles.greenWash} aria-hidden="true" />
       )}
 
-      {/* Screen reader live updates */}
-      <div className="sr-only" aria-live="polite">
+      {/* 100% COMPLETE: Clean white flash on snap */}
+      {state === INTRO_STATES.COMPLETE && !isReducedMotion && (
+        <div className={styles.completeFlash} aria-hidden="true" />
+      )}
+
+      {/* Screen reader live updates - visually hidden with .srOnly */}
+      <div className={styles.srOnly} aria-live="polite">
         {liveAnnouncement}
       </div>
 
@@ -590,33 +639,35 @@ export default function Intro({ onComplete }) {
         {/* Sequence Part 1 - 4: Loader + Alert Banner */}
         {isLoaderVisible && (
           <div className={`${styles.loaderArea} ${state === INTRO_STATES.COMPLETE ? styles.clearing : ''}`}>
-            {/* ALERT BANNER - Slides in ABOVE the loader */}
+            {/* ALERT BANNER - Sits ABOVE the loader */}
             {showAlert && (
-              <div
-                className={`${styles.alertBanner} ${
-                  state === INTRO_STATES.TURN_GREEN ? styles.alertBannerGreen : ''
-                }`}
-              >
-                <div className={styles.hazardStripes} />
-                <div className={styles.alertContent}>
-                  <span className={styles.alertIcon}>
-                    {state === INTRO_STATES.TURN_GREEN ? '✓' : '⚠️'}
-                  </span>
-                  <span className={styles.alertText}>
-                    {state === INTRO_STATES.TURN_GREEN ? 'VERIFIED' : 'LARPER DETECTED'}
+              <div className={styles.alertBannerWrapper}>
+                <span className={styles.handleLeft} />
+                <div
+                  className={`${styles.alertBanner} ${
+                    state === INTRO_STATES.TURN_GREEN ? styles.alertBannerGreen : ''
+                  }`}
+                >
+                  <div className={styles.alertTitleRow}>
+                    <span className={styles.alertText}>LARPER DETECTED</span>
+                  </div>
+                  <span className={styles.alertStatusSubline}>
+                    {state === INTRO_STATES.TURN_GREEN
+                      ? '> larper-scanner: cleared'
+                      : '> larper-scanner: flagged'}
                   </span>
                 </div>
-                <div className={styles.hazardStripes} />
+                <span className={styles.handleRight} />
               </div>
             )}
 
-            {/* Very Large Percentage Counter */}
+            {/* Large Percentage Counter */}
             <div className={`${styles.counterRow} ${isGreenPhase ? styles.greenText : ''}`}>
               <span>{displayProgress}</span>
               <span className={styles.counterPercent}>%</span>
             </div>
 
-            {/* Thick Segmented Bar made of small blocks */}
+            {/* Thick Segmented Bar with thinner 2px gaps & clean blocks */}
             <div
               className={`${styles.segmentedBar} ${isGreenPhase ? styles.greenMode : ''}`}
               aria-label="System verification progress"
@@ -635,51 +686,151 @@ export default function Intro({ onComplete }) {
               })}
             </div>
 
-            {/* Status Lines Console */}
-            <div className={styles.statusConsole}>
-              <div className={styles.statusLine}>
-                <span className={styles.statusPrompt}>&gt;</span>
-                <span>{STATUS_LINES[activeStatusIndex]}</span>
-              </div>
+            {/* Single Muted Status Line under the bar */}
+            <div className={styles.statusLineMuted}>
+              {STATUS_LINE_LOADING}
             </div>
           </div>
         )}
 
-        {/* Sequence Part 5 & 6: Real Logo Typing & Swap Scene */}
+        {/* Sequence Part 5 & 6: EXACT LOGO TYPING & SWAP SCENE (Matching logo.png) */}
         {isLogoStage && (
           <div className={styles.logoContainer} aria-live="polite">
-            {/* Top Row: LARPER (orange) or PRESENTED (cream) */}
-            <div
-              className={`${styles.logoRowTop} ${
-                state === INTRO_STATES.TYPE_LOGO ? styles.larperColor : styles.presentedColor
-              }`}
-            >
-              {typedTop}
+            {/* ROW 1: TOP LINE ("LARPER" or "PRESENTED") */}
+            <div className={styles.rowWrapper}>
+              <PixelText
+                text={typedTop}
+                totalLength={state === INTRO_STATES.TYPE_LOGO ? 6 : 9}
+                variant="chunky"
+                color={state === INTRO_STATES.TYPE_LOGO ? COLORS.orange : COLORS.cream}
+                gridColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.orangeGrid : COLORS.creamGrid}
+                echoColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.orangeEcho : COLORS.creamEcho}
+                showCursor={showTopCursor}
+                cursorColor={COLORS.yellow}
+              />
             </div>
 
-            {/* Middle Row: Brackets, Dashed Lines, Checkers, and Slanted Tag */}
-            {showTag && (
-              <div className={styles.logoRowMiddle}>
-                <span className={styles.bracketLeft}>[--</span>
-                <span className={styles.checkerBox} />
-                <span className={styles.dashedLine} />
-                <div className={styles.slantedBadge}>
-                  <span className={styles.badgeText}>{tagText}</span>
-                </div>
-                <span className={styles.dashedLine} />
-                <span className={styles.checkerBox} />
-                <span className={styles.bracketRight}>--]</span>
+            {/* ROW 2: MIDDLE ROW (SVG Brackets, Checkers, Dashes, and Slanted Parallelogram Tag) */}
+            {showMiddleRow && (
+              <div className={styles.rowWrapper}>
+                <svg
+                  className={styles.middleRowSvg}
+                  viewBox="0 0 540 38"
+                  aria-hidden="true"
+                >
+                  {/* Top-Left Rounded Bracket Corner (Open downward) */}
+                  <path
+                    d="M 12 36 L 12 16 Q 12 8 20 8 L 44 8"
+                    stroke={COLORS.yellow}
+                    strokeWidth="3.2"
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                  {/* Orange Corner Accent */}
+                  <rect x="22" y="6" width="18" height="4.5" fill={COLORS.orange} rx="1" />
+
+                  {/* Left Dashed Yellow Line */}
+                  <line
+                    x1="50"
+                    y1="8"
+                    x2="185"
+                    y2="8"
+                    stroke={COLORS.yellow}
+                    strokeWidth="2.5"
+                    strokeDasharray="9 6"
+                  />
+
+                  {/* Left Checker Diamond Box */}
+                  <g transform="translate(196, 2)">
+                    <rect x="0" y="0" width="6" height="6" fill={COLORS.yellow} />
+                    <rect x="6" y="0" width="6" height="6" fill={COLORS.cream} />
+                    <rect x="0" y="6" width="6" height="6" fill={COLORS.cream} />
+                    <rect x="6" y="6" width="6" height="6" fill={COLORS.yellow} />
+                  </g>
+
+                  {/* Slanted Cream Parallelogram Tag */}
+                  <g>
+                    <polygon
+                      points="230,2 325,2 310,36 215,36"
+                      fill={COLORS.cream}
+                      stroke={COLORS.orange}
+                      strokeWidth="2"
+                    />
+                    <polygon
+                      points="234,5 321,5 307,33 220,33"
+                      fill="none"
+                      stroke={COLORS.yellow}
+                      strokeWidth="1.2"
+                    />
+                    {/* Dark Pixel Text inside Tag ("OR" or "BY") */}
+                    <g transform="translate(248, 8)">
+                      {middleTagText.split('').map((char, cIdx) => {
+                        const matrix = GLYPHS[char] || GLYPHS[' '];
+                        const startX = cIdx * 20;
+                        return matrix.map((rowStr, rIdx) =>
+                          rowStr.split('').map((val, colIdx) => {
+                            if (val !== '1') return null;
+                            return (
+                              <rect
+                                key={`tag-cell-${cIdx}-${rIdx}-${colIdx}`}
+                                x={startX + colIdx * 3}
+                                y={rIdx * 3}
+                                width={2.7}
+                                height={2.7}
+                                fill={COLORS.darkText}
+                              />
+                            );
+                          })
+                        );
+                      })}
+                    </g>
+                  </g>
+
+                  {/* Right Checker Diamond Box */}
+                  <g transform="translate(336, 2)">
+                    <rect x="0" y="0" width="6" height="6" fill={COLORS.yellow} />
+                    <rect x="6" y="0" width="6" height="6" fill={COLORS.cream} />
+                    <rect x="0" y="6" width="6" height="6" fill={COLORS.cream} />
+                    <rect x="6" y="6" width="6" height="6" fill={COLORS.yellow} />
+                  </g>
+
+                  {/* Right Dashed Yellow Line */}
+                  <line
+                    x1="354"
+                    y1="8"
+                    x2="489"
+                    y2="8"
+                    stroke={COLORS.yellow}
+                    strokeWidth="2.5"
+                    strokeDasharray="9 6"
+                  />
+
+                  {/* Top-Right Rounded Bracket Corner (Open downward) */}
+                  <path
+                    d="M 495 8 L 519 8 Q 527 8 527 16 L 527 36"
+                    stroke={COLORS.yellow}
+                    strokeWidth="3.2"
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                  {/* Orange Corner Accent */}
+                  <rect x="499" y="6" width="18" height="4.5" fill={COLORS.orange} rx="1" />
+                </svg>
               </div>
             )}
 
-            {/* Bottom Row: CODER (cream) or CELESTIUS (orange) + Yellow Underscore Cursor */}
-            <div
-              className={`${styles.logoRowBottom} ${
-                state === INTRO_STATES.TYPE_LOGO ? styles.coderColor : styles.celestiusColor
-              }`}
-            >
-              <span>{typedBottom}</span>
-              <span className={styles.cursorUnderscore} />
+            {/* ROW 3: BOTTOM LINE ("CODER" or "CELESTIUS") */}
+            <div className={styles.rowWrapper}>
+              <PixelText
+                text={typedBottom}
+                totalLength={state === INTRO_STATES.TYPE_LOGO ? 5 : 9}
+                variant="monoline"
+                color={state === INTRO_STATES.TYPE_LOGO ? COLORS.cream : COLORS.orange}
+                gridColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.creamGrid : COLORS.orangeGrid}
+                echoColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.creamEcho : COLORS.orangeEcho}
+                showCursor={showBottomCursor}
+                cursorColor={COLORS.yellow}
+              />
             </div>
           </div>
         )}
