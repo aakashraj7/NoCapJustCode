@@ -5,7 +5,6 @@ import navbarLogoWebp from '../../assets/logo-navbar.webp';
 import navbarLogoPng from '../../assets/logo-navbar.png';
 import Button from '../ui/Button.jsx';
 import { useScrollSpy } from '../../hooks/useScrollSpy.js';
-import { EVENT_YEAR } from '../../data/event.js';
 
 export default function Navbar({ onOpenRegister }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,7 +29,7 @@ export default function Navbar({ onOpenRegister }) {
   return (
     <header className={styles.headerWrapper}>
       <nav className={styles.navbar} aria-label="Main Navigation">
-        {/* Brand */}
+        {/* Brand with Logo Image Only (No duplicated pixel text) */}
         <a href="#hero" className={styles.brand} onClick={(e) => handleNavClick(e, '#hero')}>
           <picture className={styles.brandLogoWrapper}>
             <source srcSet={navbarLogoWebp} type="image/webp" />
@@ -43,7 +42,6 @@ export default function Navbar({ onOpenRegister }) {
               style={{ aspectRatio: '320 / 163' }}
             />
           </picture>
-          {EVENT_YEAR && <span className={styles.brandBadge}>{EVENT_YEAR}</span>}
         </a>
 
         {/* Desktop Links */}

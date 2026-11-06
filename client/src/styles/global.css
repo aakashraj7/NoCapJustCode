@@ -151,6 +151,19 @@ input, select, textarea {
   letter-spacing: 0.04em;
 }
 
+/* Screen reader visually hidden utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -158,5 +171,31 @@ input, select, textarea {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile Spacing & Typography Overrides (phones under 768px only) */
+@media (max-width: 767px) {
+  body {
+    font-size: var(--mobile-text-base, 16.5px);
+    line-height: var(--mobile-line-height-base, 1.65);
+  }
+
+  .container {
+    padding-left: var(--mobile-container-padding, 20px) !important;
+    padding-right: var(--mobile-container-padding, 20px) !important;
+  }
+
+  .section {
+    padding-top: var(--mobile-section-padding-block, 96px) !important;
+    padding-bottom: var(--mobile-section-padding-block, 96px) !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: var(--mobile-heading-margin-bottom, 16px);
+  }
+
+  button, a.btn, input, select {
+    min-height: var(--mobile-min-tap-target, 48px);
   }
 }

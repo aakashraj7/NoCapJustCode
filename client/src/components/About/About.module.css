@@ -2,13 +2,12 @@
 .aboutSection {
   position: relative;
   overflow: hidden;
-  padding-block: 100px;
+  padding-block: 4.5rem;
 }
 
 @media (max-width: 767px) {
   .aboutSection {
-    padding-top: 140px;
-    padding-bottom: 140px;
+    padding-block: 96px;
   }
 }
 
@@ -56,7 +55,22 @@
   gap: 1.25rem;
 }
 
-@media (min-width: 480px) {
+@media (max-width: 767px) {
+  .statsGrid {
+    gap: 16px;
+  }
+  .statCard {
+    padding: 22px !important;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
   .statsGrid {
     grid-template-columns: repeat(3, 1fr);
   }

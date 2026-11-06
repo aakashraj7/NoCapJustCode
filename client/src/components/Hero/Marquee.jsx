@@ -3,7 +3,7 @@ import React from 'react';
 import styles from './Hero.module.css';
 
 export default function Marquee() {
-  const words = ['THINK', 'LOCK IN', 'EXECUTE', 'NO LARPING', 'ONLY CODING'];
+  const words = ['LOCK IN', 'EXECUTE', 'NO LARPING', 'ONLY CODING'];
 
   return (
     <div className={styles.marqueeContainer} aria-hidden="true">

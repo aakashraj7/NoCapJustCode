@@ -31,7 +31,7 @@ export default function Hero({ onOpenRegister }) {
             </div>
 
             <h1 className={styles.heroTitleH1}>
-              <picture>
+              <picture className={styles.heroLogoPicture}>
                 <source srcSet={logoImg} type="image/webp" />
                 <img
                   src={logoPngFallback}
@@ -54,38 +54,45 @@ export default function Hero({ onOpenRegister }) {
             </p>
 
             {/* Date, Venue & Pricing Chips */}
-            <div className={styles.chipsRow}>
-              <Chip
-                icon={
-                  <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>₹</span>
-                }
-              >
-                ₹149 per person // ₹298 per pair
-              </Chip>
+            <div className={styles.chipsContainer}>
+              <div className={styles.priceChipRow}>
+                <Chip
+                  className={styles.heroChipFull}
+                  icon={
+                    <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>₹</span>
+                  }
+                >
+                  ₹149 per person // ₹298 per pair
+                </Chip>
+              </div>
 
-              <Chip
-                icon={
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                }
-              >
-                DATE: {eventData.date}
-              </Chip>
+              <div className={styles.dateTimeVenueGrid}>
+                <Chip
+                  className={styles.heroChipGridItem}
+                  icon={
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  }
+                >
+                  DATE: {eventData.date}
+                </Chip>
 
-              <Chip
-                icon={
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                }
-              >
-                VENUE: {eventData.venue}
-              </Chip>
+                <Chip
+                  className={styles.heroChipGridItem}
+                  icon={
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                  }
+                >
+                  VENUE: {eventData.venue}
+                </Chip>
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -93,16 +100,22 @@ export default function Hero({ onOpenRegister }) {
               <Button size="lg" variant="primary" onClick={() => onOpenRegister()}>
                 Register as a pair
               </Button>
-              <Button size="lg" variant="secondary" href="#events" onClick={scrollToEvents}>
+              <Button
+                size="lg"
+                variant="secondary"
+                href="#events"
+                onClick={scrollToEvents}
+                className={styles.secondaryQuietBtn}
+              >
                 See Events
               </Button>
             </div>
           </div>
 
-          {/* Right Column: Complete Hardware Laptop with subtle orange glow */}
+          {/* Right Column: Complete Hardware Laptop without halo */}
           <div className={styles.rightCol}>
             <div className={styles.heroLaptopWrapper}>
-              <Laptop width={420} height={263} floatVariant="A" hasHalo={true} isHero={true} />
+              <Laptop width={420} height={263} floatVariant="A" hasHalo={false} isHero={true} />
             </div>
           </div>
         </div>

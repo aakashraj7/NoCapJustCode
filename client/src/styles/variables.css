@@ -50,3 +50,20 @@
   --transition-normal: 240ms cubic-bezier(0.16, 1, 0.3, 1);
   --transition-smooth: 380ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Mobile Spacing Tokens (phones under 768px) */
+@media (max-width: 767px) {
+  :root {
+    --mobile-text-base: 16.5px;
+    --mobile-line-height-base: 1.65;
+    --mobile-container-padding: 20px;
+    --mobile-section-padding-block: 96px;
+    --mobile-hero-padding-top: 112px;
+    --mobile-stack-gap-group: 24px;
+    --mobile-stack-gap-item: 12px;
+    --mobile-heading-margin-bottom: 16px;
+    --mobile-card-padding: 22px;
+    --mobile-cards-gap: 16px;
+    --mobile-min-tap-target: 48px;
+  }
+}

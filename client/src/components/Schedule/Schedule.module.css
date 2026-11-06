@@ -2,13 +2,18 @@
 .scheduleSection {
   position: relative;
   overflow: hidden;
-  padding-block: 100px;
+  padding-block: 4.5rem;
 }
 
 @media (max-width: 767px) {
   .scheduleSection {
-    padding-top: 140px;
-    padding-bottom: 140px;
+    padding-block: 96px;
+  }
+  .timeline {
+    gap: 20px;
+  }
+  .contentCard {
+    padding: 22px !important;
   }
 }
 
