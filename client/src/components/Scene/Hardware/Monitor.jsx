@@ -1,7 +1,8 @@
 // client/src/components/Scene/Hardware/Monitor.jsx
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './Hardware.module.css';
 import { THEME, hexToRgba } from '../hardwareConfig.js';
+import ScreenCode from './ScreenCode.jsx';
 
 export default function Monitor({
   width = 185,
@@ -14,6 +15,23 @@ export default function Monitor({
   className = '',
   style = {},
 }) {
+  const containerRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
   const primary = hexToRgba(color, opacity);
   const primaryFaint = hexToRgba(color, opacity * 0.75);
   const cream = hexToRgba(THEME.cream, THEME.creamDetailOpacity);
@@ -22,7 +40,8 @@ export default function Monitor({
 
   return (
     <div
-      className={`${styles.hardwarePiece} ${styles['float' + floatVariant]} ${className}`}
+      ref={containerRef}
+      className={`${styles.hardwarePiece} ${styles['float' + floatVariant]} ${isVisible ? styles.screenActive : styles.screenPaused} ${className}`}
       style={{ width, height, ...style }}
       aria-hidden="true"
     >
@@ -62,16 +81,20 @@ export default function Monitor({
         />
 
         {/* Terminal Header Bar */}
-        <line x1="18" y1="32" x2="167" y2="32" stroke={primaryFaint} strokeWidth="1" />
-        <circle cx="26" cy="25" r="2" fill="none" stroke={accent} strokeWidth="1.2" />
-        <circle cx="33" cy="25" r="2" stroke={creamFaint} strokeWidth="1" fill="none" />
-        <circle cx="40" cy="25" r="2" stroke={creamFaint} strokeWidth="1" fill="none" />
+        <line x1="18" y1="30" x2="167" y2="30" stroke={primaryFaint} strokeWidth="1" />
+        <circle cx="26" cy="24" r="2" fill="none" stroke={accent} strokeWidth="1.2" />
+        <circle cx="33" cy="24" r="2" stroke={creamFaint} strokeWidth="1" fill="none" />
+        <circle cx="40" cy="24" r="2" stroke={creamFaint} strokeWidth="1" fill="none" />
 
-        {/* Terminal Content: Prompt & code lines */}
-        <path d="M 28 44 L 32 47 L 28 50" stroke={accent} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <line x1="38" y1="47" x2="95" y2="47" stroke={cream} strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="28" y1="62" x2="120" y2="62" stroke={creamFaint} strokeWidth="1.6" strokeLinecap="round" />
-        <rect x="28" y="72" width="5" height="8" fill="none" stroke={accent} strokeWidth="1.5" className={styles.cursor} />
+        {/* Dynamic Cancelled Code Sequence (Section 3) */}
+        <ScreenCode
+          startX={26}
+          startY={45}
+          lineGap={13}
+          orange={THEME.orange}
+          cream={cream}
+          faintCream={creamFaint}
+        />
 
         {/* Monitor Stand Vertical Neck */}
         <rect x="86" y="110" width="13" height="20" rx="2" fill="none" stroke={primary} strokeWidth="1.8" />

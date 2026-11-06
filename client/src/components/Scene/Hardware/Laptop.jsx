@@ -1,7 +1,8 @@
 // client/src/components/Scene/Hardware/Laptop.jsx
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './Hardware.module.css';
 import { THEME, hexToRgba } from '../hardwareConfig.js';
+import ScreenCode from './ScreenCode.jsx';
 
 export default function Laptop({
   width = 240,
@@ -14,6 +15,23 @@ export default function Laptop({
   className = '',
   style = {},
 }) {
+  const containerRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
   const primary = hexToRgba(color, opacity);
   const primaryFaint = hexToRgba(color, opacity * 0.75);
   const cream = hexToRgba(THEME.cream, THEME.creamDetailOpacity);
@@ -23,7 +41,8 @@ export default function Laptop({
 
   return (
     <div
-      className={`${styles.hardwarePiece} ${styles['float' + floatVariant]} ${className}`}
+      ref={containerRef}
+      className={`${styles.hardwarePiece} ${styles['float' + floatVariant]} ${isVisible ? styles.screenActive : styles.screenPaused} ${className}`}
       style={{ width, height, ...style }}
       aria-hidden="true"
     >
@@ -62,15 +81,15 @@ export default function Laptop({
         {/* Webcam */}
         <circle cx="120" cy="15" r="1.5" fill="none" stroke={cream} strokeWidth="1" />
 
-        {/* Screen Content Placeholder / Static Lines (Will be enhanced in Section 3) */}
-        <line x1="50" y1="34" x2="84" y2="34" stroke={accent} strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="90" y1="34" x2="148" y2="34" stroke={cream} strokeWidth="1.6" strokeLinecap="round" />
-        <line x1="50" y1="46" x2="135" y2="46" stroke={creamFaint} strokeWidth="1.4" strokeLinecap="round" strokeDasharray="6 4" />
-        <line x1="50" y1="58" x2="162" y2="58" stroke={cream} strokeWidth="1.6" strokeLinecap="round" />
-        <line x1="62" y1="70" x2="128" y2="70" stroke={primary} strokeWidth="1.6" strokeLinecap="round" />
-        <line x1="62" y1="82" x2="152" y2="82" stroke={accent} strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="50" y1="94" x2="62" y2="94" stroke={cream} strokeWidth="1.6" strokeLinecap="round" />
-        <line x1="68" y1="90" x2="68" y2="98" stroke={accent} strokeWidth="2.2" className={styles.cursor} strokeLinecap="round" />
+        {/* Dynamic Cancelled Code Sequence (Section 3) */}
+        <ScreenCode
+          startX={48}
+          startY={38}
+          lineGap={14}
+          orange={THEME.orange}
+          cream={cream}
+          faintCream={creamFaint}
+        />
 
         {/* Hinge */}
         <line x1="88" y1="116" x2="152" y2="116" stroke={primary} strokeWidth="2.4" strokeLinecap="round" />
