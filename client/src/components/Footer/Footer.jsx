@@ -86,7 +86,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className={styles.colLink}
                 >
-                  Instagram (Celestials) &rarr;
+                  Instagram ({eventData.presentedBy}) &rarr;
                 </a>
               </li>
               <li>

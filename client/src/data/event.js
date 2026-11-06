@@ -2,6 +2,8 @@
 // Single source of truth for the LARPER OR CODER event.
 // Any information not confirmed by organizers is explicitly tagged with PLACEHOLDER comments.
 
+export const CLUB_NAME = "Celestius";
+
 export const PAIR_SIZE = 2;
 
 export const PRICING = {
@@ -15,7 +17,7 @@ export const PAYMENT_NOTE = "PLACEHOLDER: payment instructions will be shared by
 export const eventData = {
   name: "LARPER OR CODER",
   edition: null,
-  presentedBy: "Celestials",
+  presentedBy: CLUB_NAME,
   tagline: "no larping. only coding.",
   description:
     "A battleground where resume buzzwords don't save you. Only pure logic and locked-in problem solving.",
@@ -26,10 +28,10 @@ export const eventData = {
   venue: "TBA",
   // PLACEHOLDER: confirm with organizers
   contact: {
-    email: "contact.celestials@example.com", // PLACEHOLDER: confirm with organizers
+    email: "contact.celestius@example.com", // PLACEHOLDER: confirm with organizers
     phone: "TBA", // PLACEHOLDER: confirm with organizers
-    instagram: "https://instagram.com/celestials", // PLACEHOLDER: confirm with organizers
-    discord: "https://discord.gg/celestials", // PLACEHOLDER: confirm with organizers
+    instagram: "https://instagram.com/celestius", // PLACEHOLDER: confirm with organizers
+    discord: "https://discord.gg/celestius", // PLACEHOLDER: confirm with organizers
   },
 
   // PLACEHOLDER: confirm with organizers
@@ -43,7 +45,7 @@ export const eventData = {
   stats: [
     { label: "tracks", value: "2" },
     { label: "day", value: "1" },
-    { label: "presented by", value: "Celestials" },
+    { label: "presented by", value: CLUB_NAME },
   ],
 
   schedule: [
