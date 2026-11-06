@@ -4,6 +4,7 @@ import styles from './Events.module.css';
 import { eventData } from '../../data/event.js';
 import EventCard from './EventCard.jsx';
 import EventDetailPanel from './EventDetailPanel.jsx';
+import Prop from '../Scene/Prop.jsx';
 
 export default function EventCards({ onOpenRegister }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -20,7 +21,21 @@ export default function EventCards({ onOpenRegister }) {
 
   return (
     <section id="events" className={`section ${styles.eventsSection}`}>
-      <div className="container">
+      {/* Background Coding Props */}
+      <Prop
+        name="terminal"
+        parallaxFactor={0.03}
+        variant="fadeToLeft"
+        style={{ top: '6%', right: '-7%', width: 'clamp(230px, 30vw, 480px)' }}
+      />
+      <Prop
+        name="bug"
+        parallaxFactor={-0.035}
+        variant="fadeToRight"
+        style={{ bottom: '8%', left: '-5%', width: 'clamp(180px, 24vw, 380px)' }}
+      />
+
+      <div className={`container ${styles.eventsContainer}`}>
         <div className={styles.eventsHeader}>
           <div className="section-tag">
             // 03. TRACKS & COMPETITIONS

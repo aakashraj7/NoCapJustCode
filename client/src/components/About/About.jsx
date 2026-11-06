@@ -2,11 +2,27 @@
 import React from 'react';
 import styles from './About.module.css';
 import { eventData } from '../../data/event.js';
+import Prop from '../Scene/Prop.jsx';
 
 export default function About() {
   return (
     <section id="about" className={`section ${styles.aboutSection}`}>
-      <div className="container">
+      {/* Background Coding Props */}
+      <Prop
+        name="gitBranch"
+        parallaxFactor={0.035}
+        variant="fadeToLeft"
+        style={{ top: '8%', right: '-6%', width: 'clamp(220px, 30vw, 480px)' }}
+      />
+      <Prop
+        name="chip"
+        parallaxFactor={-0.03}
+        variant="fadeToRight"
+        className="phoneHide"
+        style={{ bottom: '4%', left: '-5%', width: 'clamp(190px, 25vw, 380px)' }}
+      />
+
+      <div className={`container ${styles.aboutContainer}`}>
         <div className={styles.aboutGrid}>
           {/* Left Text */}
           <div className={styles.textContent}>

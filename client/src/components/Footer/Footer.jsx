@@ -1,8 +1,10 @@
 // client/src/components/Footer/Footer.jsx
 import React from 'react';
 import styles from './Footer.module.css';
-import logoImg from '../../assets/logo.png';
+import navbarLogoWebp from '../../assets/logo-navbar.webp';
+import navbarLogoPng from '../../assets/logo-navbar.png';
 import { eventData } from '../../data/event.js';
+import Prop from '../Scene/Prop.jsx';
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -11,12 +13,30 @@ export default function Footer() {
 
   return (
     <footer id="contact" className={styles.footer}>
-      <div className="container">
+      {/* Background Coding Props */}
+      <Prop
+        name="braces"
+        parallaxFactor={-0.03}
+        variant="fadeToRight"
+        className="phoneHide"
+        style={{ top: '8%', left: '-5%', width: 'clamp(180px, 22vw, 340px)' }}
+      />
+      <Prop
+        name="cursor"
+        parallaxFactor={0.03}
+        variant="fadeToLeft"
+        style={{ bottom: '12%', right: '-4%', width: 'clamp(180px, 24vw, 360px)' }}
+      />
+
+      <div className={`container ${styles.footerContainer}`}>
         <div className={styles.footerGrid}>
           {/* Brand Column */}
           <div className={styles.brandCol}>
             <div className={styles.brandHeading}>
-              <img src={logoImg} alt="LARPER OR CODER Logo" className={styles.footerLogo} />
+              <picture>
+                <source srcSet={navbarLogoWebp} type="image/webp" />
+                <img src={navbarLogoPng} alt="LARPER OR CODER Logo" className={styles.footerLogo} width={160} height={80} />
+              </picture>
               <span className={styles.brandName}>{eventData.name}</span>
             </div>
             <span className={styles.tagline}>{eventData.tagline}</span>

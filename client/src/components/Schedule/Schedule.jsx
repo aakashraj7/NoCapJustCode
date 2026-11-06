@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './Schedule.module.css';
 import { eventData } from '../../data/event.js';
+import Prop from '../Scene/Prop.jsx';
 
 export default function Schedule() {
   const itemRefs = useRef([]);
@@ -30,7 +31,22 @@ export default function Schedule() {
 
   return (
     <section id="schedule" className={`section ${styles.scheduleSection}`}>
-      <div className="container">
+      {/* Background Coding Props */}
+      <Prop
+        name="folderTree"
+        parallaxFactor={-0.03}
+        variant="fadeToRight"
+        style={{ top: '10%', left: '-6%', width: 'clamp(210px, 28vw, 440px)' }}
+      />
+      <Prop
+        name="keycaps"
+        parallaxFactor={0.035}
+        variant="fadeToLeft"
+        className="phoneHide"
+        style={{ bottom: '8%', right: '-5%', width: 'clamp(200px, 28vw, 450px)' }}
+      />
+
+      <div className={`container ${styles.scheduleContainer}`}>
         <div className={styles.scheduleHeader}>
           <div className="section-tag">
             // 02. FULL SCHEDULE

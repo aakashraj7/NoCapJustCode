@@ -1,0 +1,182 @@
+/* client/src/components/Scene/Scene.module.css */
+
+.sceneContainer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+/* Faint dot grid at 4.5% opacity */
+.dotGrid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(247, 237, 216, 0.045) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+}
+
+/* Subtle top radial orange ambient tint */
+.radialGlowTop {
+  position: absolute;
+  top: -15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  max-width: 1200px;
+  height: 65vh;
+  background: radial-gradient(ellipse 65% 55% at 50% 25%, rgba(242, 107, 58, 0.08) 0%, transparent 70%);
+}
+
+/* Vignette to softly frame viewport edges */
+.edgeVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+/* Rising Embers Canvas */
+.embersCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ------------------------------------------------------------- */
+/* SECTION PROP DECORATIONS                                      */
+/* ------------------------------------------------------------- */
+
+.propWrapper {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  width: clamp(220px, 32vw, 560px);
+  height: auto;
+  transform: translateY(var(--parallax-y, 0px));
+  will-change: transform;
+}
+
+.propFloat {
+  width: 100%;
+  height: 100%;
+  animation: propFloatAnim 20s ease-in-out infinite alternate;
+}
+
+@keyframes propFloatAnim {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1.2deg);
+  }
+  100% {
+    transform: translateY(4px) rotate(-0.8deg);
+  }
+}
+
+/* Stagger float durations and delays across prop types */
+.laptop .propFloat {
+  animation-duration: 24s;
+  animation-delay: -2s;
+}
+
+.terminal .propFloat {
+  animation-duration: 22s;
+  animation-delay: -7s;
+}
+
+.braces .propFloat {
+  animation-duration: 18s;
+  animation-delay: -11s;
+}
+
+.gitBranch .propFloat {
+  animation-duration: 26s;
+  animation-delay: -4s;
+}
+
+.keycaps .propFloat {
+  animation-duration: 19s;
+  animation-delay: -9s;
+}
+
+.bug .propFloat {
+  animation-duration: 21s;
+  animation-delay: -14s;
+}
+
+.chip .propFloat {
+  animation-duration: 25s;
+  animation-delay: -16s;
+}
+
+.cursor .propFloat {
+  animation-duration: 17s;
+  animation-delay: -3s;
+}
+
+.folderTree .propFloat {
+  animation-duration: 23s;
+  animation-delay: -12s;
+}
+
+/* Blinking cursor on terminal and laptop screen */
+.blinkingCursor {
+  animation: cursorBlink 1.2s steps(2, start) infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Mask image fades to ensure text contrast stays WCAG AA */
+.fadeToLeft {
+  mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 95%);
+  -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 95%);
+}
+
+.fadeToRight {
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 95%);
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 40%, rgba(0, 0, 0, 0) 95%);
+}
+
+.fadeRadial {
+  mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 98%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 98%);
+}
+
+/* Hide secondary props on phone viewports to keep 1-2 per screen */
+@media (max-width: 767px) {
+  .phoneHide {
+    display: none !important;
+  }
+  .propWrapper {
+    width: clamp(160px, 45vw, 280px);
+  }
+}
+
+/* Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .propWrapper {
+    transform: none !important;
+  }
+  .propFloat {
+    animation: none !important;
+  }
+  .blinkingCursor {
+    animation: none !important;
+  }
+  .embersCanvas {
+    display: none !important;
+  }
+}

@@ -1,4 +1,14 @@
 /* client/src/components/Schedule/Schedule.module.css */
+.scheduleSection {
+  position: relative;
+  overflow: hidden;
+}
+
+.scheduleContainer {
+  position: relative;
+  z-index: 2;
+}
+
 .scheduleHeader {
   margin-bottom: 3.5rem;
 }

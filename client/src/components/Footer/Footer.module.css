@@ -5,6 +5,12 @@
   padding-top: 4.5rem;
   padding-bottom: 3rem;
   position: relative;
+  overflow: hidden;
+}
+
+.footerContainer {
+  position: relative;
+  z-index: 2;
 }
 
 .footerGrid {

@@ -7,6 +7,7 @@ import { eventData } from '../../data/event.js';
 import Button from '../ui/Button.jsx';
 import Chip from '../ui/Chip.jsx';
 import Marquee from './Marquee.jsx';
+import Prop from '../Scene/Prop.jsx';
 
 export default function Hero({ onOpenRegister }) {
   const scrollToEvents = (e) => {
@@ -19,6 +20,29 @@ export default function Hero({ onOpenRegister }) {
 
   return (
     <section id="hero" className={styles.heroSection}>
+      {/* Background Coding Props */}
+      <Prop
+        name="braces"
+        parallaxFactor={-0.03}
+        variant="fadeToRight"
+        className={`${styles.heroBracesProp} phoneHide`}
+        style={{ top: '6%', left: '-5%', width: 'clamp(180px, 22vw, 360px)' }}
+      />
+      <Prop
+        name="terminal"
+        parallaxFactor={0.03}
+        variant="fadeToRight"
+        className={styles.heroTerminalProp}
+        style={{ bottom: '8%', left: '-4%', width: 'clamp(200px, 26vw, 420px)' }}
+      />
+      <Prop
+        name="laptop"
+        parallaxFactor={-0.04}
+        variant="fadeToLeft"
+        className={styles.heroLaptopProp}
+        style={{ top: '16%', right: '-8%', width: 'clamp(300px, 40vw, 620px)' }}
+      />
+
       <div className={`container ${styles.heroContent}`}>
         <div className={styles.heroGrid}>
           {/* Left Column */}

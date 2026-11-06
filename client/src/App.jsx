@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { checkHealth } from './services/api.js';
+import Scene from './components/Scene/Scene.jsx';
 import Intro from './components/Intro/Intro.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 import Hero from './components/Hero/Hero.jsx';
@@ -38,6 +39,9 @@ export default function App() {
 
   return (
     <div className="appWrapper">
+      {/* Background Coding Scene (Dot Grid, Ambient Glows, Rising Embers) */}
+      <Scene />
+
       {/* Story Introduction Overlay */}
       {!introFinished && (
         <Intro onComplete={() => setIntroFinished(true)} />
