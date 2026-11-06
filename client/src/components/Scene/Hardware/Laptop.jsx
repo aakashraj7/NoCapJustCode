@@ -39,6 +39,9 @@ export default function Laptop({
   const creamDim = hexToRgba(THEME.cream, opacity > 0.3 ? 0.25 : THEME.creamDetailOpacity * 0.5);
   const accent = hexToRgba(color, opacity > 0.3 ? 0.55 : Math.min(opacity + 0.08, 0.24));
 
+  const svgWidth = width === 'auto' ? undefined : width;
+  const svgHeight = height === 'auto' ? undefined : height;
+
   return (
     <div
       ref={containerRef}
@@ -51,8 +54,8 @@ export default function Laptop({
       )}
       <svg
         className={styles.pieceSvg}
-        width={width}
-        height={height}
+        width={svgWidth}
+        height={svgHeight}
         viewBox="0 0 240 150"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

@@ -94,7 +94,7 @@ export const SECTION_SCENES = {
     },
     phone: {
       big: [
-        { type: 'Cpu', size: 55, pos: { top: '24px', right: '16px' }, rotate: 0, float: 'A', color: THEME.orange },
+        { type: 'Cpu', size: 50, pos: { top: '16px', right: '80px' }, rotate: 0, float: 'A', color: THEME.orange },
       ],
       small: [
         { type: 'Screw', size: 28, pos: { top: '24px', left: '16px' }, rotate: 0, spin: 80, color: THEME.orange },
@@ -225,7 +225,7 @@ export const SECTION_SCENES = {
     },
     phone: {
       big: [
-        { type: 'CaseFan', size: 65, pos: { bottom: '16px', right: '18px' }, rotate: 0, float: 'C', color: THEME.orange },
+        { type: 'CaseFan', size: 55, pos: { top: '10px', right: '18px' }, rotate: 0, float: 'C', color: THEME.orange },
       ],
       small: [
         { type: 'HexBolt', size: 28, pos: { top: '18px', left: '18px' }, rotate: 0, spin: 95, color: THEME.yellow },
