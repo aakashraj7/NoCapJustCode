@@ -7,7 +7,16 @@
 
 @media (max-width: 767px) {
   .eventsSection {
-    padding-block: 3.5rem;
+    padding-block: 96px;
+  }
+  .cardsGrid {
+    gap: 16px;
+  }
+  .eventCard {
+    padding: 22px !important;
+  }
+  .cardTop {
+    gap: 18px !important;
   }
 }
 
