@@ -1,8 +1,8 @@
 // client/src/services/api.js
 import { mockRegister } from "./mockApi.js";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-const FORCE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+const FORCE_MOCK = import.meta.env.VITE_USE_MOCK === "true" || !API_BASE_URL;
 
 /**
  * Non-blocking health check against the real backend /health endpoint.

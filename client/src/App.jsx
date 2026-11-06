@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { checkHealth } from './services/api.js';
 import Scene from './components/Scene/Scene.jsx';
-import { initDevOverlapChecker } from './components/Scene/index.js';
+import { HardwareBand, WideMarginsHardware } from './components/Scene/index.js';
 import Intro from './components/Intro/Intro.jsx';
 import CelestiusSplash from './components/Splash/CelestiusSplash.jsx';
 import { SESSION_KEYS } from './components/Intro/introConstants.js';
@@ -34,10 +34,6 @@ export default function App() {
         console.info('[System] Backend server offline or mock mode active. Mock adapter will handle registrations.');
       }
     });
-
-    if (import.meta.env.DEV) {
-      return initDevOverlapChecker();
-    }
   }, []);
 
   // Lock scroll while intro or splash is active
@@ -90,18 +86,25 @@ export default function App() {
       {/* Main Site Container: inert while intro/splash active */}
       <div
         className="siteWrapper"
-        inert={appFlow !== 'SITE' ? '' : undefined}
+        inert={appFlow !== 'SITE'}
         aria-hidden={appFlow !== 'SITE'}
       >
         {/* Floating Pill Navbar */}
         <Navbar onOpenRegister={handleOpenRegister} />
 
-        {/* Main Sections */}
+        {/* Wide screen side-margin hardware pieces (>= 1600px only) */}
+        <WideMarginsHardware />
+
+        {/* Main Sections with In-Flow Hardware Dividers */}
         <main className="mainContent">
           <Hero onOpenRegister={handleOpenRegister} />
+          <HardwareBand variant="hero-about" />
           <About />
+          <HardwareBand variant="about-schedule" />
           <Schedule />
+          <HardwareBand variant="schedule-events" />
           <EventCards onOpenRegister={handleOpenRegister} />
+          <HardwareBand variant="events-footer" />
         </main>
 
         {/* Footer */}

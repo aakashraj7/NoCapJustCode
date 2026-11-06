@@ -2,23 +2,10 @@
 import React from 'react';
 import styles from './About.module.css';
 import { eventData } from '../../data/event.js';
-import { GitGraphCard, TestCaseChip } from '../Scene/DevCards/index.js';
 
 export default function About() {
   return (
     <section id="about" className={`section ${styles.aboutSection}`}>
-      {/* Floating Dev Cards in Margins */}
-      <GitGraphCard
-        className={styles.aboutGitGraph}
-        parallaxFactor={0.035}
-        floatVariant="C"
-      />
-      <TestCaseChip
-        className={styles.aboutTestCase}
-        parallaxFactor={-0.03}
-        floatVariant="B"
-      />
-
       <div className={`container ${styles.aboutContainer}`}>
         <div className={styles.aboutGrid}>
           {/* Left Text */}

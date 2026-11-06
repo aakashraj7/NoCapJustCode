@@ -7,13 +7,7 @@ import { eventData } from '../../data/event.js';
 import Button from '../ui/Button.jsx';
 import Chip from '../ui/Chip.jsx';
 import Marquee from './Marquee.jsx';
-import {
-  LaptopCard,
-  TerminalCard,
-  KeyCaps,
-  BigOBadge,
-  StatusPill,
-} from '../Scene/DevCards/index.js';
+import { HeroCluster, MobileTopHardwareStrip } from '../Scene/index.js';
 
 export default function Hero({ onOpenRegister }) {
   const scrollToEvents = (e) => {
@@ -26,17 +20,13 @@ export default function Hero({ onOpenRegister }) {
 
   return (
     <section id="hero" className={styles.heroSection}>
-      {/* Floating Dev Cards */}
-      <BigOBadge className={styles.heroBigO} floatVariant="C" parallaxFactor={-0.03} />
-      <StatusPill className={styles.heroStatusPill} floatVariant="A" parallaxFactor={0.025} />
-      <LaptopCard className={styles.heroLaptop} floatVariant="B" parallaxFactor={-0.04} />
-      <TerminalCard className={styles.heroTerminal} floatVariant="A" parallaxFactor={0.035} />
-      <KeyCaps className={styles.heroKeyCaps} floatVariant="A" parallaxFactor={-0.03} />
-
       <div className={`container ${styles.heroContent}`}>
         <div className={styles.heroGrid}>
           {/* Left Column */}
           <div className={styles.leftCol}>
+            {/* On phone: Hardware strip directly under navbar, ABOVE the Presented badge */}
+            <MobileTopHardwareStrip />
+
             <div className={styles.presenterPill}>
               PRESENTED BY CELESTIUS
             </div>
@@ -117,6 +107,12 @@ export default function Hero({ onOpenRegister }) {
               <div className={styles.showcaseFootnote}>
                 &gt; locked in. code only.
               </div>
+
+              {/* Composed Hardware Cluster under the logo on desktop */}
+              <HeroCluster />
+
+              {/* Mobile Hardware Cluster placed right after the hero logo on phone */}
+              <HeroCluster isMobile />
             </div>
           </div>
         </div>

@@ -4,7 +4,6 @@ import styles from './Events.module.css';
 import { eventData } from '../../data/event.js';
 import EventCard from './EventCard.jsx';
 import EventDetailPanel from './EventDetailPanel.jsx';
-import { TerminalCard, StatusPill } from '../Scene/DevCards/index.js';
 
 export default function EventCards({ onOpenRegister }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -21,19 +20,6 @@ export default function EventCards({ onOpenRegister }) {
 
   return (
     <section id="events" className={`section ${styles.eventsSection}`}>
-      {/* Floating Dev Cards in Outer Gutters Only (never behind cards) */}
-      <TerminalCard
-        className={styles.eventsTerminal}
-        parallaxFactor={0.03}
-        floatVariant="A"
-      />
-      <StatusPill
-        text="pair ready"
-        className={styles.eventsStatusPill}
-        parallaxFactor={-0.03}
-        floatVariant="C"
-      />
-
       <div className={`container ${styles.eventsContainer}`}>
         <div className={styles.eventsHeader}>
           <div className="section-tag">

@@ -2,7 +2,6 @@
 import React, { useEffect, useRef } from 'react';
 import styles from './Schedule.module.css';
 import { eventData } from '../../data/event.js';
-import { CodeCard, KeyCaps } from '../Scene/DevCards/index.js';
 
 export default function Schedule() {
   const itemRefs = useRef([]);
@@ -31,18 +30,6 @@ export default function Schedule() {
 
   return (
     <section id="schedule" className={`section ${styles.scheduleSection}`}>
-      {/* Floating Dev Cards in Margins */}
-      <CodeCard
-        className={styles.scheduleCodeCard}
-        parallaxFactor={-0.04}
-        floatVariant="B"
-      />
-      <KeyCaps
-        className={styles.scheduleKeyCaps}
-        parallaxFactor={0.035}
-        floatVariant="A"
-      />
-
       <div className={`container ${styles.scheduleContainer}`}>
         <div className={styles.scheduleHeader}>
           <div className="section-tag">

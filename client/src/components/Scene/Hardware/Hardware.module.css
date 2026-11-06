@@ -1,0 +1,269 @@
+/* client/src/components/Scene/Hardware/Hardware.module.css */
+
+.hardwarePiece {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+  flex-shrink: 0;
+  will-change: transform;
+}
+
+/* Subtle radial halo behind hardware (allowed only here, radius ~1.5x) */
+.halo {
+  position: absolute;
+  inset: -25%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(242, 107, 58, 0.26) 0%,
+    rgba(245, 168, 28, 0.08) 50%,
+    transparent 74%
+  );
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.85;
+}
+
+.haloStrong {
+  inset: -35%;
+  background: radial-gradient(
+    circle,
+    rgba(242, 107, 58, 0.35) 0%,
+    rgba(245, 168, 28, 0.12) 48%,
+    transparent 76%
+  );
+  opacity: 1;
+}
+
+.pieceSvg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  overflow: visible;
+}
+
+/* Drop shadow only on desktop/laptop (>=1024px) to keep phone 60fps */
+@media (min-width: 1024px) {
+  .pieceSvg {
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.65));
+  }
+}
+
+/* Base floating animation */
+@keyframes hwFloatA {
+  0% { transform: translateY(0px) rotate(-0.6deg); }
+  50% { transform: translateY(-8px) rotate(0.8deg); }
+  100% { transform: translateY(6px) rotate(-0.5deg); }
+}
+
+@keyframes hwFloatB {
+  0% { transform: translateY(0px) rotate(0.8deg); }
+  50% { transform: translateY(7px) rotate(-0.7deg); }
+  100% { transform: translateY(-6px) rotate(0.6deg); }
+}
+
+@keyframes hwFloatC {
+  0% { transform: translateY(0px) rotate(-1deg); }
+  50% { transform: translateY(-9px) rotate(-0.2deg); }
+  100% { transform: translateY(7px) rotate(0.9deg); }
+}
+
+.floatA {
+  animation: hwFloatA 16s ease-in-out infinite alternate;
+}
+
+.floatB {
+  animation: hwFloatB 19s ease-in-out infinite alternate;
+}
+
+.floatC {
+  animation: hwFloatC 22s ease-in-out infinite alternate;
+}
+
+/* Blinking cursor on laptop and monitor screens */
+@keyframes hwBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor {
+  animation: hwBlink 1s step-start infinite;
+}
+
+/* Circuit trace traveling pulse */
+@keyframes tracePulseAnim {
+  0% {
+    stroke-dashoffset: 400;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.pulseTrace {
+  stroke-dasharray: 24 160;
+  animation: tracePulseAnim 5s linear infinite;
+}
+
+.pulseTraceFast {
+  stroke-dasharray: 20 120;
+  animation: tracePulseAnim 3.8s linear infinite;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .floatA,
+  .floatB,
+  .floatC,
+  .cursor,
+  .pulseTrace,
+  .pulseTraceFast {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+:global(.tab-hidden) .floatA,
+:global(.tab-hidden) .floatB,
+:global(.tab-hidden) .floatC,
+:global(.tab-hidden) .cursor,
+:global(.tab-hidden) .pulseTrace,
+:global(.tab-hidden) .pulseTraceFast {
+  animation-play-state: paused !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* HardwareBand (In-Flow Section Divider)                                     */
+/* -------------------------------------------------------------------------- */
+.hardwareBand {
+  position: relative;
+  width: 100%;
+  height: clamp(120px, 15vw, 240px);
+  min-height: 120px;
+  max-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bandContainer {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+}
+
+.bandCircuitSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.bandItemsWrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Hero Cluster (composed scene in Hero right column)                         */
+/* -------------------------------------------------------------------------- */
+.heroClusterDesktop {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  margin: 1.5rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1023px) {
+  .heroClusterDesktop {
+    display: none;
+  }
+}
+
+/* Hero Mobile Hardware Strip (under navbar, above Presented badge) */
+.mobileTopStrip {
+  display: none;
+  width: 100%;
+  height: 115px;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 767px) {
+  .mobileTopStrip {
+    display: flex;
+  }
+}
+
+/* Hero Mobile Cluster (right after logo on phone) */
+.heroClusterMobile {
+  display: none;
+  width: 100%;
+  height: 230px;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+@media (max-width: 767px) {
+  .heroClusterMobile {
+    display: flex;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Wide Margins Hardware (at >= 1600px only)                                  */
+/* -------------------------------------------------------------------------- */
+.wideMarginLeft,
+.wideMarginRight {
+  display: none;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 1600px) {
+  .wideMarginLeft {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    left: calc((100vw - 1320px) / 4);
+    width: 130px;
+  }
+  .wideMarginRight {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    right: calc((100vw - 1320px) / 4);
+    width: 130px;
+  }
+}

@@ -4,24 +4,6 @@
   overflow: hidden;
 }
 
-/* DevCards in Outer Gutters Only - never behind cards */
-.eventsTerminal {
-  top: 3.2rem;
-  right: 2%;
-}
-
-.eventsStatusPill {
-  bottom: 2.5rem;
-  left: 2%;
-}
-
-@media (max-width: 1279px) {
-  .eventsTerminal,
-  .eventsStatusPill {
-    display: none;
-  }
-}
-
 .eventsContainer {
   position: relative;
   z-index: 2;
