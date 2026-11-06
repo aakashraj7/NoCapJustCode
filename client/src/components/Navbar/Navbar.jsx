@@ -15,7 +15,7 @@ export default function Navbar({ onOpenRegister }) {
   const menuRef = useRef(null);
   const firstLinkRef = useRef(null);
 
-  const activeSection = useScrollSpy(['hero', 'about', 'schedule', 'events', 'connect']);
+  const activeSection = useScrollSpy(['hero', 'about', 'schedule', 'events', 'quote', 'connect']);
 
   const navItems = [
     { label: 'About', href: '#about', id: 'about' },

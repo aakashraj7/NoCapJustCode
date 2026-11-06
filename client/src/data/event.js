@@ -7,6 +7,16 @@ export const EVENT_YEAR = 2026;
 export const SHOW_UNCONFIRMED = false;
 export const PAIR_SIZE = 2;
 
+export const QUOTE = "The more u larp, the less u larp.";
+export const QUOTE_ATTRIBUTION = "Definitely not Albert Einstein";
+export const QUOTE_ATTRIBUTION_ALTERNATIVES = [
+  "The Thinker, still stuck on the same bug",
+  "Anonymous senior dev, 4 AM",
+  "A rubber duck, after hearing your code",
+];
+
+export const LINK_TARGET = "_blank";
+
 export const PRICING = {
   perHead: 149,
   pair: 149 * 2, // 298 per pair
@@ -34,6 +44,7 @@ export const eventData = {
 
   connect: {
     website: "https://www.celestius.in/",
+    websiteLabel: "celestius.in",
     instagram: "https://www.instagram.com/celestius_cit/",
     instagramLabel: "@celestius_cit",
   },
