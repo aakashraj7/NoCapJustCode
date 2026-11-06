@@ -15,7 +15,7 @@ import celestius2xPng from '../../assets/celestius-transparent@2x.png';
  * Renders ONLY:
  * 1. The PRESENTED BY brand tag (slanted cream parallelogram with dark pixel text, yellow checkers & brackets)
  * 2. The Celestius logo image
- * 3. Visually hidden aria-live announcement
+ * (Zero stray or plain text nodes beside or around the logo)
  *
  * Sequence:
  * - Fade in (300ms, scale 0.96 -> 1.0)
@@ -32,7 +32,7 @@ export default function CelestiusSplash({ onComplete }) {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
-  // Dev-only assertion: Assert Splash DOM contains only BrandTag, logo, and sr-only
+  // Dev-only assertion: Assert Splash DOM contains only BrandTag and logo, zero stray text nodes
   useEffect(() => {
     if (import.meta.env.DEV && splashRef.current) {
       const walker = document.createTreeWalker(
@@ -62,7 +62,7 @@ export default function CelestiusSplash({ onComplete }) {
       if (strayTexts.length > 0) {
         console.error('[Splash Assertion Failed] Stray visible text nodes found in splash DOM:', strayTexts);
       } else {
-        console.info('[Splash Assertion Passed] Splash DOM contains ONLY brand tag, logo, and aria-live.');
+        console.info('[Splash Assertion Passed] Splash DOM contains ONLY brand tag and logo.');
       }
     }
   }, []);
@@ -117,18 +117,13 @@ export default function CelestiusSplash({ onComplete }) {
       className={`${styles.splashOverlay} ${animState === 'exiting' ? styles.overlayExiting : ''}`}
       role="dialog"
       aria-modal="true"
-      aria-label="Celestius Splash"
+      aria-label="Presented by Celestius"
     >
       {/* Background Dot Grid and Radial Yellow Tint */}
       <div className={styles.dotGrid} aria-hidden="true" />
       <div className={styles.radialTint} aria-hidden="true" />
 
-      {/* Visually hidden screen reader announcement */}
-      <div className="sr-only" role="status" aria-live="polite">
-        Presented by Celestius
-      </div>
-
-      {/* Centered Presentation Box */}
+      {/* Centered Presentation Block */}
       <div className={`${styles.content} ${stateClass}`}>
         {/* Pixel-styled brand tag (cream parallelogram with yellow checkers & brackets) */}
         <PresentedBrandTag className={styles.brandTag} />
