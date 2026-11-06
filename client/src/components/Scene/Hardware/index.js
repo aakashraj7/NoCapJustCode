@@ -1,8 +1,5 @@
 // client/src/components/Scene/Hardware/index.js
 export * from '../hardwareConfig.js';
-export { default as HardwareBand } from './HardwareBand.jsx';
-export { HeroCluster, MobileTopHardwareStrip } from './HeroCluster.jsx';
-export { default as WideMarginsHardware } from './WideMarginsHardware.jsx';
 export { default as Laptop } from './Laptop.jsx';
 export { default as Keyboard } from './Keyboard.jsx';
 export { default as Cpu } from './Cpu.jsx';

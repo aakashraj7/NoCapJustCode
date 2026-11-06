@@ -7,7 +7,6 @@ import { eventData } from '../../data/event.js';
 import Button from '../ui/Button.jsx';
 import Chip from '../ui/Chip.jsx';
 import Marquee from './Marquee.jsx';
-import { HeroCluster, MobileTopHardwareStrip } from '../Scene/index.js';
 
 export default function Hero({ onOpenRegister }) {
   const scrollToEvents = (e) => {
@@ -24,9 +23,6 @@ export default function Hero({ onOpenRegister }) {
         <div className={styles.heroGrid}>
           {/* Left Column */}
           <div className={styles.leftCol}>
-            {/* On phone: Hardware strip directly under navbar, ABOVE the Presented badge */}
-            <MobileTopHardwareStrip />
-
             <div className={styles.presenterPill}>
               PRESENTED BY CELESTIUS
             </div>
@@ -108,12 +104,6 @@ export default function Hero({ onOpenRegister }) {
               <div className={styles.showcaseFootnote}>
                 &gt; locked in. code only.
               </div>
-
-              {/* Composed Hardware Cluster under the logo on desktop */}
-              <HeroCluster />
-
-              {/* Mobile Hardware Cluster placed right after the hero logo on phone */}
-              <HeroCluster isMobile />
             </div>
           </div>
         </div>

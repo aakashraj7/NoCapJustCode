@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import { checkHealth } from './services/api.js';
 import Scene from './components/Scene/Scene.jsx';
-import { HardwareBand, WideMarginsHardware } from './components/Scene/index.js';
 import Intro from './components/Intro/Intro.jsx';
 import CelestiusSplash from './components/Splash/CelestiusSplash.jsx';
 import { SESSION_KEYS } from './components/Intro/introConstants.js';
@@ -98,19 +97,12 @@ export default function App() {
         {/* Floating Pill Navbar */}
         <Navbar onOpenRegister={handleOpenRegister} />
 
-        {/* Wide screen side-margin hardware pieces (>= 1600px only) */}
-        <WideMarginsHardware />
-
-        {/* Main Sections with In-Flow Hardware Dividers */}
+        {/* Main Sections */}
         <main className="mainContent">
           <Hero onOpenRegister={handleOpenRegister} />
-          <HardwareBand variant="hero-about" />
           <About />
-          <HardwareBand variant="about-schedule" />
           <Schedule />
-          <HardwareBand variant="schedule-events" />
           <EventCards onOpenRegister={handleOpenRegister} />
-          <HardwareBand variant="events-footer" />
         </main>
 
         {/* Footer */}
