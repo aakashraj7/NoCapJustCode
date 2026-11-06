@@ -1,17 +1,21 @@
 // client/src/components/Intro/Intro.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Intro.module.css';
-import PixelText from './PixelText.jsx';
+import ImageTypewriter from './ImageTypewriter.jsx';
+import logoTypingImg from '../../assets/intro/logo-typing.png';
+import presentedTypingImg from '../../assets/intro/presented-typing.png';
 import {
   INTRO_STATES,
   PRESENTER_NAME,
   TIMINGS,
-  COLORS,
   TOTAL_SEGMENTS,
-  AREA_PER_PARTICLE,
   STATUS_LINE_LOADING,
+  PARTICLES_PHONE,
+  PARTICLES_TABLET,
+  PARTICLES_DESKTOP,
   SESSION_KEYS,
-  GLYPHS,
+  LOGO_REVEAL_BOXES,
+  PRESENTED_REVEAL_BOXES,
 } from './introConstants.js';
 
 export default function Intro({ onComplete }) {
@@ -47,16 +51,18 @@ export default function Intro({ onComplete }) {
   // Loading & status values
   const [progress, setProgress] = useState(0);
 
-  // Logo typing states
-  const [typedTop, setTypedTop] = useState(() => (isReducedMotion ? 'PRESENTED' : ''));
-  const [showMiddleRow, setShowMiddleRow] = useState(() => isReducedMotion);
-  const [middleTagText, setMiddleTagText] = useState(() => (isReducedMotion ? 'BY' : 'OR'));
-  const [typedBottom, setTypedBottom] = useState(() => (isReducedMotion ? PRESENTER_NAME : ''));
+  // Logo typing states: active brand image & number of revealed boxes
+  const [activeLogo, setActiveLogo] = useState(() => (isReducedMotion ? 'presented' : 'logo'));
+  const [revealedCount, setRevealedCount] = useState(() =>
+    isReducedMotion ? PRESENTED_REVEAL_BOXES.length : 0
+  );
 
   const skipBtnRef = useRef(null);
   const canvasRef = useRef(null);
   const audioCtxRef = useRef(null);
   const animationFrameRef = useRef(null);
+  const containerRef = useRef(null);
+  const initialRectRef = useRef(null);
 
   // If already seen, trigger complete immediately
   useEffect(() => {
@@ -80,6 +86,22 @@ export default function Intro({ onComplete }) {
       skipBtnRef.current.focus();
     }
   }, [alreadySeen]);
+
+  // Layout Invariant Verification (verifies getBoundingClientRect stays 100% constant)
+  useEffect(() => {
+    if (containerRef.current && (state === INTRO_STATES.TYPE_LOGO || state === INTRO_STATES.SWAP)) {
+      const rect = containerRef.current.getBoundingClientRect();
+      if (!initialRectRef.current) {
+        initialRectRef.current = { width: rect.width, height: rect.height };
+      } else {
+        const dw = Math.abs(rect.width - initialRectRef.current.width);
+        const dh = Math.abs(rect.height - initialRectRef.current.height);
+        if (dw > 0.5 || dh > 0.5) {
+          console.warn(`[Intro] Container size shifted: delta w=${dw.toFixed(2)}, h=${dh.toFixed(2)}`);
+        }
+      }
+    }
+  }, [state, activeLogo, revealedCount]);
 
   // Web Audio Context initialization & synthesis
   const getAudioCtx = useCallback(() => {
@@ -247,19 +269,24 @@ export default function Intro({ onComplete }) {
 
     const glyphs = ['{', '}', '<', '/', '>', ';', '_', '0', '1'];
 
-    // Derive particle count and size scaling from screen dimensions
+    // Strict viewport-based particle counts: Phone (36), Tablet (54), Desktop (72)
     const calculateParticles = (w, h) => {
-      const targetCount = Math.min(
-        180,
-        Math.max(24, Math.round((w * h) / AREA_PER_PARTICLE))
-      );
-      const scale = Math.min(1.8, Math.max(1.0, Math.min(w, 1200) / 400));
-      return Array.from({ length: targetCount }, () => ({
+      let count = PARTICLES_PHONE;
+      let scale = 1.0;
+      if (w >= 1200) {
+        count = PARTICLES_DESKTOP;
+        scale = 1.12;
+      } else if (w >= 768) {
+        count = PARTICLES_TABLET;
+        scale = 1.0;
+      }
+
+      return Array.from({ length: count }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
         vy: 0.28 + Math.random() * 0.45,
         char: glyphs[Math.floor(Math.random() * glyphs.length)],
-        size: Math.round((11 + Math.random() * 5) * scale),
+        size: Math.round((12 + Math.random() * 4) * scale),
         alpha: 0.06 + Math.random() * 0.04,
         isOrange: Math.random() > 0.45,
       }));
@@ -322,7 +349,7 @@ export default function Intro({ onComplete }) {
     };
   }, [alreadySeen, isReducedMotion, state]);
 
-  // Main state sequence controller
+  // Main state sequence controller (Phases 1 - 4)
   useEffect(() => {
     if (alreadySeen || isReducedMotion) return;
 
@@ -412,121 +439,70 @@ export default function Intro({ onComplete }) {
     }
   }, [state, alreadySeen, isReducedMotion, playTick, playAlarm, playDing]);
 
-  // 5. TYPE_LOGO (6.3s to 8.7s): LARPER OR CODER in exact real logo style
+  // 5. TYPE_LOGO (6.3s to 8.7s): LARPER OR CODER letter-by-letter image reveal
   useEffect(() => {
     if (alreadySeen || isReducedMotion || state !== INTRO_STATES.TYPE_LOGO) return;
 
-    const fullTop = 'LARPER';
-    const fullBottom = 'CODER';
+    let count = 0;
+    const total = LOGO_REVEAL_BOXES.length; // 13 boxes
 
-    // Step A: Type LARPER on top line (cursor after last letter)
-    let topIndex = 0;
-    const typeTopInterval = setInterval(() => {
-      topIndex++;
-      setTypedTop(fullTop.slice(0, topIndex));
+    const interval = setInterval(() => {
+      count++;
+      setRevealedCount(count);
       playKeyClick();
 
-      if (topIndex >= fullTop.length) {
-        clearInterval(typeTopInterval);
-
-        // Step B: Reveal middle row (tag OR, brackets, checkers, dashes)
+      if (count >= total) {
+        clearInterval(interval);
+        // Hold 1.0s, then proceed to backspace / swap
         setTimeout(() => {
-          setShowMiddleRow(true);
-          setMiddleTagText('OR');
-          playKeyClick();
-
-          // Step C: Type bottom row CODER with cursor
-          let bottomIndex = 0;
-          const typeBottomInterval = setInterval(() => {
-            bottomIndex++;
-            setTypedBottom(fullBottom.slice(0, bottomIndex));
-            playKeyClick();
-
-            if (bottomIndex >= fullBottom.length) {
-              clearInterval(typeBottomInterval);
-
-              // Step D: Hold 1.0s, then swap
-              setTimeout(() => {
-                setState(INTRO_STATES.SWAP);
-              }, TIMINGS.HOLD_LOGO);
-            }
-          }, TIMINGS.TYPE_CHAR_SPEED);
-        }, 160);
+          setState(INTRO_STATES.SWAP);
+        }, TIMINGS.HOLD_LOGO);
       }
-    }, TIMINGS.TYPE_CHAR_SPEED);
+    }, TIMINGS.TYPE_STEP_SPEED);
 
-    return () => clearInterval(typeTopInterval);
+    return () => clearInterval(interval);
   }, [state, alreadySeen, isReducedMotion, playKeyClick]);
 
-  // 6. SWAP (8.7s to 11.0s): Backspaces logo, then types PRESENTED BY CELESTIUS in exact same style
+  // 6. SWAP (8.7s to 11.0s): Reverse backspace of logo, then type PRESENTED BY CELESTIUS
   useEffect(() => {
     if (alreadySeen || isReducedMotion || state !== INTRO_STATES.SWAP) return;
 
-    const fullPresenterTop = 'PRESENTED';
-    const fullPresenterBottom = PRESENTER_NAME;
+    let current = LOGO_REVEAL_BOXES.length; // 13
 
-    // Step A: Backspace CODER
-    let coderCount = 'CODER'.length;
-    const backspaceBottom = setInterval(() => {
-      coderCount--;
-      setTypedBottom((prev) => prev.slice(0, Math.max(0, coderCount)));
+    // Step A: Backspace logo boxes in reverse order (40ms per step)
+    const backspaceInterval = setInterval(() => {
+      current--;
+      setRevealedCount(Math.max(0, current));
       playKeyClick();
 
-      if (coderCount <= 0) {
-        clearInterval(backspaceBottom);
+      if (current <= 0) {
+        clearInterval(backspaceInterval);
 
-        // Step B: Backspace LARPER
-        let larperCount = 'LARPER'.length;
-        const backspaceTop = setInterval(() => {
-          larperCount--;
-          setTypedTop((prev) => prev.slice(0, Math.max(0, larperCount)));
-          playKeyClick();
+        // Step B: Short pause (120ms), switch image, then type PRESENTED BY CELESTIUS
+        setTimeout(() => {
+          setActiveLogo('presented');
+          let presCount = 0;
+          const presTotal = PRESENTED_REVEAL_BOXES.length; // 20 boxes
 
-          if (larperCount <= 0) {
-            clearInterval(backspaceTop);
-            setShowMiddleRow(false);
+          const typePresInterval = setInterval(() => {
+            presCount++;
+            setRevealedCount(presCount);
+            playKeyClick();
 
-            // Step C: Type PRESENTED
-            let pTopIdx = 0;
-            const typePresentTop = setInterval(() => {
-              pTopIdx++;
-              setTypedTop(fullPresenterTop.slice(0, pTopIdx));
-              playKeyClick();
+            if (presCount >= presTotal) {
+              clearInterval(typePresInterval);
 
-              if (pTopIdx >= fullPresenterTop.length) {
-                clearInterval(typePresentTop);
-
-                // Reveal middle row with BY
-                setTimeout(() => {
-                  setMiddleTagText('BY');
-                  setShowMiddleRow(true);
-                  playKeyClick();
-
-                  // Step D: Type CELESTIUS
-                  let pBottomIdx = 0;
-                  const typePresentBottom = setInterval(() => {
-                    pBottomIdx++;
-                    setTypedBottom(fullPresenterBottom.slice(0, pBottomIdx));
-                    playKeyClick();
-
-                    if (pBottomIdx >= fullPresenterBottom.length) {
-                      clearInterval(typePresentBottom);
-
-                      // Hold 1.0s, then AUTO ENTER (about 11.0s total)
-                      setTimeout(() => {
-                        dismiss();
-                      }, TIMINGS.HOLD_SWAP);
-                    }
-                  }, TIMINGS.TYPE_CHAR_SPEED);
-                }, 150);
-              }
-            }, TIMINGS.TYPE_CHAR_SPEED);
-          }
-        }, TIMINGS.BACKSPACE_SPEED);
+              // Step C: Hold 1.0s, then AUTO-ENTER (about 11.0s total)
+              setTimeout(() => {
+                dismiss();
+              }, TIMINGS.HOLD_SWAP);
+            }
+          }, TIMINGS.TYPE_STEP_SPEED);
+        }, 120);
       }
-    }, TIMINGS.BACKSPACE_SPEED);
+    }, TIMINGS.BACKSPACE_STEP_SPEED);
 
-    return () => clearInterval(backspaceBottom);
+    return () => clearInterval(backspaceInterval);
   }, [state, alreadySeen, isReducedMotion, playKeyClick, dismiss]);
 
   if (alreadySeen) {
@@ -546,13 +522,6 @@ export default function Intro({ onComplete }) {
   const displayProgress = state === INTRO_STATES.COMPLETE ? 100 : progress;
   const activeSegmentsCount = Math.floor((displayProgress / 100) * TOTAL_SEGMENTS);
 
-  // Derive which line has active cursor
-  const isTopTarget = state === INTRO_STATES.TYPE_LOGO ? 'LARPER' : 'PRESENTED';
-  const isBottomTarget = state === INTRO_STATES.TYPE_LOGO ? 'CODER' : PRESENTER_NAME;
-
-  const showTopCursor = isLogoStage && (typedTop.length < isTopTarget.length || typedBottom.length === 0);
-  const showBottomCursor = isLogoStage && typedTop.length === isTopTarget.length && typedBottom.length <= isBottomTarget.length;
-
   // Screen reader text announcement derived directly from state
   const liveAnnouncement = (() => {
     switch (state) {
@@ -570,6 +539,10 @@ export default function Intro({ onComplete }) {
         return '';
     }
   })();
+
+  const activeBoxes = activeLogo === 'logo' ? LOGO_REVEAL_BOXES : PRESENTED_REVEAL_BOXES;
+  const activeImgSrc = activeLogo === 'logo' ? logoTypingImg : presentedTypingImg;
+  const activeAlt = activeLogo === 'logo' ? 'LARPER OR CODER' : `PRESENTED BY ${PRESENTER_NAME}`;
 
   return (
     <div
@@ -693,145 +666,17 @@ export default function Intro({ onComplete }) {
           </div>
         )}
 
-        {/* Sequence Part 5 & 6: EXACT LOGO TYPING & SWAP SCENE (Matching logo.png) */}
+        {/* Sequence Part 5 & 6: EXACT BRAND LOGO TYPING & SWAP SCENE */}
         {isLogoStage && (
-          <div className={styles.logoContainer} aria-live="polite">
-            {/* ROW 1: TOP LINE ("LARPER" or "PRESENTED") */}
-            <div className={styles.rowWrapper}>
-              <PixelText
-                text={typedTop}
-                totalLength={state === INTRO_STATES.TYPE_LOGO ? 6 : 9}
-                variant="chunky"
-                color={state === INTRO_STATES.TYPE_LOGO ? COLORS.orange : COLORS.cream}
-                gridColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.orangeGrid : COLORS.creamGrid}
-                echoColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.orangeEcho : COLORS.creamEcho}
-                showCursor={showTopCursor}
-                cursorColor={COLORS.yellow}
-              />
-            </div>
-
-            {/* ROW 2: MIDDLE ROW (SVG Brackets, Checkers, Dashes, and Slanted Parallelogram Tag) */}
-            {showMiddleRow && (
-              <div className={styles.rowWrapper}>
-                <svg
-                  className={styles.middleRowSvg}
-                  viewBox="0 0 540 38"
-                  aria-hidden="true"
-                >
-                  {/* Top-Left Rounded Bracket Corner (Open downward) */}
-                  <path
-                    d="M 12 36 L 12 16 Q 12 8 20 8 L 44 8"
-                    stroke={COLORS.yellow}
-                    strokeWidth="3.2"
-                    fill="none"
-                    strokeLinecap="round"
-                  />
-                  {/* Orange Corner Accent */}
-                  <rect x="22" y="6" width="18" height="4.5" fill={COLORS.orange} rx="1" />
-
-                  {/* Left Dashed Yellow Line */}
-                  <line
-                    x1="50"
-                    y1="8"
-                    x2="185"
-                    y2="8"
-                    stroke={COLORS.yellow}
-                    strokeWidth="2.5"
-                    strokeDasharray="9 6"
-                  />
-
-                  {/* Left Checker Diamond Box */}
-                  <g transform="translate(196, 2)">
-                    <rect x="0" y="0" width="6" height="6" fill={COLORS.yellow} />
-                    <rect x="6" y="0" width="6" height="6" fill={COLORS.cream} />
-                    <rect x="0" y="6" width="6" height="6" fill={COLORS.cream} />
-                    <rect x="6" y="6" width="6" height="6" fill={COLORS.yellow} />
-                  </g>
-
-                  {/* Slanted Cream Parallelogram Tag */}
-                  <g>
-                    <polygon
-                      points="230,2 325,2 310,36 215,36"
-                      fill={COLORS.cream}
-                      stroke={COLORS.orange}
-                      strokeWidth="2"
-                    />
-                    <polygon
-                      points="234,5 321,5 307,33 220,33"
-                      fill="none"
-                      stroke={COLORS.yellow}
-                      strokeWidth="1.2"
-                    />
-                    {/* Dark Pixel Text inside Tag ("OR" or "BY") */}
-                    <g transform="translate(248, 8)">
-                      {middleTagText.split('').map((char, cIdx) => {
-                        const matrix = GLYPHS[char] || GLYPHS[' '];
-                        const startX = cIdx * 20;
-                        return matrix.map((rowStr, rIdx) =>
-                          rowStr.split('').map((val, colIdx) => {
-                            if (val !== '1') return null;
-                            return (
-                              <rect
-                                key={`tag-cell-${cIdx}-${rIdx}-${colIdx}`}
-                                x={startX + colIdx * 3}
-                                y={rIdx * 3}
-                                width={2.7}
-                                height={2.7}
-                                fill={COLORS.darkText}
-                              />
-                            );
-                          })
-                        );
-                      })}
-                    </g>
-                  </g>
-
-                  {/* Right Checker Diamond Box */}
-                  <g transform="translate(336, 2)">
-                    <rect x="0" y="0" width="6" height="6" fill={COLORS.yellow} />
-                    <rect x="6" y="0" width="6" height="6" fill={COLORS.cream} />
-                    <rect x="0" y="6" width="6" height="6" fill={COLORS.cream} />
-                    <rect x="6" y="6" width="6" height="6" fill={COLORS.yellow} />
-                  </g>
-
-                  {/* Right Dashed Yellow Line */}
-                  <line
-                    x1="354"
-                    y1="8"
-                    x2="489"
-                    y2="8"
-                    stroke={COLORS.yellow}
-                    strokeWidth="2.5"
-                    strokeDasharray="9 6"
-                  />
-
-                  {/* Top-Right Rounded Bracket Corner (Open downward) */}
-                  <path
-                    d="M 495 8 L 519 8 Q 527 8 527 16 L 527 36"
-                    stroke={COLORS.yellow}
-                    strokeWidth="3.2"
-                    fill="none"
-                    strokeLinecap="round"
-                  />
-                  {/* Orange Corner Accent */}
-                  <rect x="499" y="6" width="18" height="4.5" fill={COLORS.orange} rx="1" />
-                </svg>
-              </div>
-            )}
-
-            {/* ROW 3: BOTTOM LINE ("CODER" or "CELESTIUS") */}
-            <div className={styles.rowWrapper}>
-              <PixelText
-                text={typedBottom}
-                totalLength={state === INTRO_STATES.TYPE_LOGO ? 5 : 9}
-                variant="monoline"
-                color={state === INTRO_STATES.TYPE_LOGO ? COLORS.cream : COLORS.orange}
-                gridColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.creamGrid : COLORS.orangeGrid}
-                echoColor={state === INTRO_STATES.TYPE_LOGO ? COLORS.creamEcho : COLORS.orangeEcho}
-                showCursor={showBottomCursor}
-                cursorColor={COLORS.yellow}
-              />
-            </div>
+          <div ref={containerRef} className={styles.logoContainer} aria-live="polite">
+            <ImageTypewriter
+              imageSrc={activeImgSrc}
+              boxes={activeBoxes}
+              revealedCount={revealedCount}
+              showActiveCursor={!isReducedMotion}
+              isComplete={isReducedMotion}
+              alt={activeAlt}
+            />
           </div>
         )}
       </div>
