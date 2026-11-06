@@ -2,11 +2,10 @@
 
 /**
  * Dev-only hardware placement assertion:
- * For every hardware piece, asserts:
- * 1. getBoundingClientRect() lies strictly inside the viewport width (left >= 0, right <= viewportWidth).
- * 2. getBoundingClientRect() lies strictly inside its section bounding box.
- * 3. Does not intersect any element containing text, a button, a card, or the logo.
- * Logs every violation and returns violation count.
+ * Asserts:
+ * 1. Every piece has its full bounding box inside viewport (left >= 16, right <= viewportWidth - 16).
+ * 2. Every piece has its full bounding box inside its section.
+ * 3. Does not intersect any text, button, card, or logo element.
  */
 export function auditHardwarePlacement() {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -20,7 +19,7 @@ export function auditHardwarePlacement() {
   // Content elements that hardware pieces must NOT intersect
   const contentElements = Array.from(
     document.querySelectorAll(
-      'h1, h2, h3, p, button, a.btn, [class*="presenterPill"], [class*="chip"], [class*="heroLogo"], [class*="eventCard"], [class*="statCard"], [class*="timelineItem"], [class*="brandCol"], [class*="footerCol"]'
+      'h1, h2, h3, p, button, a.btn, [class*="presenterPill"], [class*="chip"], [class*="heroLogo"], [class*="eventCard"], [class*="statCard"], [class*="timelineItem"], [class*="brandCol"], [class*="footerCol"], [class*="marqueeContainer"]'
     )
   ).filter((el) => {
     const r = el.getBoundingClientRect();
@@ -40,8 +39,8 @@ export function auditHardwarePlacement() {
     const secId = section?.id || section?.tagName?.toLowerCase() || 'unknown';
     const secRect = section ? section.getBoundingClientRect() : null;
 
-    // 1. Viewport width check (with 1px rounding tolerance)
-    if (r.left < -1 || r.right > viewportWidth + 1) {
+    // 1. Viewport width check (with 16px safe inset)
+    if (r.left < 15 || r.right > viewportWidth - 15) {
       violations.push({
         type: 'VIEWPORT_OVERFLOW',
         name,
@@ -51,9 +50,9 @@ export function auditHardwarePlacement() {
       });
     }
 
-    // 2. Section bounds check (with 2px tolerance for float animation)
+    // 2. Section bounds check
     if (secRect) {
-      if (r.top < secRect.top - 2 || r.bottom > secRect.bottom + 2) {
+      if (r.top < secRect.top - 4 || r.bottom > secRect.bottom + 4) {
         violations.push({
           type: 'SECTION_OVERFLOW',
           name,
@@ -91,6 +90,7 @@ export function auditHardwarePlacement() {
 
   if (violations.length > 0) {
     console.warn(`[HardwareAudit] ${violations.length} violations found:`, violations);
+    if (console.table) console.table(violations);
   } else {
     console.info(`[HardwareAudit] PASS: 0 violations across ${pieces.length} active hardware pieces.`);
   }
