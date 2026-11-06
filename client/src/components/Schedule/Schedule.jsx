@@ -8,25 +8,55 @@ export default function Schedule() {
   const itemRefs = useRef([]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add(styles.revealed);
-          }
-        });
-      },
-      {
-        threshold: 0.15,
-        rootMargin: '0px 0px -40px 0px',
-      }
-    );
+    if (typeof window === 'undefined') return;
 
-    itemRefs.current.forEach((el) => {
-      if (el) observer.observe(el);
-    });
+    let observer;
+    const items = itemRefs.current.filter(Boolean);
 
-    return () => observer.disconnect();
+    if ('IntersectionObserver' in window) {
+      items.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (!inView) {
+          el.classList.add(styles.itemHidden);
+        } else {
+          el.classList.add(styles.revealed);
+        }
+      });
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.remove(styles.itemHidden);
+              entry.target.classList.add(styles.revealed);
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          rootMargin: '0px 0px -10% 0px',
+          threshold: 0.01,
+        }
+      );
+
+      items.forEach((el) => {
+        observer.observe(el);
+      });
+    }
+
+    // 1500ms safety fallback reveals everything
+    const fallbackTimer = setTimeout(() => {
+      items.forEach((el) => {
+        el.classList.remove(styles.itemHidden);
+        el.classList.add(styles.revealed);
+      });
+    }, 1500);
+
+    return () => {
+      clearTimeout(fallbackTimer);
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   return (
