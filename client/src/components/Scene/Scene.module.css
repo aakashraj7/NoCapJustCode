@@ -1,0 +1,54 @@
+/* client/src/components/Scene/Scene.module.css */
+
+.sceneContainer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+/* Faint dot grid at 4.5% opacity */
+.dotGrid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(247, 237, 216, 0.045) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+}
+
+/* Subtle top radial orange ambient tint */
+.radialGlowTop {
+  position: absolute;
+  top: -15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  max-width: 1200px;
+  height: 65vh;
+  background: radial-gradient(ellipse 65% 55% at 50% 25%, rgba(242, 107, 58, 0.08) 0%, transparent 70%);
+}
+
+/* Vignette to softly frame viewport edges */
+.edgeVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+/* Rising Embers Canvas */
+.embersCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .embersCanvas {
+    display: none !important;
+  }
+}

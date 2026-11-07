@@ -1,0 +1,251 @@
+/* client/src/components/Navbar/Navbar.module.css */
+.headerWrapper {
+  position: fixed;
+  top: 1.25rem;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.navbar {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 960px;
+  height: 60px;
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.85rem 0 1.25rem;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-primary);
+  min-width: 0;
+  flex-shrink: 0;
+  border: none;
+  outline: none;
+}
+
+.brandLogoWrapper {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  flex-shrink: 0;
+  width: 63px;
+  height: 32px;
+}
+
+.brandLogo {
+  height: 32px;
+  width: 63px;
+  aspect-ratio: 320 / 163;
+  object-fit: contain;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  display: block;
+}
+
+.brandNameMobile {
+  display: none;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.navLink {
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.navLink:hover {
+  color: var(--text-primary);
+  background-color: rgba(247, 237, 216, 0.05);
+}
+
+.navLink.active {
+  color: var(--accent-orange);
+  background-color: rgba(242, 107, 58, 0.1);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Mobile Toggle (48px tap target) */
+.mobileToggle {
+  display: none;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  color: var(--text-primary);
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color var(--transition-fast);
+}
+
+.mobileToggle:hover {
+  background-color: var(--surface-2);
+}
+
+/* Mobile Backdrop */
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 998;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menuBackdrop.backdropActive {
+  opacity: 1;
+}
+
+/* Mobile Dropdown Menu */
+.mobileMenu {
+  pointer-events: auto;
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 1rem;
+  right: 1rem;
+  background-color: #0B0B0D;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1), transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobileMenu.menuActive {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mobileNavList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mobileNavLink {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.mobileNavLink.active {
+  color: var(--accent-orange);
+  background-color: rgba(242, 107, 58, 0.1);
+}
+
+/* Responsive: under 1024px */
+@media (max-width: 1023px) {
+  .navbar {
+    height: 64px;
+    padding: 0 0.5rem 0 0.85rem;
+  }
+
+  .brand {
+    gap: 10px;
+  }
+
+  .brandLogoWrapper {
+    width: 60px;
+    flex-shrink: 0;
+  }
+
+  .brandLogo {
+    width: 60px;
+    height: auto;
+    max-width: 60px;
+    max-height: 32px;
+  }
+
+  .brandNameMobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-family: var(--font-display, 'Space Grotesk', sans-serif);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(14px, 4.2vw, 17px);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .nameCream {
+    color: var(--text-primary);
+  }
+
+  .nameOrange {
+    color: var(--accent-orange);
+  }
+
+  .navLinks {
+    display: none;
+  }
+
+  .actions .registerBtnDesktop {
+    display: none;
+  }
+
+  .mobileToggle {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuBackdrop,
+  .mobileMenu {
+    transition: none !important;
+  }
+}

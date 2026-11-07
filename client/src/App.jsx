@@ -1,122 +1,152 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+// client/src/App.jsx
+import React, { useState, useEffect, useCallback } from 'react';
+import './App.css';
+import { checkHealth } from './services/api.js';
+import Scene from './components/Scene/Scene.jsx';
+import Intro from './components/Intro/Intro.jsx';
+import CelestiusSplash from './components/Splash/CelestiusSplash.jsx';
+import { SESSION_KEYS } from './components/Intro/introConstants.js';
+import { logTimelineEvent } from './utils/timelineLogger.js';
+import Navbar from './components/Navbar/Navbar.jsx';
+import Hero from './components/Hero/Hero.jsx';
+import About from './components/About/About.jsx';
+import Schedule from './components/Schedule/Schedule.jsx';
+import EventCards from './components/Events/EventCards.jsx';
+import Quote from './components/Quote/Quote.jsx';
+import RegisterModal from './components/Register/RegisterModal.jsx';
+import Footer from './components/Footer/Footer.jsx';
+import { auditHardwarePlacement } from './utils/hardwareAudit.js';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [appFlow, setAppFlow] = useState(() => {
+    if (typeof window === 'undefined') return 'INTRO';
+    const seen =
+      sessionStorage.getItem(SESSION_KEYS?.INTRO_SEEN || 'larper_or_coder_intro_seen') === 'true' ||
+      sessionStorage.getItem('INTRO_SEEN') === 'true';
+    return seen ? 'SITE' : 'INTRO';
+  });
+  const [registerModalOpen, setRegisterModalOpen] = useState(false);
+
+  // Non-blocking background health check
+  useEffect(() => {
+    checkHealth().then((status) => {
+      if (status.healthy) {
+        console.info('[System] Connected to backend server successfully.');
+      } else {
+        console.info('[System] Backend server offline or mock mode active. Mock adapter will handle registrations.');
+      }
+    });
+  }, []);
+
+  // Handle tab visibility to pause animations when hidden
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        document.documentElement.classList.add('tab-hidden');
+      } else {
+        document.documentElement.classList.remove('tab-hidden');
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, []);
+
+  // Dev-only hardware placement audit
+  useEffect(() => {
+    if (import.meta.env.DEV && appFlow === 'SITE') {
+      const timer = setTimeout(() => {
+        auditHardwarePlacement();
+      }, 500);
+      const onResize = () => auditHardwarePlacement();
+      window.addEventListener('resize', onResize);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', onResize);
+      };
+    }
+  }, [appFlow]);
+
+  // Lock scroll while intro or splash is active
+  useEffect(() => {
+    if (appFlow !== 'SITE') {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [appFlow]);
+
+  const handleOpenRegister = () => {
+    setRegisterModalOpen(true);
+  };
+
+  const handleCloseRegister = () => {
+    setRegisterModalOpen(false);
+  };
+
+  const handleIntroComplete = useCallback(() => {
+    setAppFlow('SPLASH');
+  }, []);
+
+  const handleSplashComplete = useCallback(() => {
+    setAppFlow('SITE');
+    logTimelineEvent('site visible');
+    try {
+      sessionStorage.setItem('INTRO_SEEN', 'true');
+      sessionStorage.setItem(
+        SESSION_KEYS?.INTRO_SEEN || 'larper_or_coder_intro_seen',
+        'true'
+      );
+    } catch {
+      // Storage safety
+    }
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="appWrapper">
+      {/* Background Coding Scene (Dot Grid, Ambient Glows, Rising Embers) */}
+      <Scene />
 
-      <div className="ticks"></div>
+      {/* Story Introduction Overlay */}
+      {appFlow === 'INTRO' && (
+        <Intro onComplete={handleIntroComplete} />
+      )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* Celestius Splash Screen Overlay */}
+      {appFlow === 'SPLASH' && (
+        <CelestiusSplash onComplete={handleSplashComplete} />
+      )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Main Site Container: inert while intro/splash active */}
+      <div
+        className="siteWrapper"
+        inert={appFlow !== 'SITE'}
+        aria-hidden={appFlow !== 'SITE'}
+      >
+        {/* Floating Pill Navbar */}
+        <Navbar onOpenRegister={handleOpenRegister} />
+
+        {/* Main Sections */}
+        <main className="mainContent">
+          <Hero onOpenRegister={handleOpenRegister} />
+          <About />
+          <Schedule />
+          <EventCards onOpenRegister={handleOpenRegister} />
+          <Quote />
+        </main>
+
+        {/* Footer */}
+        <Footer />
+      </div>
+
+      {/* Registration Modal / Bottom Sheet */}
+      <RegisterModal
+        isOpen={registerModalOpen}
+        onClose={handleCloseRegister}
+      />
+    </div>
+  );
 }
-
-export default App

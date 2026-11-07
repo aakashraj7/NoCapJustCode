@@ -1,0 +1,373 @@
+/* client/src/components/Quote/Quote.module.css */
+
+.quoteSection {
+  position: relative;
+  width: 100%;
+  padding-top: 16px;
+  padding-bottom: 72px;
+  background-color: var(--surface-0, #000000);
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .quoteSection {
+    padding-top: 32px;
+    padding-bottom: 96px;
+  }
+}
+
+.quoteContainer {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 0 20px;
+}
+
+/* Two columns on desktop (>= 1024px), single centered column on mobile/tablet */
+.quoteFigure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .quoteFigure {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 64px;
+  }
+}
+
+/* ----------------------------------------------------
+   Statue Column
+   ---------------------------------------------------- */
+.statueWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: -10px;
+  /* Transform & opacity animation */
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 1024px) {
+  .statueWrapper {
+    margin-top: -20px;
+  }
+}
+
+/* When interactive pre-state is applied but not yet triggered */
+.quoteSection[data-ready="true"]:not([data-revealed="true"]) .statueWrapper {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.statueImage {
+  display: block;
+  mix-blend-mode: screen;
+  opacity: var(--statue-opacity, 0.6);
+  pointer-events: none;
+  user-select: none;
+  width: clamp(200px, 62vw, 320px);
+  height: auto;
+  aspect-ratio: 900 / 1420;
+  object-fit: contain;
+
+  /* Soft vertical edge fade so plinth does not end abruptly */
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+}
+
+@media (min-width: 1024px) {
+  .statueImage {
+    width: auto;
+    height: clamp(420px, 56vh, 600px);
+  }
+}
+
+/* ----------------------------------------------------
+   Quote Column
+   ---------------------------------------------------- */
+.quoteContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  max-width: 30ch;
+}
+
+@media (min-width: 1024px) {
+  .quoteContent {
+    align-items: flex-start;
+    text-align: left;
+    max-width: 34ch;
+    /* 2px orange vertical rule with 24px gap */
+    border-left: 2px solid var(--accent-orange, #F26B3A);
+    padding-left: 24px;
+  }
+}
+
+/* Mobile 48px orange divider line above the quote */
+.mobileDivider {
+  width: 48px;
+  height: 2px;
+  background-color: var(--accent-orange, #F26B3A);
+  margin-bottom: 24px;
+}
+
+@media (min-width: 1024px) {
+  .mobileDivider {
+    display: none;
+  }
+}
+
+/* Screen reader hidden text */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ----------------------------------------------------
+   CRT Quote Display & Ghost Sizing (No Layout Shift)
+   ---------------------------------------------------- */
+.quoteDisplay {
+  position: relative;
+  width: 100%;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  font-size: clamp(0.9rem, 3.6vw, 1.1rem);
+  color: var(--accent-orange, #F26B3A);
+
+  /* CRT Glow */
+  text-shadow: 0 0 6px rgba(242, 107, 58, 0.35);
+  animation: crtFlicker 6s infinite ease-in-out;
+}
+
+@media (min-width: 1024px) {
+  .quoteDisplay {
+    font-size: clamp(0.95rem, 1.35vw, 1.3rem);
+  }
+}
+
+/* CRT Scanlines Overlay */
+.quoteDisplay::after {
+  content: '';
+  position: absolute;
+  inset: -6px -8px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(247, 237, 216, 0.06) 2px,
+    rgba(247, 237, 216, 0.06) 4px
+  );
+  border-radius: 4px;
+  mix-blend-mode: overlay;
+}
+
+/* Subtle CRT Flicker (0.96 to 1) */
+@keyframes crtFlicker {
+  0%, 100% { opacity: 1; }
+  35% { opacity: 0.98; }
+  52% { opacity: 0.99; }
+  78% { opacity: 0.96; }
+  85% { opacity: 1; }
+  92% { opacity: 0.97; }
+}
+
+/* Ghost line for zero layout shift */
+.quoteGhost {
+  visibility: hidden;
+  user-select: none;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animated container positioned directly over the ghost */
+.quoteAnimated {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.quoteLine {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* "LARP" word in cream #F7EDD8 */
+.larpCream {
+  color: var(--cream, #F7EDD8);
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------
+   Typing Animations with steps()
+   Line 1: 16 chars * 40ms = 640ms
+   Line 2: 16 chars * 40ms = 640ms, delay 640ms
+   ---------------------------------------------------- */
+.quoteSection[data-ready="true"]:not([data-revealed="true"]) .line1,
+.quoteSection[data-ready="true"]:not([data-revealed="true"]) .line2 {
+  width: 0;
+}
+
+.quoteSection[data-revealed="true"] .line1 {
+  animation: typeLine1 640ms steps(16, end) forwards;
+}
+
+.quoteSection[data-revealed="true"] .line2 {
+  animation: typeLine2 640ms steps(16, end) 640ms forwards;
+}
+
+@keyframes typeLine1 {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes typeLine2 {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* ----------------------------------------------------
+   Orange Block Cursor
+   Line 1 cursor blinks from 0ms to 640ms, then hides.
+   Line 2 cursor activates at 640ms, blinks, and disappears
+   1s after typing ends (at 2280ms).
+   ---------------------------------------------------- */
+.cursor1,
+.cursor2 {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.15em;
+  background-color: var(--accent-orange, #F26B3A);
+  vertical-align: -0.15em;
+  margin-left: 2px;
+}
+
+.cursor1 {
+  opacity: 0;
+}
+
+.cursor2 {
+  opacity: 0;
+}
+
+.quoteSection[data-revealed="true"] .cursor1 {
+  animation: cursorBlink 600ms step-end infinite, cursor1Hide 640ms step-end forwards;
+}
+
+.quoteSection[data-revealed="true"] .cursor2 {
+  animation: cursor2Show 640ms step-end forwards, cursorBlink 600ms step-end 640ms infinite, cursor2Hide 2280ms step-end forwards;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes cursor1Hide {
+  0%, 99.9% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
+
+@keyframes cursor2Show {
+  0%, 99.9% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes cursor2Hide {
+  0%, 99.9% { visibility: visible; }
+  100% { visibility: hidden; opacity: 0; display: none; }
+}
+
+/* ----------------------------------------------------
+   Attribution Style
+   JetBrains Mono, uppercase, 12px, letter-spacing 0.12em, muted cream
+   Fades in after typing completes (1320ms)
+   ---------------------------------------------------- */
+.attribution {
+  margin-top: 18px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted, rgba(247, 237, 216, 0.6));
+  line-height: 1.4;
+  opacity: 1;
+  transition: opacity 400ms ease;
+}
+
+.quoteSection[data-ready="true"]:not([data-revealed="true"]) .attribution {
+  opacity: 0;
+}
+
+.quoteSection[data-revealed="true"] .attribution {
+  animation: attributionFadeIn 400ms ease 1320ms forwards;
+  opacity: 0;
+}
+
+@keyframes attributionFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ----------------------------------------------------
+   prefers-reduced-motion: show everything immediately
+   ---------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .statueWrapper {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .quoteDisplay {
+    animation: none !important;
+    text-shadow: none !important;
+  }
+  .quoteDisplay::after {
+    display: none !important;
+  }
+  .line1, .line2 {
+    width: 100% !important;
+    animation: none !important;
+  }
+  .cursor1, .cursor2 {
+    display: none !important;
+    animation: none !important;
+  }
+  .attribution {
+    opacity: 1 !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
